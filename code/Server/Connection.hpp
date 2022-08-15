@@ -13,6 +13,7 @@ namespace Server
 {
     typedef boost::asio::ip::tcp::socket SocketType;
 
+/// Handles output
 class Connection
 {
 public:
@@ -27,16 +28,32 @@ public:
       m_writing(false), m_moreToWrite(false)
     {}
 
-    void Write(const std::string &message)
+    template <typename T>
+    void Write(const T &message)
     {
         *m_outputStream << message;
         WriteToSocket();
     }
 
-    void Start()
+    template <typename T>
+    std::ostream &operator<<(const T &message)
     {
-        Write("Welcome to DarkFalls!\n");
+        Write(message);
+        m_moreToWrite = true;
+        return *m_outputStream;
     }
+
+    std::ostream &ostream()
+    {
+        WriteToSocket();
+        m_moreToWrite = true;
+        return *m_outputStream;
+    }
+
+//    void Start()
+//    {
+//        Write("Welcome to DarkFalls!\n");
+//    }
 
     SocketType &Socket() { return m_socket; }
 
@@ -52,7 +69,7 @@ private:
 };
 
 
-} // Mud
 } // Server
+} // Mud
 
 #endif //DARKFALLS_CONNECTION_HPP
