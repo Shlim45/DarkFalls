@@ -20,7 +20,8 @@ public:
     Server(int port)
     : m_signal_set(m_io_service, SIGINT, SIGTERM),
     m_acceptor(m_io_service, boost::asio::ip::tcp::endpoint(
-            boost::asio::ip::tcp::v6(), port))
+            boost::asio::ip::tcp::v6(), port)),
+            m_nextSocket(m_io_service)
     {
         m_signal_set.async_wait(
                 [this](boost::system::error_code error, int signal)
@@ -45,18 +46,17 @@ public:
 private:
     void Accept()
     {
-        m_connections.emplace_back(m_io_service);
-        auto &newConnection = m_connections.back();
-
-        m_acceptor.async_accept(newConnection.Socket(),
-                                [this, &newConnection](boost::system::error_code error)
+        m_acceptor.async_accept(m_nextSocket,
+                                [this](boost::system::error_code error)
                                 {
                                     if (!error)
                                     {
-                                        std::cout << "[SERVER] Accepting new connection.  Total connections: "
-                                                  << m_connections.size() << std::endl;
+                                        m_connections.emplace_back(std::move(m_nextSocket));
 
-                                        newConnection.Start();
+                                        auto &conn = m_connections.back();
+
+                                        std::cout << "[SERVER] Accepting new connection from '" << conn.Socket().remote_endpoint().address()
+                                                  << "'.  Total connections: " << m_connections.size() << std::endl;
 
                                         Accept();
                                     }
@@ -70,6 +70,7 @@ private:
     boost::asio::io_service m_io_service;
     boost::asio::signal_set m_signal_set;
     boost::asio::ip::tcp::acceptor m_acceptor;
+    SocketType m_nextSocket;
 
     std::list<LineOrientedConnection> m_connections;
 };

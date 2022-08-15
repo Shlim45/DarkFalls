@@ -29,6 +29,12 @@ void Connection::WriteToSocket()
                     {
                         WriteToSocket();
                         m_moreToWrite = false;
+                        return;
+                    }
+
+                    if (!m_reading)
+                    {
+                        // Close up, delete self
                     }
                 });
 }

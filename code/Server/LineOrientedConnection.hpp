@@ -16,13 +16,12 @@ namespace Server
     class LineOrientedConnection : public Connection
     {
     public:
-        LineOrientedConnection(boost::asio::io_service &io_service)
-            : Connection(io_service),
+        LineOrientedConnection(SocketType &&socket)
+            : Connection(std::move(socket)),
               m_inputStream(&m_inputBuffer)
-        {}
-
-        void Start()
         {
+            Write("Welcome to DarkFalls!\n");
+
             ReadLine();
         }
 

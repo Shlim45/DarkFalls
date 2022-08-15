@@ -17,8 +17,8 @@ namespace Server
 class Connection
 {
 public:
-    explicit Connection(boost::asio::io_service &io_service)
-    : m_socket(io_service),
+    explicit Connection(SocketType &&socket)
+    : m_socket(std::move(socket)),
       m_outputStream1(&m_outputBuffer1),
       m_outputStream2(&m_outputBuffer2),
       m_outputBuffer(&m_outputBuffer1),
@@ -49,11 +49,6 @@ public:
         m_moreToWrite = true;
         return *m_outputStream;
     }
-
-//    void Start()
-//    {
-//        Write("Welcome to DarkFalls!\n");
-//    }
 
     SocketType &Socket() { return m_socket; }
 
