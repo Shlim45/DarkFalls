@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-Wreturn-type -Wreorder)
 set(SRCS
         code/main.cpp
-        code/Server/Server.cpp)
+        code/Server/Connection.cpp)
 
 add_executable(DarkFalls ${SRCS})
 target_link_libraries(DarkFalls LINK_PUBLIC ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})

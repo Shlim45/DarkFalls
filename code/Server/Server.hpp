@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <list>
-#include <boost/asio.hpp>
 #include "Connection.hpp"
 
 namespace Mud

@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "Server/Server.hpp"
 
 namespace
