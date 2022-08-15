@@ -15,7 +15,9 @@ void LineOrientedConnection::ReadLine()
                      {
         if (error)
         {
-            std::cerr << "[SERVER] async_read_until encountered an error. " << error.message() << std::endl;
+            // TODO(jon): If error.message() == "End of file", user closed connection.
+            std::cerr << "[SERVER] ERROR: async_read_until encountered an error \'"
+                      << error.message()  << "\'." << std::endl;
         }
         else
         {
