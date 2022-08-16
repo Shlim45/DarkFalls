@@ -4,8 +4,9 @@
 
 #include "MudInterface.hpp"
 
-#include "../Server/ConnectionBase.hpp"
 #include "../Dictionary/Tokenizer.hpp"
+#include "../Server/ConnectionBase.hpp"
+#include "../Server/Text.hpp"
 
 using namespace Mud::Logic;
 
@@ -13,7 +14,7 @@ MudInterface::MudInterface(Mud::Server::ConnectionBase &connection)
         : m_connection(connection),
           m_interfaceState(InterfaceState::WAITING_FOR_USER)
 {
-    m_connection << "Welcome to DarkFalls!\r\n"
+    m_connection << "Welcome to DarkFalls!" << Server::NEWLINE
                  << "Enter username: ";
 }
 
@@ -24,21 +25,21 @@ void MudInterface::HandleLine(const std::string &line)
     {
     case InterfaceState::WAITING_FOR_USER:
     {
-        m_connection << "Hello, " << tokenizer.GetString() << "\r\n"
-                     << "Enter password: ";
+        m_connection << "Hello, " << Server::YELLOWTEXT << tokenizer.GetString()  << Server::WHITETEXT << Server::NEWLINE
+                     << "Enter password: " << Server::ECHOOFF;
         m_interfaceState = InterfaceState::WAITING_FOR_PASS;
     } break;
 
     case InterfaceState::WAITING_FOR_PASS:
     {
-        m_connection << "Logged in.\r\n"
+        m_connection << Server::ECHOON << Server::NEWLINE << "Logged in." << Server::NEWLINE
                      << "> ";
         m_interfaceState = InterfaceState::LOGGED_IN;
     } break;
 
     case InterfaceState::LOGGED_IN:
     {
-        m_connection << tokenizer.GetString() << "\r\n"
+        m_connection << tokenizer.GetString() << Server::NEWLINE
                      << "> ";
     } break;
     }

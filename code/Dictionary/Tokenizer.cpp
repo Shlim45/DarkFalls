@@ -10,6 +10,19 @@ namespace
 {
     const std::string NO_STRING;
     const char ASCII_DEL = 0x7F;
+
+    const char TELNET_WILL = 0xFB;
+    const char TELNET_WONT = 0xFC;
+    const char TELNET_DO   = 0xFD;
+    const char TELNET_DONT = 0xFE;
+    const char TELNET_IAC  = 0xFF;
+}
+
+void Tokenizer::IgnoreTelnetCommand()
+{
+    ++m_pos;
+    if (*m_pos >= TELNET_WILL && *m_pos <= TELNET_DONT)
+        ++m_pos;
 }
 
 const std::string &Tokenizer::GetString()
@@ -35,7 +48,9 @@ const std::string &Tokenizer::ReadNextString()
 
     for (; m_pos != m_end; ++m_pos)
     {
-        if (*m_pos <= ' ' || *m_pos >= ASCII_DEL)
+        if (*m_pos == TELNET_IAC)
+            IgnoreTelnetCommand();
+        else if (*m_pos <= ' ' || *m_pos >= ASCII_DEL)
         {
             break;
         }
@@ -57,7 +72,9 @@ void Tokenizer::AdvanceToNextToken()
 {
     for (; m_pos != m_end; ++m_pos)
     {
-        if (*m_pos >= ' ' && *m_pos < ASCII_DEL)
+        if (*m_pos == TELNET_IAC)
+            IgnoreTelnetCommand();
+        else if (*m_pos >= ' ' && *m_pos < ASCII_DEL)
             break;
     }
 }

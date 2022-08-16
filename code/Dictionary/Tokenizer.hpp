@@ -28,6 +28,7 @@ public:
 private:
     void AdvanceToNextToken();
     const std::string &ReadNextString();
+    void IgnoreTelnetCommand();
 
     std::vector<std::string> m_cache;
     std::vector<std::string>::const_iterator m_cacheIterator;
