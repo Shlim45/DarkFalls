@@ -10,7 +10,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-Wreturn-type -Wreorder)
 set(SRCS
         code/main.cpp
-        code/Server/Connection.cpp
+        code/Server/Server.cpp
+        code/Server/ConnectionBase.cpp
         code/Server/LineOrientedConnection.cpp)
 
 add_executable(DarkFalls ${SRCS})

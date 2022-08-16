@@ -5,7 +5,7 @@
 #ifndef DARKFALLS_LINEORIENTEDCONNECTION_HPP
 #define DARKFALLS_LINEORIENTEDCONNECTION_HPP
 
-#include "Connection.hpp"
+#include "ConnectionBase.hpp"
 
 namespace Mud
 {
@@ -13,11 +13,11 @@ namespace Server
 {
 
     /// Handles "line-oriented" input
-    class LineOrientedConnection : public Connection
+    class LineOrientedConnection : public ConnectionBase
     {
     public:
         LineOrientedConnection(SocketType &&socket)
-            : Connection(std::move(socket)),
+            : ConnectionBase(std::move(socket)),
               m_inputStream(&m_inputBuffer)
         {
             Write("Welcome to DarkFalls!\n");

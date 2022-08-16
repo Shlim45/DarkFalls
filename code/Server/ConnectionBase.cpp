@@ -2,11 +2,11 @@
 // Created by shlim on 8/14/22.
 //
 #include <iostream>
-#include "Connection.hpp"
+#include "ConnectionBase.hpp"
 
 using namespace Mud::Server;
 
-void Connection::WriteToSocket()
+void ConnectionBase::WriteToSocket()
 {
     if (m_writing)
     {

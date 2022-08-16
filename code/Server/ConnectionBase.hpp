@@ -2,8 +2,8 @@
 // Created by shlim on 8/14/22.
 //
 
-#ifndef DARKFALLS_CONNECTION_HPP
-#define DARKFALLS_CONNECTION_HPP
+#ifndef DARKFALLS_CONNECTIONBASE_HPP
+#define DARKFALLS_CONNECTIONBASE_HPP
 
 #include <boost/asio.hpp>
 
@@ -14,20 +14,9 @@ namespace Server
     typedef boost::asio::ip::tcp::socket SocketType;
 
 /// Handles output
-class Connection
+class ConnectionBase
 {
 public:
-    explicit Connection(SocketType &&socket)
-    : m_socket(std::move(socket)),
-      m_outputStream1(&m_outputBuffer1),
-      m_outputStream2(&m_outputBuffer2),
-      m_outputBuffer(&m_outputBuffer1),
-      m_bufferBeingWritten(&m_outputBuffer2),
-      m_outputStream(&m_outputStream1),
-      m_streamBeingWritten(&m_outputStream2),
-      m_reading(true), m_writing(false), m_moreToWrite(false)
-    {}
-
     template <typename T>
     void Write(const T &message)
     {
@@ -56,7 +45,23 @@ public:
         m_closeHandler = std::forward<Handler>(handler);
     }
 
+    void Close()
+    {
+        m_socket.shutdown(SocketType::shutdown_receive);
+    }
+
 protected:
+    explicit ConnectionBase(SocketType &&socket)
+            : m_socket(std::move(socket)),
+              m_outputStream1(&m_outputBuffer1),
+              m_outputStream2(&m_outputBuffer2),
+              m_outputBuffer(&m_outputBuffer1),
+              m_bufferBeingWritten(&m_outputBuffer2),
+              m_outputStream(&m_outputStream1),
+              m_streamBeingWritten(&m_outputStream2),
+              m_reading(true), m_writing(false), m_moreToWrite(false)
+    {}
+
     void DoneReading()
     {
         m_reading = false;
@@ -82,4 +87,4 @@ private:
 } // Server
 } // Mud
 
-#endif //DARKFALLS_CONNECTION_HPP
+#endif //DARKFALLS_CONNECTIONBASE_HPP
