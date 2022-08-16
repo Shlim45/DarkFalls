@@ -25,7 +25,7 @@ public:
       m_bufferBeingWritten(&m_outputBuffer2),
       m_outputStream(&m_outputStream1),
       m_streamBeingWritten(&m_outputStream2),
-      m_writing(false), m_moreToWrite(false)
+      m_reading(true), m_writing(false), m_moreToWrite(false)
     {}
 
     template <typename T>
@@ -50,17 +50,32 @@ public:
         return *m_outputStream;
     }
 
-    SocketType &Socket() { return m_socket; }
+    template<typename Handler>
+    void SetCloseHandler(Handler &&handler)
+    {
+        m_closeHandler = std::forward<Handler>(handler);
+    }
+
+protected:
+    void DoneReading()
+    {
+        m_reading = false;
+        WriteToSocket();
+    }
+
+    SocketType m_socket;
 
 private:
     void WriteToSocket();
 
-    SocketType m_socket;
     boost::asio::streambuf m_outputBuffer1, m_outputBuffer2;
     std::ostream m_outputStream1, m_outputStream2;
     boost::asio::streambuf *m_outputBuffer, *m_bufferBeingWritten;
     std::ostream *m_outputStream, *m_streamBeingWritten;
-    bool m_writing, m_moreToWrite;
+
+    bool m_reading, m_writing, m_moreToWrite;
+
+    std::function<void()> m_closeHandler;
 };
 
 

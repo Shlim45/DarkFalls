@@ -10,7 +10,7 @@ using namespace Mud::Server;
 
 void LineOrientedConnection::ReadLine()
 {
-    async_read_until(Socket(), m_inputBuffer, '\n',
+    async_read_until(m_socket, m_inputBuffer, '\n',
                      [this](boost::system::error_code error, std::size_t length)
                      {
         if (error)
@@ -28,6 +28,9 @@ void LineOrientedConnection::ReadLine()
             std::cout << ">> " << line << std::endl;
 
             ReadLine();
+            return;
         }
+
+        DoneReading();
                      });
 }

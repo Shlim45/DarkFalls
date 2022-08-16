@@ -24,7 +24,8 @@ void Connection::WriteToSocket()
                     m_writing = false;
 
                     if (error)
-                        std::cerr << "[CONNECTION] ERROR: async_write returned an error " << error.message() << std::endl;
+                        std::cerr << "[CONNECTION] ERROR: async_write returned an error "
+                                  << error.message() << std::endl;
                     else if (m_moreToWrite)
                     {
                         WriteToSocket();
@@ -34,7 +35,7 @@ void Connection::WriteToSocket()
 
                     if (!m_reading)
                     {
-                        // Close up, delete self
+                        m_closeHandler();
                     }
                 });
 }

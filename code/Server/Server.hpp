@@ -43,6 +43,7 @@ public:
         m_io_service.run();
     }
 
+
 private:
     void Accept()
     {
@@ -51,18 +52,27 @@ private:
                                 {
                                     if (!error)
                                     {
-                                        m_connections.emplace_back(std::move(m_nextSocket));
+                                        m_connections.emplace_front(std::move(m_nextSocket));
 
-                                        auto &conn = m_connections.back();
+                                        auto connection = m_connections.begin();
+                                        connection->SetCloseHandler(
+                                                [this, connection]()
+                                                {
+                                                    m_connections.erase(connection);
 
-                                        std::cout << "[SERVER] Accepting new connection from '" << conn.Socket().remote_endpoint().address()
-                                                  << "'.  Total connections: " << m_connections.size() << std::endl;
+                                                    std::cout << "[SERVER] Closing connection.  Total connections: "
+                                                              << m_connections.size() << std::endl;
+                                                });
+
+                                        std::cout << "[SERVER] Accepting new connection.  Total connections: "
+                                                  << m_connections.size() << std::endl;
 
                                         Accept();
                                     }
                                     else
                                     {
-                                        std::cerr << "[SERVER] ERROR: async_accept encountered an error: " << error.message() << std::endl;
+                                        std::cerr << "[SERVER] ERROR: async_accept encountered an error: "
+                                                  << error.message() << std::endl;
                                     }
                                 });
     }
