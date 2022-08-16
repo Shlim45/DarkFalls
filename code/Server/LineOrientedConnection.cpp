@@ -24,8 +24,7 @@ void LineOrientedConnection::ReadLine()
             std::string line;
             std::getline(m_inputStream, line);
             line.erase(line.find('\r'));
-            //m_interface.HandleLine(line);
-            std::cout << ">> " << line << std::endl;
+            m_interface.HandleLine(line);
 
             ReadLine();
             return;

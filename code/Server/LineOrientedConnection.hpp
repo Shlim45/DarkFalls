@@ -5,6 +5,7 @@
 #ifndef DARKFALLS_LINEORIENTEDCONNECTION_HPP
 #define DARKFALLS_LINEORIENTEDCONNECTION_HPP
 
+#include "../Logic/MudInterface.hpp"
 #include "ConnectionBase.hpp"
 
 namespace Mud
@@ -18,10 +19,9 @@ namespace Server
     public:
         LineOrientedConnection(SocketType &&socket)
             : ConnectionBase(std::move(socket)),
-              m_inputStream(&m_inputBuffer)
+              m_inputStream(&m_inputBuffer),
+              m_interface(*this)
         {
-            Write("Welcome to DarkFalls!\n");
-
             ReadLine();
         }
 
@@ -31,6 +31,7 @@ namespace Server
         boost::asio::streambuf m_inputBuffer;
         std::istream           m_inputStream;
 
+        Logic::MudInterface m_interface;
     };
 
 } // Server
