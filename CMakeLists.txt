@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-Wreturn-type -Wreorder)
 set(SRCS
         code/main.cpp
+        code/Dictionary/Tokenizer.cpp
         code/Logic/MudInterface.cpp
         code/Server/Server.cpp
         code/Server/ConnectionBase.cpp

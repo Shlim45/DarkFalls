@@ -5,6 +5,7 @@
 #include "MudInterface.hpp"
 
 #include "../Server/ConnectionBase.hpp"
+#include "../Dictionary/Tokenizer.hpp"
 
 using namespace Mud::Logic;
 
@@ -18,11 +19,12 @@ MudInterface::MudInterface(Mud::Server::ConnectionBase &connection)
 
 void MudInterface::HandleLine(const std::string &line)
 {
+    Dictionary::Tokenizer tokenizer(line);
     switch (m_interfaceState)
     {
     case InterfaceState::WAITING_FOR_USER:
     {
-        m_connection << "Hello, " << line
+        m_connection << "Hello, " << tokenizer.GetString() << "\r\n"
                      << "Enter password: ";
         m_interfaceState = InterfaceState::WAITING_FOR_PASS;
     } break;
@@ -36,7 +38,7 @@ void MudInterface::HandleLine(const std::string &line)
 
     case InterfaceState::LOGGED_IN:
     {
-        m_connection << line
+        m_connection << tokenizer.GetString() << "\r\n"
                      << "> ";
     } break;
     }
