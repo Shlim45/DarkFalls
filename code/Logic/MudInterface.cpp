@@ -39,8 +39,8 @@ void MudInterface::HandleLine(const std::string &line)
 
     case InterfaceState::LOGGED_IN:
     {
-        m_connection << tokenizer.GetString() << Server::NEWLINE
-                     << "> ";
+        m_grammar.Parse(tokenizer, m_connection.ostream());
+        m_connection << "> ";
     } break;
     }
 }

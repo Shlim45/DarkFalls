@@ -6,12 +6,13 @@
 #define DARKFALLS_MUDINTERFACE_HPP
 
 #include <string>
+#include "../Grammar/Grammar.hpp"
 
 namespace Mud
 {
 namespace Server
 {
-class ConnectionBase;
+    class ConnectionBase;
 } // Server
 
 namespace Logic
@@ -25,6 +26,7 @@ public:
     void HandleLine(const std::string &line);
 
 private:
+    Grammar::Grammar m_grammar;
     Server::ConnectionBase &m_connection;
 
     enum class InterfaceState
