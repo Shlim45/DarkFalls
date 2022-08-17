@@ -7,8 +7,8 @@
 
 #include <ostream>
 #include <map>
-#include "Command.hpp"
 #include <memory>
+#include "Command.hpp"
 
 namespace Mud
 {

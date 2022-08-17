@@ -6,7 +6,6 @@
 
 #include "../Dictionary/Tokenizer.hpp"
 #include "../Server/ConnectionBase.hpp"
-#include "../Server/Text.hpp"
 
 using namespace Mud::Logic;
 
