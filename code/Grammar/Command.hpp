@@ -5,7 +5,6 @@
 #ifndef DARKFALLS_COMMAND_HPP
 #define DARKFALLS_COMMAND_HPP
 
-#include <ostream>
 #include "code/Server/Text.hpp"
 
 namespace Mud

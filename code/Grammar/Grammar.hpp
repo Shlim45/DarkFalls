@@ -16,6 +16,10 @@ namespace Dictionary
 {
     class Tokenizer;
 }
+namespace Logic
+{
+    class MudInterface;
+}
 
 namespace Grammar
 {
@@ -24,7 +28,7 @@ class Grammar
 {
 public:
     Grammar();
-    void Parse(Dictionary::Tokenizer &tokenizer, std::ostream &response) const;
+    void Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::MudInterface> mudInterface) const;
 
 private:
     std::map<std::string, std::shared_ptr<Command> > m_commands;

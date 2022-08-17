@@ -25,6 +25,7 @@ public:
     explicit MudInterface(Server::ConnectionBase &connection);
 
     void HandleLine(const std::string &line);
+    std::ostream &ostream();
 
 private:
     Grammar::Grammar m_grammar;

@@ -44,8 +44,13 @@ void MudInterface::HandleLine(const std::string &line)
 
     case InterfaceState::LOGGED_IN:
     {
-        m_grammar.Parse(tokenizer, m_connection.ostream());
+        m_grammar.Parse(tokenizer, std::make_shared<MudInterface>(*this));
         m_connection << m_player->Name() << "> ";
     } break;
     }
+}
+
+std::ostream &MudInterface::ostream()
+{
+    return m_connection.ostream();
 }
