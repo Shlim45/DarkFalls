@@ -11,6 +11,7 @@ using namespace Mud::Grammar;
 Grammar::Grammar()
 {
     m_commands["hello"] = std::make_shared<HelloCommand>();
+    m_commands["health"] = std::make_shared<HealthCommand>();
 }
 
 void Grammar::Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::MudInterface> mudInterface) const
@@ -27,6 +28,6 @@ void Grammar::Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::Mud
     }
     else
     {
-        verbCommand->second->Execute(response);
+        verbCommand->second->Execute(mudInterface);
     }
 }

@@ -26,6 +26,7 @@ public:
 
     void HandleLine(const std::string &line);
     std::ostream &ostream();
+    std::shared_ptr<Mob> Player();
 
 private:
     Grammar::Grammar m_grammar;

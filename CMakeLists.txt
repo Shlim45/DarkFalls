@@ -12,6 +12,7 @@ set(SRCS
         code/main.cpp
         code/Dictionary/Tokenizer.cpp
         code/Grammar/Grammar.cpp
+        code/Grammar/Command.cpp
         code/Logic/MudInterface.cpp
         code/Server/Server.cpp
         code/Server/ConnectionBase.cpp

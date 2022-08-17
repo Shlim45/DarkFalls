@@ -54,3 +54,8 @@ std::ostream &MudInterface::ostream()
 {
     return m_connection.ostream();
 }
+
+std::shared_ptr<Mob> MudInterface::Player()
+{
+    return m_player;
+}
