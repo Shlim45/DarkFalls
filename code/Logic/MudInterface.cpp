@@ -6,12 +6,15 @@
 
 #include "../Dictionary/Tokenizer.hpp"
 #include "../Server/ConnectionBase.hpp"
+#include "Mob.hpp"
 
 using namespace Mud::Logic;
 
 MudInterface::MudInterface(Mud::Server::ConnectionBase &connection)
         : m_connection(connection),
+          m_player(nullptr),
           m_interfaceState(InterfaceState::WAITING_FOR_USER)
+
 {
     m_connection << "Welcome to DarkFalls!" << Server::NEWLINE
                  << "Enter username: ";
@@ -24,7 +27,10 @@ void MudInterface::HandleLine(const std::string &line)
     {
     case InterfaceState::WAITING_FOR_USER:
     {
-        m_connection << "Hello, " << Server::YELLOWTEXT << tokenizer.GetString()  << Server::WHITETEXT << Server::NEWLINE
+        auto name = tokenizer.GetString();
+        std::shared_ptr<Mob> player = std::make_shared<Mob>(name);
+        m_player = player;
+        m_connection << "Hello, " << Server::YELLOWTEXT << player->Name()  << Server::WHITETEXT << Server::NEWLINE
                      << "Enter password: " << Server::ECHOOFF;
         m_interfaceState = InterfaceState::WAITING_FOR_PASS;
     } break;
@@ -39,7 +45,7 @@ void MudInterface::HandleLine(const std::string &line)
     case InterfaceState::LOGGED_IN:
     {
         m_grammar.Parse(tokenizer, m_connection.ostream());
-        m_connection << "> ";
+        m_connection << m_player->Name() << "> ";
     } break;
     }
 }

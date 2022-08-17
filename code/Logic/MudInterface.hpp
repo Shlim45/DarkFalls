@@ -17,7 +17,8 @@ namespace Server
 
 namespace Logic
 {
-
+class Mob;
+    /// Acts as the connections "session"
 class MudInterface
 {
 public:
@@ -28,6 +29,7 @@ public:
 private:
     Grammar::Grammar m_grammar;
     Server::ConnectionBase &m_connection;
+    std::shared_ptr<Mob> m_player;
 
     enum class InterfaceState
     {
