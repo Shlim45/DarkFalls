@@ -14,11 +14,9 @@ namespace Mud
     class Game
     {
     public:
-        Game(const int PORT) : m_server(PORT)
-        {
-            World::World world;
-            m_world = std::make_unique<World::World>(world);
-        }
+        Game(const int PORT)
+        : m_server(PORT), m_world(std::make_unique<World::World>())
+        { }
 
         void Start()
         {
@@ -32,8 +30,8 @@ namespace Mud
         }
 
     private:
-        std::unique_ptr<World::World> m_world;
         Server::Server m_server;
+        std::unique_ptr<World::World> m_world;
     };
 
 } // Mud
