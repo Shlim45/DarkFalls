@@ -1,16 +1,14 @@
-#include "Server/Server.hpp"
+#include "application/Game.hpp"
 
 namespace
 {
     const int PORT = 4000;
 }
 
-using namespace Mud::Server;
-
 int main()
 {
-    Server server(PORT);
-    server.Run();
+    Mud::Game game(PORT);
+    game.Start();
 
     std::cout << "Program terminated normally." << std::endl;
     return 0;

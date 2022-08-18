@@ -2,6 +2,7 @@
 // Created by shlim on 8/15/22.
 //
 
+#include <iostream>
 #include "Server.hpp"
 
 using namespace Mud::Server;
@@ -55,7 +56,6 @@ void Server::Accept()
 
                                     std::cout << "[SERVER] Accepting new connection.  Total connections: "
                                               << m_connections.size() << std::endl;
-
                                     Accept();
                                 } else
                                 {

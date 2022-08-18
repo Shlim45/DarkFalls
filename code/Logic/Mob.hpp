@@ -15,7 +15,7 @@ namespace Logic
 class Mob
 {
 public:
-    Mob(std::string name) : m_name(std::move(name))
+    explicit Mob(std::string name) : m_name(std::move(name))
     {
         m_health = 10;
         m_maxHealth = 10;

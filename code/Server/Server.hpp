@@ -5,7 +5,6 @@
 #ifndef DARKFALLS_SERVER_HPP
 #define DARKFALLS_SERVER_HPP
 
-#include <iostream>
 #include <list>
 #include "LineOrientedConnection.hpp"
 
@@ -17,7 +16,7 @@ namespace Server
 class Server
 {
 public:
-    Server(int port)
+    explicit Server(int port)
     : m_signal_set(m_io_service, SIGINT, SIGTERM),
     m_acceptor(m_io_service, boost::asio::ip::tcp::endpoint(
             boost::asio::ip::tcp::v6(), port)),
@@ -27,6 +26,8 @@ public:
 
     void Run();
     void Shutdown();
+
+    std::list<LineOrientedConnection>::iterator Connections() { return m_connections.begin(); }
 
 private:
     void Accept();
