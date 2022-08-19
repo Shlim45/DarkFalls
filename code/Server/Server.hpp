@@ -32,6 +32,7 @@ public:
 private:
     void Accept();
 
+    /* Connections */
     boost::asio::io_service m_io_service;
     boost::asio::signal_set m_signal_set;
     boost::asio::ip::tcp::acceptor m_acceptor;

@@ -18,6 +18,8 @@ namespace Mud
         : m_server(PORT), m_world(std::make_unique<World::World>())
         { }
 
+        ~Game() {}
+
         void Start()
         {
             std::thread server_thread([this]()
