@@ -6,7 +6,7 @@
 
 #include "../Dictionary/Tokenizer.hpp"
 #include "../Server/ConnectionBase.hpp"
-#include "Mob.hpp"
+#include "Player.hpp"
 
 using namespace Mud::Logic;
 
@@ -28,7 +28,7 @@ void MudInterface::HandleLine(const std::string &line)
     case InterfaceState::WAITING_FOR_USER:
     {
         auto name = tokenizer.GetString();
-        std::shared_ptr<Mob> player = std::make_shared<Mob>(name);
+        std::shared_ptr<Player> player = std::make_shared<Player>(name, m_connection);
         m_player = player;
         m_connection << "Hello, " << Server::YELLOWTEXT << player->Name()  << Server::WHITETEXT << Server::NEWLINE
                      << "Enter password: " << Server::ECHOOFF;
@@ -55,7 +55,7 @@ std::ostream &MudInterface::ostream()
     return m_connection.ostream();
 }
 
-std::shared_ptr<Mob> MudInterface::Player()
+std::shared_ptr<Player> MudInterface::GetPlayer()
 {
     return m_player;
 }

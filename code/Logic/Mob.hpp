@@ -36,7 +36,7 @@ public:
     int Power() { return m_power; }
     int MaxPower() { return m_maxPower; }
 
-private:
+protected:
     std::string m_name;
 
     int m_health, m_maxHealth;

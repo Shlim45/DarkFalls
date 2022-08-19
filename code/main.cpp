@@ -1,4 +1,5 @@
-#include "application/Game.hpp"
+#include <iostream>
+#include "Server/Server.hpp"
 
 namespace
 {
@@ -7,8 +8,8 @@ namespace
 
 int main()
 {
-    Mud::Game game(PORT);
-    game.Start();
+    Mud::Server::Server server(PORT);
+    server.Run();
 
     std::cout << "Program terminated normally." << std::endl;
     return 0;
