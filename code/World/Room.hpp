@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "code/Logic/Player.hpp"
+#include "code/World/Exit.hpp"
 
 namespace Mud
 {
@@ -29,14 +30,14 @@ namespace Logic
             return rhs.m_roomId == m_roomId;
         }
 
-        int RoomID()
+        int RoomID() const
         {
             return m_roomId;
         }
 
         void SetAreaName(std::string name)
         {
-            m_areaName = name;
+            m_areaName = std::move(name);
         }
 
         std::string AreaName() const
@@ -57,7 +58,7 @@ namespace Logic
 
         void RemovePlayer(Player &player)
         {
-            for (std::list<Player>::iterator p = m_players.begin(); p != m_players.end(); p++)
+            for (auto p = m_players.begin(); p != m_players.end(); p++)
                 if (*p == player)
                 {
                     m_players.erase(p);
@@ -78,9 +79,29 @@ namespace Logic
 
         void RemoveMonster(Mob &monster)
         {
-            for (std::list<Mob>::iterator m = m_monsters.begin(); m != m_monsters.end(); m++)
+            for (auto m = m_monsters.begin(); m != m_monsters.end(); m++)
                 if (*m == monster)
+                {
                     m_monsters.erase(m);
+                    break;
+                }
+        }
+
+        std::list<Exit>::const_iterator Exits() { return m_exits.begin(); }
+
+        void AddExit(const Exit &exit)
+        {
+            m_exits.push_back(exit);
+        }
+
+        void RemoveExit(Exit &exit)
+        {
+            for (auto e = m_exits.begin(); e != m_exits.end(); e++)
+                if (*e == exit)
+                {
+                    m_exits.erase(e);
+                    break;
+                }
         }
 
         std::string RoomDescription() const
@@ -95,6 +116,29 @@ namespace Logic
             sOutput += "[" + Server::ColorizeText(AreaName(), Server::REDTEXT) + "]"
                        + Server::NEWLINE + Server::NEWLINE
                        + RoomDescription() + Server::NEWLINE;
+
+            const int NUM_EXITS = m_exits.size();
+            if (NUM_EXITS > 0)
+            {
+                int count = 0;
+
+                std::string sExits = Server::NEWLINE + "Obvious exits: ";
+                std::for_each(m_exits.begin(), m_exits.end(),
+                              [NUM_EXITS, &count, &sExits, player](Exit e)
+                              {
+                                  count++;
+                                  if (count > 1 && count == NUM_EXITS)
+                                      sExits += "and ";
+                                  sExits += Server::ColorizeText(e.DirectionName(), Server::BROWNTEXT);
+                                  if (NUM_EXITS > 1 && count < NUM_EXITS)
+                                      sExits += ", ";
+                                  else
+                                      sExits += "." + Server::NEWLINE;
+
+                              });
+
+                sOutput += sExits;
+            }
 
             const int NUM_PLAYERS = m_players.size() - 1;
 
@@ -138,7 +182,7 @@ namespace Logic
         int m_roomId;
         std::string m_areaName;
         std::string m_description;
-        // exits
+        std::list<Exit> m_exits;
         // objects/items
         // players
         std::list<Player> m_players;

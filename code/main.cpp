@@ -30,6 +30,19 @@ int main()
     Mud::Logic::Room room3(3, "You are standing in the third dark room.  There is a picture of dogs shooting pool and smoking cigars hanging on the wall.");
     std::cout << "Rooms Loaded.\n";
 
+    std::cout << "Loading Exits...\n";
+    Mud::Logic::Exit east1(Mud::Logic::Direction::EAST);
+    room1.AddExit(east1);
+
+    Mud::Logic::Exit east2(Mud::Logic::Direction::EAST);
+    room2.AddExit(east2);
+    Mud::Logic::Exit west1(Mud::Logic::Direction::WEST);
+    room2.AddExit(west1);
+
+    Mud::Logic::Exit west2(Mud::Logic::Direction::WEST);
+    room3.AddExit(west2);
+    std::cout << "Exits Loaded.\n";
+
     area.AddRoom(0,0,0, room1);
     area.AddRoom(1,0,0, room2);
     area.AddRoom(2,0,0, room3);
