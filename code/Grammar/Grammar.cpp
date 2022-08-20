@@ -12,9 +12,10 @@ Grammar::Grammar()
 {
     m_commands["hello"] = std::make_shared<HelloCommand>();
     m_commands["health"] = std::make_shared<HealthCommand>();
+    m_commands["look"] = std::make_shared<LookCommand>();
 }
 
-void Grammar::Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::MudInterface> mudInterface) const
+void Grammar::Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     const auto &verb = tokenizer.GetString();
     const auto verbCommand = m_commands.find(verb);
@@ -28,6 +29,6 @@ void Grammar::Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::Mud
     }
     else
     {
-        verbCommand->second->Execute(mudInterface);
+        verbCommand->second->Execute(mudInterface, world);
     }
 }

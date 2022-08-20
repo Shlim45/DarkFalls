@@ -10,6 +10,11 @@
 
 namespace Mud
 {
+namespace Logic
+{
+    class World;
+}
+
 namespace Server
 {
     class ConnectionBase;
@@ -22,7 +27,7 @@ class Player;
 class MudInterface
 {
 public:
-    explicit MudInterface(Server::ConnectionBase &connection);
+    explicit MudInterface(Server::ConnectionBase &connection, Logic::World &world);
 
     void HandleLine(const std::string &line);
     std::ostream &ostream();
@@ -40,6 +45,8 @@ private:
         WAITING_FOR_PASS,
         LOGGED_IN
     } m_interfaceState;
+
+    Logic::World &m_world;
 };
 
 } // Logic

@@ -43,7 +43,7 @@ void Server::Accept()
                             [this](boost::system::error_code error) {
                                 if (!error)
                                 {
-                                    m_connections.emplace_front(std::move(m_nextSocket));
+                                    m_connections.emplace_front(std::move(m_nextSocket), m_world);
 
                                     auto connection = m_connections.begin();
                                     connection->SetCloseHandler(

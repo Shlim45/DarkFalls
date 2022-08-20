@@ -17,10 +17,10 @@ namespace Server
     class LineOrientedConnection : public ConnectionBase
     {
     public:
-        LineOrientedConnection(SocketType &&socket)
+        LineOrientedConnection(SocketType &&socket, Logic::World &world)
             : ConnectionBase(std::move(socket)),
               m_inputStream(&m_inputBuffer),
-              m_interface(*this)
+              m_interface(*this, world)
         {
             ReadLine();
         }

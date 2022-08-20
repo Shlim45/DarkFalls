@@ -7,13 +7,15 @@
 #include "../Dictionary/Tokenizer.hpp"
 #include "../Server/ConnectionBase.hpp"
 #include "Player.hpp"
+#include "code/World/World.hpp"
 
 using namespace Mud::Logic;
 
-MudInterface::MudInterface(Mud::Server::ConnectionBase &connection)
+MudInterface::MudInterface(Mud::Server::ConnectionBase &connection, Logic::World &world)
         : m_connection(connection),
           m_player(nullptr),
-          m_interfaceState(InterfaceState::WAITING_FOR_USER)
+          m_interfaceState(InterfaceState::WAITING_FOR_USER),
+          m_world(world)
 
 {
     m_connection << "Welcome to DarkFalls!" << Server::NEWLINE
@@ -30,6 +32,7 @@ void MudInterface::HandleLine(const std::string &line)
         auto name = tokenizer.GetString();
         std::shared_ptr<Player> player = std::make_shared<Player>(name, m_connection);
         m_player = player;
+        m_world.FindRoom(1).AddPlayer(*player);
         m_connection << "Hello, " << Server::YELLOWTEXT << player->Name()  << Server::WHITETEXT << Server::NEWLINE
                      << "Enter password: " << Server::ECHOOFF;
         m_interfaceState = InterfaceState::WAITING_FOR_PASS;
@@ -44,7 +47,7 @@ void MudInterface::HandleLine(const std::string &line)
 
     case InterfaceState::LOGGED_IN:
     {
-        m_grammar.Parse(tokenizer, std::make_shared<MudInterface>(*this));
+        m_grammar.Parse(tokenizer, std::make_shared<MudInterface>(*this), m_world);
         m_connection << m_player->Name() << "> ";
     } break;
     }

@@ -26,6 +26,11 @@ public:
     }
     ~Mob() = default;
 
+    virtual bool operator==(Mob &rhs)
+    {
+        return rhs.Name().compare(Name()) == 0;
+    }
+
     std::string Name() { return m_name; }
     void SetName(std::string name) { m_name = name; }
 

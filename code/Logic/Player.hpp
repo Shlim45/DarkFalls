@@ -21,6 +21,11 @@ namespace Logic
         : Mob(name), m_connection(connection)
         {}
 
+        bool operator==(Player &rhs)
+        {
+            return rhs.Name().compare(Name()) == 0;
+        }
+
         void Tell(std::string &message)
         {
             m_connection << message << Server::NEWLINE;

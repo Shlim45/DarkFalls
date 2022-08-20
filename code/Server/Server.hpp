@@ -7,6 +7,7 @@
 
 #include <list>
 #include "LineOrientedConnection.hpp"
+#include "code/World/World.hpp"
 
 namespace Mud
 {
@@ -16,11 +17,12 @@ namespace Server
 class Server
 {
 public:
-    explicit Server(int port)
+    explicit Server(int port, Mud::Logic::World &world)
     : m_signal_set(m_io_service, SIGINT, SIGTERM),
     m_acceptor(m_io_service, boost::asio::ip::tcp::endpoint(
             boost::asio::ip::tcp::v6(), port)),
-            m_nextSocket(m_io_service)
+            m_nextSocket(m_io_service),
+            m_world(world)
     {
     }
 
@@ -39,6 +41,7 @@ private:
     SocketType m_nextSocket;
 
     std::list<LineOrientedConnection> m_connections;
+    Mud::Logic::World &m_world;
 };
 
 } // Server
