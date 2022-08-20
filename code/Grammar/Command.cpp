@@ -25,12 +25,12 @@ void HealthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, L
 {
     auto &response = mudInterface->ostream();
 
-    response << " Hits: " << mudInterface->GetPlayer()->Health() << "/"
-             << mudInterface->GetPlayer()->MaxHealth() << Server::NEWLINE
-             << "  Fat: " << mudInterface->GetPlayer()->Fatigue() << "/"
-             << mudInterface->GetPlayer()->MaxFatigue() << Server::NEWLINE
-             << "Power: " << mudInterface->GetPlayer()->Power() << "/"
-             << mudInterface->GetPlayer()->MaxPower() << Server::NEWLINE;
+    response << " Hits: " << Server::BR_BLUETEXT << mudInterface->GetPlayer()->Health() << "/"
+             << mudInterface->GetPlayer()->MaxHealth() << Server::BR_WHITETEXT << Server::NEWLINE
+             << "  Fat: " << Server::BR_GREENTEXT << mudInterface->GetPlayer()->Fatigue() << "/"
+             << mudInterface->GetPlayer()->MaxFatigue() << Server::BR_WHITETEXT << Server::NEWLINE
+             << "Power: " << Server::BR_REDTEXT << mudInterface->GetPlayer()->Power() << "/"
+             << mudInterface->GetPlayer()->MaxPower() << Server::BR_WHITETEXT << Server::NEWLINE;
 }
 
 void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
@@ -38,8 +38,17 @@ void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
     auto &response = mudInterface->ostream();
     auto room = mudInterface->GetPlayer()->Location();
 
-    response << "[" << Server::BR_REDTEXT << (room != NULL ? room->AreaName() : "The Void") << Server::WHITETEXT << "]"
-             << Server::NEWLINE << ((room != NULL) ? room->RoomDescription() : "You\'re in the void!") << Server::NEWLINE;
+    if (room == nullptr)
+    {
+        response << "[" << Server::BR_REDTEXT << "The Void" << Server::WHITETEXT << "]"
+                 << Server::NEWLINE << "You\'re in the void!" << Server::NEWLINE;
+    }
+    else
+    {
+        response << "[" << Server::REDTEXT << room->AreaName() << Server::BR_WHITETEXT << "]" << Server::NEWLINE
+                 << room->RoomDescription() << Server::NEWLINE;;
+    }
+
 }
 
 void QuitCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const

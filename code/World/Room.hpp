@@ -31,7 +31,8 @@ namespace Logic
 
         friend std::ostream &operator<<(std::ostream &os, const Room &r)
         {
-            os << r.m_description;
+            os << "[" << Server::REDTEXT << r.AreaName() << Server::BR_WHITETEXT << "]" << Server::NEWLINE
+               << r.RoomDescription() << Server::NEWLINE;
             return os;
         }
 
@@ -86,7 +87,7 @@ namespace Logic
                     m_monsters.erase(m);
         }
 
-        std::string &RoomDescription()
+        std::string RoomDescription() const
         {
             return m_description;
         }

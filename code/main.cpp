@@ -13,8 +13,9 @@ namespace
 
 int main()
 {
-    std::cout << Mud::Server::BR_GREENTEXT << MUDNAME << Mud::Server::BR_WHITETEXT
-              << " version " << Mud::Server::BR_YELLOWTEXT << MAJOR << "." << MINOR << "." << PATCH << Mud::Server::BR_WHITETEXT << " started.\n";
+    std::cout << Mud::Server::BR_GREENTEXT << MUDNAME << Mud::Server::BR_WHITETEXT << " version "
+              << Mud::Server::BR_YELLOWTEXT << MAJOR << "." << MINOR << "." << PATCH << Mud::Server::BR_WHITETEXT
+              << " started.\n";
 
     std::cout << "Initializing World...\n";
     Mud::Logic::World world;

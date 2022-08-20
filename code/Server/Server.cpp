@@ -43,6 +43,8 @@ void Server::Accept()
                             [this](boost::system::error_code error) {
                                 if (!error)
                                 {
+                                    auto address = m_nextSocket.remote_endpoint().address();
+
                                     m_connections.emplace_front(std::move(m_nextSocket), m_world);
 
                                     auto connection = m_connections.begin();
@@ -50,12 +52,11 @@ void Server::Accept()
                                             [this, connection]() {
                                                 m_connections.erase(connection);
 
-                                                std::cout << "[SERVER] Closing connection.  Total connections: "
-                                                          << m_connections.size() << std::endl;
+                                                std::cout << "[SERVER] Closing connection.  Total connections: " << m_connections.size() << std::endl;
                                             });
 
-                                    std::cout << "[SERVER] Accepting new connection.  Total connections: "
-                                              << m_connections.size() << std::endl;
+                                    std::cout << "[SERVER] Accepting new connection from '" << address
+                                              << "'.  Total connections: " << m_connections.size() << std::endl;
                                     Accept();
                                 } else
                                 {
