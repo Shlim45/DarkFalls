@@ -32,7 +32,8 @@ void MudInterface::HandleLine(const std::string &line)
         auto name = tokenizer.GetString();
         std::shared_ptr<Player> player = std::make_shared<Player>(name, m_connection);
         m_player = player;
-        m_world.FindRoom(1).AddPlayer(*player);
+        m_world.FindArea("Tamia City").FindRoom(1,0,0).AddPlayer(*player);
+//        m_world.FindRoom(1).AddPlayer(*player);
         m_connection << "Hello, " << Server::YELLOWTEXT << player->Name()  << Server::WHITETEXT << Server::NEWLINE
                      << "Enter password: " << Server::ECHOOFF;
         m_interfaceState = InterfaceState::WAITING_FOR_PASS;

@@ -36,7 +36,13 @@ void HealthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, L
 void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto &response = mudInterface->ostream();
+    auto room = mudInterface->GetPlayer()->Location();
 
-    response << "[" << Server::BR_REDTEXT << "City of Tamia" << Server::WHITETEXT << "]" << Server::NEWLINE
-             << world.FindRoom(1).RoomDescription() << Server::NEWLINE;
+    response << "[" << Server::BR_REDTEXT << (room != NULL ? room->AreaName() : "The Void") << Server::WHITETEXT << "]"
+             << Server::NEWLINE << ((room != NULL) ? room->RoomDescription() : "You\'re in the void!") << Server::NEWLINE;
+}
+
+void QuitCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+{
+    mudInterface->GetPlayer()->Quit();
 }

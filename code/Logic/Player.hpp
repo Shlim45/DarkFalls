@@ -8,6 +8,8 @@
 #include <string>
 #include "code/Server/ConnectionBase.hpp"
 #include "Mob.hpp"
+#include "code/Server/Text.hpp"
+
 
 namespace Mud
 {
@@ -29,6 +31,11 @@ namespace Logic
         void Tell(std::string &message)
         {
             m_connection << message << Server::NEWLINE;
+        }
+
+        void Quit()
+        {
+            m_connection.Close();
         }
 
     private:

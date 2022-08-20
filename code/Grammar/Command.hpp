@@ -6,7 +6,6 @@
 #define DARKFALLS_COMMAND_HPP
 
 #include <memory>
-#include "code/Server/Text.hpp"
 
 namespace Mud
 {
@@ -37,6 +36,11 @@ class HealthCommand : public Command
 };
 
 class LookCommand : public Command
+{
+    void Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const override;
+};
+
+class QuitCommand : public Command
 {
     void Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const override;
 };

@@ -11,11 +11,12 @@ namespace Mud
 {
 namespace Logic
 {
+class Room;
 
 class Mob
 {
 public:
-    explicit Mob(std::string name) : m_name(std::move(name))
+    explicit Mob(std::string name) : m_name(std::move(name)), m_location(nullptr)
     {
         m_health = 10;
         m_maxHealth = 10;
@@ -24,7 +25,7 @@ public:
         m_power = 10;
         m_maxPower = 10;
     }
-    ~Mob() = default;
+    ~Mob() { m_location = nullptr; }
 
     virtual bool operator==(Mob &rhs)
     {
@@ -33,6 +34,9 @@ public:
 
     std::string Name() { return m_name; }
     void SetName(std::string name) { m_name = name; }
+
+    Room *Location() { return m_location; }
+    void SetLocation(Room *newLocation) { m_location = newLocation; }
 
     int Health() { return m_health; }
     int MaxHealth() { return m_maxHealth; }
@@ -43,6 +47,7 @@ public:
 
 protected:
     std::string m_name;
+    Room *m_location;
 
     int m_health, m_maxHealth;
     int m_fatigue, m_maxFatigue;

@@ -29,9 +29,25 @@ namespace Logic
             return rhs.m_roomId == m_roomId;
         }
 
+        friend std::ostream &operator<<(std::ostream &os, const Room &r)
+        {
+            os << r.m_description;
+            return os;
+        }
+
         int RoomID()
         {
             return m_roomId;
+        }
+
+        void SetAreaName(std::string name)
+        {
+            m_areaName = name;
+        }
+
+        std::string AreaName() const
+        {
+            return m_areaName;
         }
 
         std::list<Player>::const_iterator Players()
@@ -42,6 +58,7 @@ namespace Logic
         void AddPlayer(Player &player)
         {
             m_players.push_back(player);
+            player.SetLocation(this);
         }
 
         void RemovePlayer(Player &player)
@@ -49,6 +66,7 @@ namespace Logic
             for (std::list<Player>::iterator p = m_players.begin(); p != m_players.end(); p++)
                 if (*p == player)
                     m_players.erase(p);
+            player.SetLocation(nullptr);
         }
 
         std::list<Mob>::const_iterator Monsters()
@@ -80,7 +98,7 @@ namespace Logic
 
     private:
         int m_roomId;
-        // area
+        std::string m_areaName;
         std::string m_description;
         // exits
         // objects/items
