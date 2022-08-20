@@ -59,7 +59,10 @@ namespace Logic
         {
             for (std::list<Player>::iterator p = m_players.begin(); p != m_players.end(); p++)
                 if (*p == player)
+                {
                     m_players.erase(p);
+                    break;
+                }
             player.SetLocation(nullptr);
         }
 

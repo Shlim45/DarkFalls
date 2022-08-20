@@ -28,7 +28,7 @@ namespace Logic
             return rhs.Name().compare(Name()) == 0;
         }
 
-        void Tell(std::string &message)
+        void Tell(std::string message)
         {
             m_connection << message << Server::NEWLINE;
         }

@@ -41,7 +41,7 @@ void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 
     if (room == nullptr)
     {
-        response << "[" << Server::BR_REDTEXT << "The Void" << Server::GREYTEXT << "]"
+        response << "[" << Server::BR_REDTEXT << "The Void" << Server::PLAINTEXT << "]"
                  << Server::NEWLINE << "You\'re in the void!" << Server::NEWLINE;
     }
     else
@@ -53,5 +53,10 @@ void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 
 void QuitCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
-    mudInterface->GetPlayer()->Quit();
+    auto player = mudInterface->GetPlayer();
+    auto room = player->Location();
+    if (room != nullptr)
+        room->RemovePlayer(*player);
+    player->Tell("Bye bye!");
+    player->Quit();
 }

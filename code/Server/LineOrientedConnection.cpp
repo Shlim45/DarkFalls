@@ -18,7 +18,6 @@ void LineOrientedConnection::ReadLine()
             // NOTE(jon): User closed connection (quit).
             if (error == boost::asio::error::eof)
             {
-                // TODO(jon): Handle player cleanup
                 std::cout << "[SERVER] " << m_socket.remote_endpoint().address()
                           << " disconnected." << std::endl;
             }
