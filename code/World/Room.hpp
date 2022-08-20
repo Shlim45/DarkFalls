@@ -29,13 +29,6 @@ namespace Logic
             return rhs.m_roomId == m_roomId;
         }
 
-        friend std::ostream &operator<<(std::ostream &os, const Room &r)
-        {
-            os << "[" << Server::REDTEXT << r.AreaName() << Server::BR_WHITETEXT << "]" << Server::NEWLINE
-               << r.RoomDescription() << Server::NEWLINE;
-            return os;
-        }
-
         int RoomID()
         {
             return m_roomId;
@@ -51,7 +44,7 @@ namespace Logic
             return m_areaName;
         }
 
-        std::list<Player>::const_iterator Players()
+        std::list<Player>::const_iterator Players() const
         {
             return m_players.begin();
         }
@@ -92,10 +85,51 @@ namespace Logic
             return m_description;
         }
 
-        void Show(Player &player)
+        std::string HandleLook(const Player &player) const
         {
-            player.Tell(m_description);
+            std::string sOutput = Server::NEWLINE;
+
+            sOutput += "[" + Server::ColorizeText(AreaName(), Server::REDTEXT) + "]"
+                       + Server::NEWLINE + Server::NEWLINE
+                       + RoomDescription() + Server::NEWLINE;
+
+            const int NUM_PLAYERS = m_players.size() - 1;
+
+            if (NUM_PLAYERS > 0)
+            {
+                int count = 0;
+
+                std::string sPlayers = Server::NEWLINE + "Also there is ";
+                std::for_each(m_players.begin(), m_players.end(),
+                              [NUM_PLAYERS, &count, &sPlayers, player](const Player &p)
+                              {
+                                  if (p.Name().compare(player.Name()) != 0)
+                                  {
+                                      count++;
+                                      if (count > 1 && count == NUM_PLAYERS)
+                                          sPlayers += "and ";
+                                      sPlayers += Server::ColorizeText(p.Name(), Server::BR_GREENTEXT);
+                                      if (NUM_PLAYERS > 1 && count < NUM_PLAYERS)
+                                        sPlayers += ", ";
+                                      else
+                                          sPlayers += "." + Server::NEWLINE;
+                                  }
+                              });
+
+                sOutput += sPlayers;
+            }
+
+            return sOutput;
         }
+
+/*        friend std::ostream &operator<<(std::ostream &os, const Room &r)
+        {
+            os << "[" << Server::ColorizeText(r.AreaName(), Server::REDTEXT) << "]"
+               << Server::NEWLINE << Server::NEWLINE
+               << r.RoomDescription() << Server::NEWLINE;
+
+                return os;
+        }*/
 
     private:
         int m_roomId;

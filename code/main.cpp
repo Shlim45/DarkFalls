@@ -13,8 +13,8 @@ namespace
 
 int main()
 {
-    std::cout << Mud::Server::BR_GREENTEXT << MUDNAME << Mud::Server::BR_WHITETEXT << " version "
-              << Mud::Server::BR_YELLOWTEXT << MAJOR << "." << MINOR << "." << PATCH << Mud::Server::BR_WHITETEXT
+    std::cout << Mud::Server::BR_GREENTEXT << MUDNAME << Mud::Server::PLAINTEXT << " version "
+              << Mud::Server::YELLOWTEXT << MAJOR << "." << MINOR << "." << PATCH << Mud::Server::PLAINTEXT
               << " started.\n";
 
     std::cout << "Initializing World...\n";

@@ -26,27 +26,27 @@ void HealthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, L
     auto &response = mudInterface->ostream();
 
     response << " Hits: " << Server::BR_BLUETEXT << mudInterface->GetPlayer()->Health() << "/"
-             << mudInterface->GetPlayer()->MaxHealth() << Server::BR_WHITETEXT << Server::NEWLINE
+             << mudInterface->GetPlayer()->MaxHealth() << Server::PLAINTEXT << Server::NEWLINE
              << "  Fat: " << Server::BR_GREENTEXT << mudInterface->GetPlayer()->Fatigue() << "/"
-             << mudInterface->GetPlayer()->MaxFatigue() << Server::BR_WHITETEXT << Server::NEWLINE
+             << mudInterface->GetPlayer()->MaxFatigue() << Server::PLAINTEXT << Server::NEWLINE
              << "Power: " << Server::BR_REDTEXT << mudInterface->GetPlayer()->Power() << "/"
-             << mudInterface->GetPlayer()->MaxPower() << Server::BR_WHITETEXT << Server::NEWLINE;
+             << mudInterface->GetPlayer()->MaxPower() << Server::PLAINTEXT << Server::NEWLINE;
 }
 
 void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto &response = mudInterface->ostream();
-    auto room = mudInterface->GetPlayer()->Location();
+    auto player = mudInterface->GetPlayer();
+    auto room = player->Location();
 
     if (room == nullptr)
     {
-        response << "[" << Server::BR_REDTEXT << "The Void" << Server::WHITETEXT << "]"
+        response << "[" << Server::BR_REDTEXT << "The Void" << Server::GREYTEXT << "]"
                  << Server::NEWLINE << "You\'re in the void!" << Server::NEWLINE;
     }
     else
     {
-        response << "[" << Server::REDTEXT << room->AreaName() << Server::BR_WHITETEXT << "]" << Server::NEWLINE
-                 << room->RoomDescription() << Server::NEWLINE;;
+        response << room->HandleLook(*player) << Server::NEWLINE;
     }
 
 }

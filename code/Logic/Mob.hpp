@@ -32,18 +32,18 @@ public:
         return rhs.Name().compare(Name()) == 0;
     }
 
-    std::string Name() { return m_name; }
+    std::string Name() const { return m_name; }
     void SetName(std::string name) { m_name = name; }
 
-    Room *Location() { return m_location; }
+    Room *Location() const { return m_location; }
     void SetLocation(Room *newLocation) { m_location = newLocation; }
 
-    int Health() { return m_health; }
-    int MaxHealth() { return m_maxHealth; }
-    int Fatigue() { return m_fatigue; }
-    int MaxFatigue() { return m_maxFatigue; }
-    int Power() { return m_power; }
-    int MaxPower() { return m_maxPower; }
+    int Health() const { return m_health; }
+    int MaxHealth() const { return m_maxHealth; }
+    int Fatigue() const { return m_fatigue; }
+    int MaxFatigue() const { return m_maxFatigue; }
+    int Power() const { return m_power; }
+    int MaxPower() const { return m_maxPower; }
 
 protected:
     std::string m_name;

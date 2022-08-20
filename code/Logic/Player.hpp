@@ -23,7 +23,7 @@ namespace Logic
         : Mob(name), m_connection(connection)
         {}
 
-        bool operator==(Player &rhs)
+        bool operator==(Player &rhs) const
         {
             return rhs.Name().compare(Name()) == 0;
         }

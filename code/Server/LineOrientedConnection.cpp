@@ -15,11 +15,12 @@ void LineOrientedConnection::ReadLine()
                      {
         if (error)
         {
-            // TODO(jon): If error.message() == "End of file", user closed connection.
-            if (error.value() == 2)
+            // NOTE(jon): User closed connection (quit).
+            if (error == boost::asio::error::eof)
             {
-                std::cout << "[SERVER] Connection from " << m_socket.remote_endpoint().address()
-                          << " closed." << std::endl;
+                // TODO(jon): Handle player cleanup
+                std::cout << "[SERVER] " << m_socket.remote_endpoint().address()
+                          << " disconnected." << std::endl;
             }
             else
                 std::cerr << "[SERVER] ERROR: async_read_until encountered an error \'"
