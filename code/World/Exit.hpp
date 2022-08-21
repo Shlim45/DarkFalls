@@ -14,16 +14,16 @@ namespace Mud
     {
         enum class Direction
         {
-            NORTH = 0,
-            SOUTH = 1,
-            EAST = 2,
-            WEST = 3,
-            NORTHEAST = 4,
-            NORTHWEST = 5,
-            SOUTHEAST = 6,
-            SOUTHWEST = 7,
-            UP = 8,
-            DOWN = 9,
+            NORTH,
+            SOUTH,
+            EAST,
+            WEST,
+            NORTHEAST,
+            NORTHWEST,
+            SOUTHEAST,
+            SOUTHWEST,
+            UP,
+            DOWN,
         };
 
         class Exit
@@ -36,6 +36,11 @@ namespace Mud
             bool operator==(Exit &rhs)
             {
                 return rhs.m_direction == m_direction;
+            }
+
+            Direction Destination()
+            {
+                return m_direction;
             }
 
             std::string DirectionName()

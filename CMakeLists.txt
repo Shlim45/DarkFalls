@@ -14,6 +14,7 @@ set(SRCS
         code/Grammar/Grammar.cpp
         code/Grammar/Command.cpp
         code/Logic/MudInterface.cpp
+        code/World/Room.cpp
         code/Server/Server.cpp
         code/Server/ConnectionBase.cpp
         code/Server/LineOrientedConnection.cpp)
