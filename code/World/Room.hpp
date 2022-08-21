@@ -45,18 +45,18 @@ namespace Logic
             return m_areaName;
         }
 
-        std::list<Player>::const_iterator Players() const
+        std::list<std::shared_ptr<Player>>::const_iterator Players() const
         {
             return m_players.begin();
         }
 
-        void AddPlayer(Player &player)
+        void AddPlayer(std::shared_ptr<Player> player)
         {
             m_players.push_back(player);
-            player.SetLocation(this);
+            player->SetLocation(std::make_shared<Room>(*this));
         }
 
-        void RemovePlayer(Player &player)
+        void RemovePlayer(std::shared_ptr<Player> player)
         {
             for (auto p = m_players.begin(); p != m_players.end(); p++)
                 if (*p == player)
@@ -64,7 +64,7 @@ namespace Logic
                     m_players.erase(p);
                     break;
                 }
-            player.SetLocation(nullptr);
+            player->SetLocation(nullptr);
         }
 
         std::list<Mob>::const_iterator Monsters()
@@ -109,7 +109,7 @@ namespace Logic
             return m_description;
         }
 
-        std::string HandleLook(const Player &player) const;
+        std::string HandleLook(const std::shared_ptr<Player> player) const;
 
         void SetCoords(int x, int y, int z)
         {
@@ -134,10 +134,12 @@ namespace Logic
         int m_roomId;
         std::string m_areaName;
         std::string m_description;
+
+        // TODO(jon): std::set instead of list
         std::list<Exit> m_exits;
         // objects/items
         // players
-        std::list<Player> m_players;
+        std::list<std::shared_ptr<Player>> m_players;
         // monsters
         std::list<Mob> m_monsters;
 

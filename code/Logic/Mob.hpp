@@ -35,8 +35,8 @@ public:
     std::string Name() const { return m_name; }
     void SetName(std::string name) { m_name = name; }
 
-    Room *Location() const { return m_location; }
-    void SetLocation(Room *newLocation) { m_location = newLocation; }
+    Room &Location() const { return *m_location; }
+    void SetLocation(std::shared_ptr<Room> newLocation) { m_location = newLocation; }
 
     int Health() const { return m_health; }
     int MaxHealth() const { return m_maxHealth; }
@@ -47,7 +47,7 @@ public:
 
 protected:
     std::string m_name;
-    Room *m_location;
+    std::shared_ptr<Room> m_location;
 
     int m_health, m_maxHealth;
     int m_fatigue, m_maxFatigue;

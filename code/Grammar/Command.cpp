@@ -37,7 +37,7 @@ void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 {
     auto &response = mudInterface->ostream();
     auto player = mudInterface->GetPlayer();
-    auto room = player->Location();
+    auto room = &player->Location();
 
     if (room == nullptr)
     {
@@ -46,7 +46,7 @@ void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
     }
     else
     {
-        response << room->HandleLook(*player) << Server::NEWLINE;
+        response << room->HandleLook(player) << Server::NEWLINE;
     }
 
 }
@@ -54,17 +54,17 @@ void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 void QuitCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto player = mudInterface->GetPlayer();
-    auto room = player->Location();
+    auto room = &player->Location();
     if (room != nullptr)
-        room->RemovePlayer(*player);
+        room->RemovePlayer(player);
     player->Tell("Bye bye!");
     player->Quit();
 }
 
 void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
+    auto player            = mudInterface->GetPlayer();
+    auto room             = &player->Location();
     auto exits          = room->Exits();
     auto area               = world.FindArea(room->AreaName());
     std::tuple<int,int,int> coords = room->Coords();
@@ -82,14 +82,13 @@ void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
     auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
     room->RemovePlayer(player);
     newRoom.AddPlayer(player);
-    player.Tell("You travel north.");
-    newRoom.HandleLook(player);
+    player->Tell("You travel north." + Server::NEWLINE + newRoom.HandleLook(player));
 }
 
 void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
+    auto player            = mudInterface->GetPlayer();
+    auto room             = &player->Location();
     auto exits          = room->Exits();
     auto area               = world.FindArea(room->AreaName());
     std::tuple<int,int,int> coords = room->Coords();
@@ -107,14 +106,13 @@ void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
     auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
     room->RemovePlayer(player);
     newRoom.AddPlayer(player);
-    player.Tell("You travel south.");
-    newRoom.HandleLook(player);
+    player->Tell("You travel south." + Server::NEWLINE + newRoom.HandleLook(player));
 }
 
 void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
+    auto player            = mudInterface->GetPlayer();
+    auto room             = &player->Location();
     auto exits          = room->Exits();
     auto area               = world.FindArea(room->AreaName());
     std::tuple<int,int,int> coords = room->Coords();
@@ -132,14 +130,13 @@ void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
     auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
     room->RemovePlayer(player);
     newRoom.AddPlayer(player);
-    player.Tell("You travel east.");
-    newRoom.HandleLook(player);
+    player->Tell("You travel east." + Server::NEWLINE + newRoom.HandleLook(player));
 }
 
 void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
+    auto player            = mudInterface->GetPlayer();
+    auto room             = &player->Location();
     auto exits          = room->Exits();
     auto area               = world.FindArea(room->AreaName());
     std::tuple<int,int,int> coords = room->Coords();
@@ -157,156 +154,5 @@ void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
     auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
     room->RemovePlayer(player);
     newRoom.AddPlayer(player);
-    player.Tell("You travel west.");
-    newRoom.HandleLook(player);
-}
-
-void NorthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
-{
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
-    auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
-    std::tuple<int,int,int> coords = room->Coords();
-
-    for (auto &exit : exits)
-    {
-        if (exit.Destination() == Logic::Direction::NORTHEAST)
-        {
-            // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::NORTHEAST);
-            break;
-        }
-    }
-
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom.AddPlayer(player);
-    player.Tell("You travel northeast.");
-    newRoom.HandleLook(player);
-}
-
-void NorthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
-{
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
-    auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
-    std::tuple<int,int,int> coords = room->Coords();
-
-    for (auto &exit : exits)
-    {
-        if (exit.Destination() == Logic::Direction::NORTHWEST)
-        {
-            // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::NORTHWEST);
-            break;
-        }
-    }
-
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom.AddPlayer(player);
-    player.Tell("You travel northwest.");
-    newRoom.HandleLook(player);
-}
-
-void SouthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
-{
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
-    auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
-    std::tuple<int,int,int> coords = room->Coords();
-
-    for (auto &exit : exits)
-    {
-        if (exit.Destination() == Logic::Direction::SOUTHEAST)
-        {
-            // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::SOUTHEAST);
-            break;
-        }
-    }
-
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom.AddPlayer(player);
-    player.Tell("You travel southeast.");
-    newRoom.HandleLook(player);
-}
-
-void SouthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
-{
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
-    auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
-    std::tuple<int,int,int> coords = room->Coords();
-
-    for (auto &exit : exits)
-    {
-        if (exit.Destination() == Logic::Direction::SOUTHWEST)
-        {
-            // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::SOUTHWEST);
-            break;
-        }
-    }
-
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom.AddPlayer(player);
-    player.Tell("You travel southwest.");
-    newRoom.HandleLook(player);
-}
-
-void UpCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
-{
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
-    auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
-    std::tuple<int,int,int> coords = room->Coords();
-
-    for (auto &exit : exits)
-    {
-        if (exit.Destination() == Logic::Direction::UP)
-        {
-            // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::UP);
-            break;
-        }
-    }
-
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom.AddPlayer(player);
-    player.Tell("You travel up.");
-    newRoom.HandleLook(player);
-}
-
-void DownCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
-{
-    auto player            = *mudInterface->GetPlayer();
-    auto room             = player.Location();
-    auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
-    std::tuple<int,int,int> coords = room->Coords();
-
-    for (auto &exit : exits)
-    {
-        if (exit.Destination() == Logic::Direction::DOWN)
-        {
-            // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::DOWN);
-            break;
-        }
-    }
-
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom.AddPlayer(player);
-    player.Tell("You travel down.");
-    newRoom.HandleLook(player);
+    player->Tell("You travel west." + Server::NEWLINE + newRoom.HandleLook(player));
 }

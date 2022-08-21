@@ -64,7 +64,7 @@ class WestCommand : public Command
 {
         void Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const override;
 };
-
+/*
 class NorthEastCommand : public Command
 {
         void Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const override;
@@ -93,7 +93,7 @@ class UpCommand : public Command
 class DownCommand : public Command
 {
         void Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const override;
-};
+};*/
 } // Grammar
 } // Mud
 
