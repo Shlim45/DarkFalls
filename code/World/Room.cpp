@@ -46,7 +46,6 @@ std::string Room::HandleLook(const std::shared_ptr<Player> player) const
         std::string sPlayers = Server::NEWLINE + "Also there is ";
         for (auto p : m_players)
         {
-//            if (p->Name().compare(player->Name()) != 0)
             if (p != player)
             {
                 count++;
@@ -59,21 +58,6 @@ std::string Room::HandleLook(const std::shared_ptr<Player> player) const
                     sPlayers += "." + Server::NEWLINE;
             }
         }
-/*        std::for_each(m_players.begin(), m_players.end(),
-                      [NUM_PLAYERS, &count, &sPlayers, player](const Player &p)
-                      {
-                          if (p.Name().compare(player.Name()) != 0)
-                          {
-                              count++;
-                              if (count > 1 && count == NUM_PLAYERS)
-                                  sPlayers += "and ";
-                              sPlayers += Server::ColorizeText(p.Name(), Server::BR_GREENTEXT);
-                              if (NUM_PLAYERS > 1 && count < NUM_PLAYERS)
-                                  sPlayers += ", ";
-                              else
-                                  sPlayers += "." + Server::NEWLINE;
-                          }
-                      });*/
 
         sOutput += sPlayers;
     }
