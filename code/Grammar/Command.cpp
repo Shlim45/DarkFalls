@@ -71,7 +71,6 @@ void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::NORTH)
         {
             // valid direction
@@ -97,7 +96,6 @@ void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::SOUTH)
         {
             // valid direction
@@ -123,7 +121,6 @@ void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::EAST)
         {
             // valid direction
@@ -149,7 +146,6 @@ void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::WEST)
         {
             // valid direction
@@ -175,7 +171,6 @@ void NorthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::NORTHEAST)
         {
             // valid direction
@@ -201,7 +196,6 @@ void NorthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::NORTHWEST)
         {
             // valid direction
@@ -227,7 +221,6 @@ void SouthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::SOUTHEAST)
         {
             // valid direction
@@ -253,7 +246,6 @@ void SouthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::SOUTHWEST)
         {
             // valid direction
@@ -279,7 +271,6 @@ void UpCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::UP)
         {
             // valid direction
@@ -305,7 +296,6 @@ void DownCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 
     for (auto &exit : exits)
     {
-        // TODO(jon): Find north, figure how to get coords adjusted and find destination
         if (exit.Destination() == Logic::Direction::DOWN)
         {
             // valid direction
