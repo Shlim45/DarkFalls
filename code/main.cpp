@@ -42,9 +42,11 @@ int main()
     room3.AddExit(std::make_shared<Mud::Logic::Exit>(Mud::Logic::Direction::WEST));
     std::cout << "Exits Loaded.\n";
 
-    area.AddRoom(0,0,0, room1);
-    area.AddRoom(1,0,0, room2);
-    area.AddRoom(2,0,0, room3);
+    world.AddRoom(room1);
+
+    area.AddRoom(0, 0, 0, static_cast<const std::shared_ptr<Mud::Logic::Room> >(&room1));
+    area.AddRoom(1, 0, 0, static_cast<const std::shared_ptr<Mud::Logic::Room> >(&room2));
+    area.AddRoom(2, 0, 0, static_cast<const std::shared_ptr<Mud::Logic::Room> >(&room3));
 
     world.AddArea(area);
     std::cout << "World initialized." << std::endl;

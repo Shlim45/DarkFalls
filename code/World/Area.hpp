@@ -8,21 +8,23 @@
 #include <map>
 #include <tuple>
 #include <utility>
+#include <string>
+#include <memory>
 
-#include "Room.hpp"
 
 namespace Mud::Logic
 {
     enum class Realm;
+    class Room;
 
     class Area
     {
     public:
-        Area(std::string name)
+        explicit Area(std::string name)
             : m_name(std::move(name))
         {}
 
-        bool operator==(Area &rhs)
+        bool operator==(const Area &rhs)
         {
             return rhs.m_name == m_name;
         }
@@ -38,38 +40,16 @@ namespace Mud::Logic
             return m_name;
         }
 
-        std::map<int, Room>::const_iterator Rooms() const
+        std::map<int, std::shared_ptr<Room>>::const_iterator Rooms() const
         {
             return m_rooms.begin();
         }
 
-        void AddRoom(int x, int y, int z, Room &toAdd)
-        {
-            toAdd.SetAreaName(m_name);
+        void AddRoom(int x, int y, int z, std::shared_ptr<Room> toAdd);
 
-            m_rooms.insert(std::pair<int, Room>(toAdd.RoomID(), toAdd));
-            auto coords = std::make_tuple(x,y,z);
-            m_coords.insert(std::pair<std::tuple<int,int,int>, Room>(coords, toAdd));
-        }
+        std::shared_ptr<Room> &FindRoom(int roomId);
 
-        Room &FindRoom(int roomId)
-        {
-            auto room = m_rooms.find(roomId);
-            if (room != m_rooms.end())
-                return room->second;
-            else
-                return m_rooms.begin()->second;
-        }
-
-        Room &FindRoom(int x, int y, int z)
-        {
-            auto coords = std::make_tuple(x,y,z);
-            auto room = m_coords.find(coords);
-            if (room != m_coords.end())
-                return room->second;
-            else
-                return m_coords.begin()->second;
-        }
+        std::shared_ptr<Room> &FindRoom(int x, int y, int z);
 
         Realm GetRealm()
         {
@@ -78,9 +58,9 @@ namespace Mud::Logic
 
     private:
         std::string m_name;
-        std::map<int, Room> m_rooms;
-        std::map<std::tuple<int,int,int>, Room> m_coords;
-        Realm m_realm;
+        std::map<int, std::shared_ptr<Room>> m_rooms;
+        std::map<std::tuple<int,int,int>, std::shared_ptr<Room>> m_coords;
+        Realm m_realm{};
     };
 
 } // Logic

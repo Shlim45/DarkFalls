@@ -20,9 +20,16 @@ namespace Mud::Logic
     class Room
     {
     public:
+        Room() {}
+
         Room(int roomId, std::string description)
             : m_roomId(roomId), m_description(std::move(description))
         {}
+
+        Room(const Room &) = delete;
+        Room(Room &&) = delete;
+        Room &operator=(const Room &) = delete;
+        Room &operator=(Room &&) = delete;
 
         bool operator==(Room &rhs) const
         {
@@ -52,19 +59,13 @@ namespace Mud::Logic
         void AddPlayer(const std::shared_ptr<Player>& player)
         {
             m_players.insert(player);
-            player->SetLocation(std::make_shared<Room>(*this));
+            player->SetRoomID(m_roomId);
         }
 
         void RemovePlayer(const std::shared_ptr<Player>& player)
         {
-            for (auto p = m_players.begin(); p != m_players.end(); p++)
-                if (*p == player)
-                {
-                    m_players.erase(p);
-                    break;
-                }
-//            m_players.erase(player);
-            player->SetLocation(nullptr);
+            player->SetRoomID(0);
+            m_players.erase(player);
         }
 
         std::set<std::shared_ptr<Mob>>::const_iterator Monsters()
@@ -79,13 +80,8 @@ namespace Mud::Logic
 
         void RemoveMonster(const std::shared_ptr<Mob>& monster)
         {
+            monster->SetRoomID(0);
             m_monsters.erase(monster);
-//            for (auto m = m_monsters.begin(); m != m_monsters.end(); m++)
-//                if (*m == monster)
-//                {
-//                    m_monsters.erase(m);
-//                    break;
-//                }
         }
 
         std::set<std::shared_ptr<Exit>> Exits() { return m_exits; }
@@ -98,12 +94,6 @@ namespace Mud::Logic
         void RemoveExit(const std::shared_ptr<Exit>& exit)
         {
             m_exits.erase(exit);
-//            for (auto e = m_exits.begin(); e != m_exits.end(); e++)
-//                if (*e == exit)
-//                {
-//                    m_exits.erase(e);
-//                    break;
-//                }
         }
 
         std::string RoomDescription() const

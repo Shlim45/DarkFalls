@@ -45,17 +45,19 @@ namespace Mud::Logic
                 return m_areas.begin()->second;
         }
 
-        std::map<int, Room>::const_iterator Rooms()
+        std::map<int, std::shared_ptr<Room>>::const_iterator Rooms()
         {
             return m_rooms.begin();
         }
 
-        void AddRoom(Room &toAdd)
+        void AddRoom(std::shared_ptr<Room> toAdd)
         {
-            m_rooms.insert(std::pair<int, Room>(toAdd.RoomID(), toAdd));
+            m_rooms.insert(std::make_pair<int, std::shared_ptr<Room>>(toAdd->RoomID(), std::move(toAdd)));
+
+//            m_rooms.insert(std::pair<int, Room>(toAdd.RoomID(), toAdd));
         }
 
-        Room &FindRoom(int roomId)
+        std::shared_ptr<Room> &FindRoom(int roomId)
         {
             auto room = m_rooms.find(roomId);
             if (room != m_rooms.end())
@@ -65,7 +67,7 @@ namespace Mud::Logic
         }
 
     private:
-        std::map<int, Room> m_rooms;
+        std::map<int, std::shared_ptr<Room> > m_rooms;
         std::map<std::string, Area> m_areas;
     };
 
