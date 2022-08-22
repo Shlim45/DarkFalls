@@ -11,24 +11,22 @@
 #include "code/Server/Text.hpp"
 
 
-namespace Mud
-{
-namespace Logic
+namespace Mud::Logic
 {
 
     class Player : public Mob
     {
     public:
-        explicit Player(std::string name, Server::ConnectionBase &connection)
+        explicit Player(const std::string &name, Server::ConnectionBase &connection)
         : Mob(name), m_connection(connection)
         {}
 
         bool operator==(Player &rhs) const
         {
-            return rhs.Name().compare(Name()) == 0;
+            return rhs.Name() == Name();
         }
 
-        void Tell(std::string message)
+        void Tell(const std::string& message)
         {
             m_connection << message << Server::NEWLINE;
         }
@@ -42,7 +40,6 @@ namespace Logic
         Server::ConnectionBase &m_connection;
     };
 
-} // Mud
 } // Logic
 
 #endif //DARKFALLS_PLAYER_HPP

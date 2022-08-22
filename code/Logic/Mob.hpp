@@ -6,10 +6,9 @@
 #define DARKFALLS_MOB_HPP
 
 #include <string>
+#include <utility>
 
-namespace Mud
-{
-namespace Logic
+namespace Mud::Logic
 {
 class Room;
 
@@ -33,10 +32,10 @@ public:
     }
 
     std::string Name() const { return m_name; }
-    void SetName(std::string name) { m_name = name; }
+    void SetName(std::string name) { m_name = std::move(name); }
 
     Room &Location() const { return *m_location; }
-    void SetLocation(std::shared_ptr<Room> newLocation) { m_location = newLocation; }
+    void SetLocation(std::shared_ptr<Room> newLocation) { m_location = std::move(newLocation); }
 
     int Health() const { return m_health; }
     int MaxHealth() const { return m_maxHealth; }
@@ -54,7 +53,6 @@ protected:
     int m_power, m_maxPower;
 };
 
-} // Logic
 } // Mud
 
 #endif //DARKFALLS_MOB_HPP

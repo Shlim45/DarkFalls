@@ -8,9 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace Mud
-{
-    namespace Logic
+namespace Mud::Logic
     {
         enum class Direction
         {
@@ -29,7 +27,7 @@ namespace Mud
         class Exit
         {
         public:
-            Exit(Direction dir) : m_direction(dir)
+            explicit Exit(Direction dir) : m_direction(dir)
             {
             }
 
@@ -115,7 +113,6 @@ namespace Mud
                     };
         };
 
-    } // Mud
-} // Logic
+    } // Logic
 
 #endif //DARKFALLS_DIRECTION_HPP

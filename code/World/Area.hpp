@@ -7,12 +7,11 @@
 
 #include <map>
 #include <tuple>
+#include <utility>
 
 #include "Room.hpp"
 
-namespace Mud
-{
-namespace Logic
+namespace Mud::Logic
 {
     enum class Realm;
 
@@ -20,12 +19,12 @@ namespace Logic
     {
     public:
         Area(std::string name)
-            : m_name(name)
+            : m_name(std::move(name))
         {}
 
         bool operator==(Area &rhs)
         {
-            return rhs.m_name.compare(m_name) == 0;
+            return rhs.m_name == m_name;
         }
 
         friend std::ostream &operator<<(std::ostream &os, const Area &a)
@@ -84,7 +83,6 @@ namespace Logic
         Realm m_realm;
     };
 
-} // Mud
 } // Logic
 
 #endif //DARKFALLS_AREA_HPP

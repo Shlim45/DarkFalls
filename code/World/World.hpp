@@ -10,9 +10,7 @@
 #include "Area.hpp"
 #include "Room.hpp"
 
-namespace Mud
-{
-namespace Logic
+namespace Mud::Logic
 {
     enum class Realm
     {
@@ -38,7 +36,7 @@ namespace Logic
             m_areas.insert(std::pair<std::string, Area>(toAdd.Name(), toAdd));
         }
 
-        Area &FindArea(std::string areaName)
+        Area &FindArea(const std::string& areaName)
         {
             auto area = m_areas.find(areaName);
             if (area != m_areas.end())
@@ -71,7 +69,6 @@ namespace Logic
         std::map<std::string, Area> m_areas;
     };
 
-} // Mud
 } // Logic
 
 #endif //DARKFALLS_WORLD_HPP

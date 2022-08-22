@@ -71,10 +71,10 @@ void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
 
     for (auto &exit : exits)
     {
-        if (exit.Destination() == Logic::Direction::NORTH)
+        if (exit->Destination() == Logic::Direction::NORTH)
         {
             // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::NORTH);
+            exit->AdjustXYZByDirection(coords, Logic::Direction::NORTH);
             break;
         }
     }
@@ -95,10 +95,10 @@ void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
 
     for (auto &exit : exits)
     {
-        if (exit.Destination() == Logic::Direction::SOUTH)
+        if (exit->Destination() == Logic::Direction::SOUTH)
         {
             // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::SOUTH);
+            exit->AdjustXYZByDirection(coords, Logic::Direction::SOUTH);
             break;
         }
     }
@@ -119,10 +119,10 @@ void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 
     for (auto &exit : exits)
     {
-        if (exit.Destination() == Logic::Direction::EAST)
+        if (exit->Destination() == Logic::Direction::EAST)
         {
             // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::EAST);
+            exit->AdjustXYZByDirection(coords, Logic::Direction::EAST);
             break;
         }
     }
@@ -143,10 +143,10 @@ void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 
     for (auto &exit : exits)
     {
-        if (exit.Destination() == Logic::Direction::WEST)
+        if (exit->Destination() == Logic::Direction::WEST)
         {
             // valid direction
-            exit.AdjustXYZByDirection(coords, Logic::Direction::WEST);
+            exit->AdjustXYZByDirection(coords, Logic::Direction::WEST);
             break;
         }
     }

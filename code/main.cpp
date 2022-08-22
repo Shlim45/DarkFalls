@@ -34,12 +34,12 @@ int main()
     std::cout << "Rooms Loaded.\n";
 
     std::cout << "Loading Exits...\n";
-    room1.AddExit(Mud::Logic::Exit(Mud::Logic::Direction::EAST));
+    room1.AddExit(std::make_shared<Mud::Logic::Exit>(Mud::Logic::Direction::EAST));
 
-    room2.AddExit(Mud::Logic::Exit(Mud::Logic::Direction::EAST));
-    room2.AddExit(Mud::Logic::Exit(Mud::Logic::Direction::WEST));
+    room2.AddExit(std::make_shared<Mud::Logic::Exit>(Mud::Logic::Direction::EAST));
+    room2.AddExit(std::make_shared<Mud::Logic::Exit>(Mud::Logic::Direction::WEST));
 
-    room3.AddExit(Mud::Logic::Exit(Mud::Logic::Direction::WEST));
+    room3.AddExit(std::make_shared<Mud::Logic::Exit>(Mud::Logic::Direction::WEST));
     std::cout << "Exits Loaded.\n";
 
     area.AddRoom(0,0,0, room1);

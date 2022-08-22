@@ -6,15 +6,14 @@
 #define DARKFALLS_ROOM_HPP
 
 #include <string>
-#include <list>
+#include <set>
 #include <memory>
+#include <utility>
 
 #include "code/Logic/Player.hpp"
 #include "code/World/Exit.hpp"
 
-namespace Mud
-{
-namespace Logic
+namespace Mud::Logic
 {
     class Mob;
 
@@ -22,10 +21,10 @@ namespace Logic
     {
     public:
         Room(int roomId, std::string description)
-            : m_roomId(roomId), m_description(description)
+            : m_roomId(roomId), m_description(std::move(description))
         {}
 
-        bool operator==(Room &rhs)
+        bool operator==(Room &rhs) const
         {
             return rhs.m_roomId == m_roomId;
         }
@@ -45,18 +44,18 @@ namespace Logic
             return m_areaName;
         }
 
-        std::list<std::shared_ptr<Player>>::const_iterator Players() const
+        std::set<std::shared_ptr<Player>>::const_iterator Players() const
         {
             return m_players.begin();
         }
 
-        void AddPlayer(std::shared_ptr<Player> player)
+        void AddPlayer(const std::shared_ptr<Player>& player)
         {
-            m_players.push_back(player);
+            m_players.insert(player);
             player->SetLocation(std::make_shared<Room>(*this));
         }
 
-        void RemovePlayer(std::shared_ptr<Player> player)
+        void RemovePlayer(const std::shared_ptr<Player>& player)
         {
             for (auto p = m_players.begin(); p != m_players.end(); p++)
                 if (*p == player)
@@ -64,44 +63,47 @@ namespace Logic
                     m_players.erase(p);
                     break;
                 }
+//            m_players.erase(player);
             player->SetLocation(nullptr);
         }
 
-        std::list<Mob>::const_iterator Monsters()
+        std::set<std::shared_ptr<Mob>>::const_iterator Monsters()
         {
             return m_monsters.begin();
         }
 
-        void AddMonster(Mob &monster)
+        void AddMonster(const std::shared_ptr<Mob>& monster)
         {
-            m_monsters.push_back(monster);
+            m_monsters.insert(monster);
         }
 
-        void RemoveMonster(Mob &monster)
+        void RemoveMonster(const std::shared_ptr<Mob>& monster)
         {
-            for (auto m = m_monsters.begin(); m != m_monsters.end(); m++)
-                if (*m == monster)
-                {
-                    m_monsters.erase(m);
-                    break;
-                }
+            m_monsters.erase(monster);
+//            for (auto m = m_monsters.begin(); m != m_monsters.end(); m++)
+//                if (*m == monster)
+//                {
+//                    m_monsters.erase(m);
+//                    break;
+//                }
         }
 
-        std::list<Exit> Exits() { return m_exits; }
+        std::set<std::shared_ptr<Exit>> Exits() { return m_exits; }
 
-        void AddExit(const Exit &exit)
+        void AddExit(const std::shared_ptr<Exit>& exit)
         {
-            m_exits.push_back(exit);
+            m_exits.insert(exit);
         }
 
-        void RemoveExit(Exit &exit)
+        void RemoveExit(const std::shared_ptr<Exit>& exit)
         {
-            for (auto e = m_exits.begin(); e != m_exits.end(); e++)
-                if (*e == exit)
-                {
-                    m_exits.erase(e);
-                    break;
-                }
+            m_exits.erase(exit);
+//            for (auto e = m_exits.begin(); e != m_exits.end(); e++)
+//                if (*e == exit)
+//                {
+//                    m_exits.erase(e);
+//                    break;
+//                }
         }
 
         std::string RoomDescription() const
@@ -109,7 +111,7 @@ namespace Logic
             return m_description;
         }
 
-        std::string HandleLook(const std::shared_ptr<Player> player) const;
+        std::string HandleLook(const std::shared_ptr<Player>& player) const;
 
         void SetCoords(int x, int y, int z)
         {
@@ -136,17 +138,16 @@ namespace Logic
         std::string m_description;
 
         // TODO(jon): std::set instead of list
-        std::list<Exit> m_exits;
+        std::set<std::shared_ptr<Exit>> m_exits;
         // objects/items
         // players
-        std::list<std::shared_ptr<Player>> m_players;
+        std::set<std::shared_ptr<Player>> m_players;
         // monsters
-        std::list<Mob> m_monsters;
+        std::set<std::shared_ptr<Mob>> m_monsters;
 
         std::tuple<int,int,int> m_coords;
     };
 
-} // Logic
 } // Mud
 
 #endif //DARKFALLS_ROOM_HPP

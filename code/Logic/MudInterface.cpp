@@ -27,9 +27,11 @@ void MudInterface::HandleLine(const std::string &line)
     Dictionary::Tokenizer tokenizer(line);
     switch (m_interfaceState)
     {
+    case InterfaceState::NEW_CONNECTION:
     case InterfaceState::WAITING_FOR_USER:
     {
         auto name = tokenizer.GetString();
+
         std::shared_ptr<Player> player = std::make_shared<Player>(name, m_connection);
         m_player = player;
         m_world.FindArea("Tamia City").FindRoom(1,0,0).AddPlayer(player);
