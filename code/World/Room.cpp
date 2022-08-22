@@ -3,6 +3,9 @@
 //
 
 #include "Room.hpp"
+#include "code/Server/Text.hpp"
+#include "code/Logic/Player.hpp"
+#include "code/World/Exit.hpp"
 
 using namespace Mud::Logic;
 
@@ -10,7 +13,7 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
 {
     std::string sOutput = Server::NEWLINE;
 
-    sOutput += "[" + Server::ColorizeText(AreaName(), Server::REDTEXT) + "]"
+    sOutput += "[" + Server::ColorizeText(Area(), Server::REDTEXT) + "]"
                + Server::NEWLINE + Server::NEWLINE
                + RoomDescription() + Server::NEWLINE;
 
@@ -21,7 +24,7 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
 
         std::string sExits = Server::NEWLINE + "Obvious exits: ";
 
-        for (auto &e : m_exits)
+        for (auto e : m_exits)
         {
             count++;
             if (count > 1 && count == NUM_EXITS)
@@ -32,20 +35,6 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
             else
                 sExits += "." + Server::NEWLINE;
         }
-
-/*        std::for_each(m_exits.begin(), m_exits.end(),
-                      [NUM_EXITS, &count, &sExits, player](Exit e)
-                      {
-                          count++;
-                          if (count > 1 && count == NUM_EXITS)
-                              sExits += "and ";
-                          sExits += Server::ColorizeText(e.DirectionName(), Server::BROWNTEXT);
-                          if (NUM_EXITS > 1 && count < NUM_EXITS)
-                              sExits += ", ";
-                          else
-                              sExits += "." + Server::NEWLINE;
-
-                      });*/
 
         sOutput += sExits;
     }
@@ -76,4 +65,27 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
     }
 
     return sOutput + Server::NEWLINE;
+}
+
+std::set<std::shared_ptr<Player>>::const_iterator Room::Players() const
+{
+    return m_players.begin();
+}
+
+void Room::AddPlayer(const std::shared_ptr<Player> &player)
+{
+    m_players.insert(player);
+    player->SetLocation(m_roomId);
+}
+
+void Room::RemovePlayer(const std::shared_ptr<Player> &player)
+{
+    player->SetLocation(0);
+    m_players.erase(player);
+}
+
+void Room::RemoveMonster(const std::shared_ptr<Mob> &monster)
+{
+    monster->SetLocation(0);
+    m_monsters.erase(monster);
 }

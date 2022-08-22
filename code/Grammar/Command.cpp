@@ -6,6 +6,9 @@
 #include "code/Logic/MudInterface.hpp"
 #include "code/Logic/Player.hpp"
 #include "code/World/World.hpp"
+#include "code/World/Area.hpp"
+#include "code/World/Room.hpp"
+#include "code/World/Exit.hpp"
 
 using namespace Mud::Grammar;
 
@@ -37,25 +40,26 @@ void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 {
     auto &response = mudInterface->ostream();
     auto player = mudInterface->GetPlayer();
-    auto roomID = player->RoomID();
-    auto room = world.FindRoom(roomID);
+    auto roomID = player->Location();
+    auto &room = world.FindRoom(roomID);
 
-    if (roomID == 0 || room == nullptr)
-    {
-        response << "[" << Server::BR_REDTEXT << "The Void" << Server::PLAINTEXT << "]"
-                 << Server::NEWLINE << "You\'re in the void!" << Server::NEWLINE;
-    }
-    else
-    {
+//    if (roomID == 0 || room == nullptr)
+//    {
+//        response << "[" << Server::BR_REDTEXT << "The Void" << Server::PLAINTEXT << "]"
+//                 << Server::NEWLINE << "You\'re in the void!" << Server::NEWLINE;
+//    }
+//    else
+//    {
         response << room->HandleLook(player) << Server::NEWLINE;
-    }
+//    }
 
 }
 
 void QuitCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto player = mudInterface->GetPlayer();
-    auto room = world.FindRoom(player->RoomID());
+    auto roomID = player->Location();
+    auto &room = world.FindRoom(roomID);
     if (room != nullptr)
         room->RemovePlayer(player);
     player->Tell(Server::NEWLINE + "Bye bye!" + Server::NEWLINE);
@@ -65,9 +69,10 @@ void QuitCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
-    auto room = world.FindRoom(player->RoomID());
+    auto roomID = player->Location();
+    auto &room = world.FindRoom(roomID);
     auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
+    auto &area               = world.FindArea("City of Tamia");
     std::tuple<int,int,int> coords = room->Coords();
 
     for (auto &exit : exits)
@@ -80,7 +85,7 @@ void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
         }
     }
 
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = area->FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
     room->RemovePlayer(player);
     newRoom->AddPlayer(player);
     player->Tell("You travel north." + Server::NEWLINE + newRoom->HandleLook(player));
@@ -89,9 +94,10 @@ void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
 void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
-    auto room = world.FindRoom(player->RoomID());
+    auto roomID = player->Location();
+    auto &room = world.FindRoom(roomID);
     auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
+    auto &area               = world.FindArea(1);
     std::tuple<int,int,int> coords = room->Coords();
 
     for (auto &exit : exits)
@@ -104,7 +110,7 @@ void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
         }
     }
 
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = area->FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
     room->RemovePlayer(player);
     newRoom->AddPlayer(player);
     player->Tell("You travel south." + Server::NEWLINE + newRoom->HandleLook(player));
@@ -113,9 +119,10 @@ void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
 void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
-    auto room = world.FindRoom(player->RoomID());
+    auto roomID = player->Location();
+    auto &room = world.FindRoom(roomID);
     auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
+    auto &area               = world.FindArea(1);
     std::tuple<int,int,int> coords = room->Coords();
 
     for (auto &exit : exits)
@@ -128,7 +135,7 @@ void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
         }
     }
 
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = area->FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
     room->RemovePlayer(player);
     newRoom->AddPlayer(player);
     player->Tell("You travel east." + Server::NEWLINE + newRoom->HandleLook(player));
@@ -137,9 +144,10 @@ void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
 void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
-    auto room = world.FindRoom(player->RoomID());
+    auto roomID = player->Location();
+    auto &room = world.FindRoom(roomID);
     auto exits          = room->Exits();
-    auto area               = world.FindArea(room->AreaName());
+    auto &area               = world.FindArea(1);
     std::tuple<int,int,int> coords = room->Coords();
 
     for (auto &exit : exits)
@@ -152,7 +160,7 @@ void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
         }
     }
 
-    auto newRoom = area.FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = area->FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
     room->RemovePlayer(player);
     newRoom->AddPlayer(player);
     player->Tell("You travel west." + Server::NEWLINE + newRoom->HandleLook(player));

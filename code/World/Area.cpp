@@ -2,14 +2,14 @@
 // Created by shlim on 8/21/22.
 //
 
-#include "Area.hpp"
 #include "Room.hpp"
+#include "Area.hpp"
 
 using namespace Mud::Logic;
 
 void Area::AddRoom(int x, int y, int z, std::shared_ptr<Room> toAdd)
 {
-    toAdd->SetAreaName(m_name);
+    toAdd->SetArea(m_name);
 
     m_rooms.insert(std::make_pair<int, std::shared_ptr<Room>>(toAdd->RoomID(), std::move(toAdd)));
     auto coords = std::make_tuple(x,y,z);

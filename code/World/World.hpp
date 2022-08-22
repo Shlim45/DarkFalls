@@ -5,70 +5,46 @@
 #ifndef DARKFALLS_WORLD_HPP
 #define DARKFALLS_WORLD_HPP
 
-#include <map>
-
+#include "code/Logic/includes.hpp"
 #include "Area.hpp"
 #include "Room.hpp"
 
 namespace Mud::Logic
 {
-    enum class Realm
-    {
-        IMMORTAL = 0,
-        EVIL = 1,
-        CHAOS = 2,
-        GOOD = 3,
-        KAID = 4
-    };
-
     class World
     {
     public:
         World() {}
 
-        std::map<std::string, Area>::const_iterator Areas() const
-        {
-            return m_areas.begin();
-        }
+        std::map<int, std::unique_ptr<Area>>::const_iterator Areas() const;
 
-        void AddArea(Area &toAdd)
-        {
-            m_areas.insert(std::pair<std::string, Area>(toAdd.Name(), toAdd));
-        }
+        void AddArea(std::unique_ptr<Area> &toAdd);
 
-        Area &FindArea(const std::string& areaName)
-        {
-            auto area = m_areas.find(areaName);
-            if (area != m_areas.end())
-                return area->second;
-            else
-                return m_areas.begin()->second;
-        }
+        std::unique_ptr<Area> &FindArea(const std::string& areaName);
+        std::unique_ptr<Area> &FindArea(int areaID);
 
-        std::map<int, std::shared_ptr<Room>>::const_iterator Rooms()
-        {
-            return m_rooms.begin();
-        }
+        void GenerateArea(const std::string& areaName);
 
-        void AddRoom(std::shared_ptr<Room> toAdd)
-        {
-            m_rooms.insert(std::make_pair<int, std::shared_ptr<Room>>(toAdd->RoomID(), std::move(toAdd)));
+        std::map<int, std::unique_ptr<Room>>::const_iterator Rooms();
 
-//            m_rooms.insert(std::pair<int, Room>(toAdd.RoomID(), toAdd));
-        }
+        void AddRoom(std::unique_ptr<Room> &toAdd);
 
-        std::shared_ptr<Room> &FindRoom(int roomId)
+        std::unique_ptr<Room> &FindRoom(int roomId);
+
+        void GenerateRoom(const std::string &description, int areaID, int x, int y, int z);
+
+        enum class Realm
         {
-            auto room = m_rooms.find(roomId);
-            if (room != m_rooms.end())
-                return room->second;
-            else
-                return m_rooms.begin()->second;
-        }
+            IMMORTAL = 0,
+            EVIL = 1,
+            CHAOS = 2,
+            GOOD = 3,
+            KAID = 4
+        };
 
     private:
-        std::map<int, std::shared_ptr<Room> > m_rooms;
-        std::map<std::string, Area> m_areas;
+        std::map<int, std::unique_ptr<Room> > m_rooms;
+        std::map<int, std::unique_ptr<Area>> m_areas;
     };
 
 } // Logic

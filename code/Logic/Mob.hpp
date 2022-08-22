@@ -5,8 +5,7 @@
 #ifndef DARKFALLS_MOB_HPP
 #define DARKFALLS_MOB_HPP
 
-#include <string>
-#include <utility>
+#include "includes.hpp"
 
 namespace Mud::Logic
 {
@@ -34,8 +33,8 @@ public:
     std::string Name() const { return m_name; }
     void SetName(std::string name) { m_name = std::move(name); }
 
-    int RoomID() const { return m_location; }
-    void SetRoomID(int newLocation) { m_location = newLocation; }
+    int Location() const { return m_location; }
+    void SetLocation(int newLocation) { m_location = newLocation; }
 
     int Health() const { return m_health; }
     int MaxHealth() const { return m_maxHealth; }

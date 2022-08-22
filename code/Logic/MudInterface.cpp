@@ -8,6 +8,7 @@
 #include "../Server/ConnectionBase.hpp"
 #include "Player.hpp"
 #include "code/World/World.hpp"
+#include "code/World/Room.hpp"
 
 using namespace Mud::Logic;
 
@@ -34,7 +35,7 @@ void MudInterface::HandleLine(const std::string &line)
 
         std::shared_ptr<Player> player = std::make_shared<Player>(name, m_connection);
         m_player = player;
-        m_world.FindArea("Tamia City").FindRoom(1,0,0)->AddPlayer(player);
+        m_world.FindRoom(1)->AddPlayer(player);
         m_connection << "Hello, " << Server::YELLOWTEXT << player->Name() << Server::PLAINTEXT << Server::NEWLINE
                      << "Enter password: " << Server::ECHOOFF;
         m_interfaceState = InterfaceState::WAITING_FOR_PASS;

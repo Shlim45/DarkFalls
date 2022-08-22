@@ -5,11 +5,7 @@
 #ifndef DARKFALLS_AREA_HPP
 #define DARKFALLS_AREA_HPP
 
-#include <map>
-#include <tuple>
-#include <utility>
-#include <string>
-#include <memory>
+#include "code/Logic/includes.hpp"
 
 
 namespace Mud::Logic
@@ -20,30 +16,37 @@ namespace Mud::Logic
     class Area
     {
     public:
-        explicit Area(std::string name)
-            : m_name(std::move(name))
-        {}
+        static int areaCount;
+
+        Area()
+        {
+            std::cout << "[DEBUG]: Area() called.  areaCount: " << areaCount << std::endl;
+        }
+
+        explicit Area(int id, std::string name)
+            : m_areaId(id), m_name(std::move(name))
+        {
+            areaCount++;
+        }
 
         bool operator==(const Area &rhs)
         {
             return rhs.m_name == m_name;
         }
 
-        friend std::ostream &operator<<(std::ostream &os, const Area &a)
-        {
-            os << a.m_name;
-            return os;
-        }
+//        friend std::ostream &operator<<(std::ostream &os, const Area &a)
+//        {
+//            os << a.m_name;
+//            return os;
+//        }
 
-        std::string Name() const
-        {
-            return m_name;
-        }
+        int AreaID() { return m_areaId; }
 
-        std::map<int, std::shared_ptr<Room>>::const_iterator Rooms() const
-        {
-            return m_rooms.begin();
-        }
+        std::string Name() const { return m_name; }
+
+        Realm &GetRealm() { return m_realm; }
+
+        std::map<int, std::shared_ptr<Room>>::const_iterator Rooms() const { return m_rooms.begin(); }
 
         void AddRoom(int x, int y, int z, std::shared_ptr<Room> toAdd);
 
@@ -51,12 +54,10 @@ namespace Mud::Logic
 
         std::shared_ptr<Room> &FindRoom(int x, int y, int z);
 
-        Realm GetRealm()
-        {
-            return m_realm;
-        }
+        static int GetWorldCount() { return areaCount; }
 
     private:
+        int m_areaId;
         std::string m_name;
         std::map<int, std::shared_ptr<Room>> m_rooms;
         std::map<std::tuple<int,int,int>, std::shared_ptr<Room>> m_coords;

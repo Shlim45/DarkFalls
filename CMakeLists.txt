@@ -15,9 +15,11 @@ set(SRCS
         code/Grammar/Command.cpp
         code/Logic/MudInterface.cpp
         code/World/Room.cpp
+        code/World/Area.cpp
+        code/World/World.cpp
         code/Server/Server.cpp
         code/Server/ConnectionBase.cpp
-        code/Server/LineOrientedConnection.cpp code/World/Area.cpp)
+        code/Server/LineOrientedConnection.cpp)
 
 add_executable(DarkFalls ${SRCS})
 target_link_libraries(DarkFalls LINK_PUBLIC ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
