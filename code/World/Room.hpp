@@ -19,12 +19,7 @@ namespace Mud::Logic
     public:
         static int roomCount;
 
-        Room()
-        {
-            std::cout << "[DEBUG]: Room() called.  roomCount: " << roomCount << std::endl;
-        }
-
-        Room(int roomId, std::string description)
+        explicit Room(int roomId, std::string description)
             : m_roomId(roomId), m_description(std::move(description))
         {
             roomCount++;
@@ -85,7 +80,7 @@ namespace Mud::Logic
 
     private:
         int m_roomId;
-        int m_areaId;
+        int m_areaId{};
         std::string m_areaName;
         std::string m_description;
 

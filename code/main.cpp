@@ -42,12 +42,12 @@ int main()
 
     std::cout << "Loading Areas...\n";
 
-//    Mud::Logic::Area area("Tamia City");
     world.GenerateArea("The Void");
     world.GenerateArea("City of Tamia");
-    std::cout << "Areas Loaded.\n";
+    std::cout << Mud::Logic::Area::GetWorldCount() << " Areas Loaded.\n";
 
     std::cout << "Loading Rooms...\n";
+
     world.GenerateRoom("You are in the void!", 0, 0,0,0);
     uint16_t cExits1 = (1 << static_cast<int>(Mud::Logic::Direction::EAST));
     world.GenerateRoom("You are standing in the first dark room.  The walls are bare and the air is musty.",
@@ -63,7 +63,8 @@ int main()
     world.GenerateRoom("You are standing in the third dark room.  There is a picture of dogs shooting pool "
                        "and smoking cigars hanging on the wall.",
                        1, 2, 0, 0, cExits3);
-    std::cout << "Rooms Loaded.\n";
+
+    std::cout << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
 
     std::cout << "Loading Exits...\n";
     // NOTE(jon): Load objects (portals)
