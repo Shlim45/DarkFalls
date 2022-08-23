@@ -66,7 +66,7 @@ void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::NORTH);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
@@ -89,7 +89,7 @@ void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::SOUTH);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
@@ -112,7 +112,7 @@ void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::EAST);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
@@ -135,7 +135,7 @@ void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::WEST);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
@@ -158,7 +158,7 @@ void NorthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::NORTHEAST);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
@@ -181,7 +181,7 @@ void NorthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::NORTHWEST);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
@@ -204,7 +204,7 @@ void SouthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::SOUTHEAST);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
@@ -227,7 +227,7 @@ void SouthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::SOUTHWEST);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
@@ -250,7 +250,7 @@ void UpCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::UP);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
@@ -273,7 +273,7 @@ void DownCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
         Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::DOWN);
     else
     {
-        player->Tell("That direction seems to lead to NOWHERE!");
+        player->Tell("You cannot travel in that direction.");
         return;
     }
 
