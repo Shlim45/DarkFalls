@@ -6,22 +6,25 @@
 #include "code/Logic/MudInterface.hpp"
 #include "code/Logic/Player.hpp"
 #include "code/World/World.hpp"
+#include "code/Dictionary/Tokenizer.hpp"
 
 using namespace Mud::Grammar;
 
-void Command::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void Command::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                      Mud::Logic::World &world) const
 {
+
     auto &response = mudInterface->ostream();
     response << "Command found!" << Server::NEWLINE;
 }
 
-void HelloCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void HelloCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto &response = mudInterface->ostream();
     response << "Hello there, " << mudInterface->GetPlayer()->Name() << "!" << Server::NEWLINE;
 }
 
-void HealthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void HealthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto &response = mudInterface->ostream();
 
@@ -33,17 +36,36 @@ void HealthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, L
              << mudInterface->GetPlayer()->MaxPower() << Server::PLAINTEXT << Server::NEWLINE;
 }
 
-void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void LookCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto &response = mudInterface->ostream();
     auto player = mudInterface->GetPlayer();
     auto roomID = player->Location();
     auto &room = world.FindRoom(roomID);
 
-    response << room->HandleLook(player) << Server::NEWLINE;
+    auto lookAtWhat = commands.CombineRemaining();
+    if (lookAtWhat.length() == 0)
+    {
+        response << room->HandleLook(player) << Server::NEWLINE;
+        return;
+    }
+
+    auto lookAt = room->FindPlayer(lookAtWhat);
+    if (lookAt == nullptr)
+    {
+        response << "You don't see them here." << Server::NEWLINE;
+        return;
+    }
+
+    response << "You see " << lookAt->Name() << "." << Server::NEWLINE
+             << "They are currently holding:" << Server::NEWLINE
+             << "  nothing" << Server::NEWLINE
+             << "They are currently wearing:" << Server::NEWLINE
+             << "  nothing" << Server::NEWLINE
+             << "They are standing." << Server::NEWLINE << Server::NEWLINE;
 }
 
-void QuitCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void QuitCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -54,7 +76,7 @@ void QuitCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
     player->Quit();
 }
 
-void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void NorthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -77,7 +99,7 @@ void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
     player->Tell("You travel north." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
-void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void SouthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -100,7 +122,7 @@ void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
     player->Tell("You travel south." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
-void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void EastCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -123,7 +145,7 @@ void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
     player->Tell("You travel east." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
-void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void WestCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -146,7 +168,7 @@ void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
     player->Tell("You travel west." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
-void NorthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void NorthEastCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -169,7 +191,7 @@ void NorthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
     player->Tell("You travel northeast." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
-void NorthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void NorthWestCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -192,7 +214,7 @@ void NorthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
     player->Tell("You travel northwest." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
-void SouthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void SouthEastCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -215,7 +237,7 @@ void SouthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
     player->Tell("You travel southeast." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
-void SouthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void SouthWestCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -238,7 +260,7 @@ void SouthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface
     player->Tell("You travel southwest." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
-void UpCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void UpCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -261,7 +283,7 @@ void UpCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic
     player->Tell("You travel up." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
-void DownCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void DownCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
@@ -282,4 +304,18 @@ void DownCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
     room->get()->RemovePlayer(player);
     newRoom->get()->AddPlayer(player);
     player->Tell("You travel down." + Server::NEWLINE + newRoom->get()->HandleLook(player));
+}
+
+void SayCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                         Mud::Logic::World &world) const
+{
+    auto player = mudInterface->GetPlayer();
+    auto sayWhat = commands.CombineRemaining();
+    if (sayWhat.length() == 0)
+    {
+        player->Tell("Say what?");
+        return;
+    }
+
+    mudInterface->ostream() << "You say, '" << sayWhat << "'" << Server::NEWLINE;
 }

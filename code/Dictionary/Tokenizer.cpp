@@ -41,6 +41,21 @@ const std::string &Tokenizer::GetString()
     }
 }
 
+std::string Tokenizer::CombineRemaining(const std::string &delim)
+{
+    auto &result = m_cache.emplace_back();
+    m_cacheIterator = m_cache.end();
+    for (++m_pos; m_pos != m_end; ++m_pos)
+    {
+        if (*m_pos < ' ' || *m_pos >= ASCII_DEL)
+            break;
+        else
+            result.push_back(*m_pos);
+    }
+
+    return result;
+}
+
 const std::string &Tokenizer::ReadNextString()
 {
     auto &result = m_cache.emplace_back();

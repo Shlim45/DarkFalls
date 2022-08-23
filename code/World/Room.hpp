@@ -50,6 +50,8 @@ namespace Mud::Logic
 
         void RemovePlayer(const std::shared_ptr<Player>& player);
 
+        std::shared_ptr<Player> FindPlayer(const std::string &name);
+
         std::set<std::shared_ptr<Mob>>::const_iterator Monsters() { return m_monsters.begin(); }
 
         void AddMonster(const std::shared_ptr<Mob>& monster) { m_monsters.insert(monster); }

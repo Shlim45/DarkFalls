@@ -25,6 +25,8 @@ public:
 
     const std::string &GetString();
 
+    std::string CombineRemaining(const std::string &delim = " ");
+
 private:
     void AdvanceToNextToken();
     const std::string &ReadNextString();

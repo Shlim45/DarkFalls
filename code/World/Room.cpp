@@ -122,3 +122,14 @@ bool Room::HasCardinalExit(Direction dir)
 {
     return m_cardinalExits & (1 << static_cast<int>(dir));
 }
+
+std::shared_ptr<Player> Room::FindPlayer(const std::string &name)
+{
+    for (const auto& p : m_players)
+    {
+        if (p->Name() == name)
+            return p;
+    }
+
+    return nullptr;
+}

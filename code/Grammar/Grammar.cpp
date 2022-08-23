@@ -14,8 +14,11 @@ Grammar::Grammar()
     /* Miscellaneous */
     m_commands["hello"] = std::make_shared<HelloCommand>();
     m_commands["health"] = std::make_shared<HealthCommand>();
+    m_commands["h"] = std::make_shared<HealthCommand>();
     m_commands["look"] = std::make_shared<LookCommand>();
+    m_commands["l"] = std::make_shared<LookCommand>();
     m_commands["quit"] = std::make_shared<QuitCommand>();
+    m_commands["say"] = std::make_shared<SayCommand>();
 
     /* Movement */
     auto north = std::make_shared<NorthCommand>();
@@ -64,15 +67,13 @@ void Grammar::Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::Mud
     const auto &verb = tokenizer.GetString();
     const auto verbCommand = m_commands.find(verb);
 
-    auto &response = mudInterface->ostream();
-
     if (verbCommand == m_commands.end())
     {
-        response << "Command \'" << verb << "\' is not a valid command."
+        mudInterface->ostream() << "Command \'" << verb << "\' is not a valid command."
                  << Server::NEWLINE;
     }
     else
     {
-        verbCommand->second->Execute(mudInterface, world);
+        verbCommand->second->Execute(tokenizer, mudInterface, world);
     }
 }
