@@ -31,7 +31,7 @@ namespace Mud::Logic
 
         std::unique_ptr<Room> &FindRoom(int roomId);
 
-        void GenerateRoom(const std::string &description, int areaID, int x, int y, int z);
+        void GenerateRoom(const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
 
         enum class Realm
         {

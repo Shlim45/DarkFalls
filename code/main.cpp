@@ -17,6 +17,20 @@ namespace
 int Mud::Logic::Area::areaCount = 0;
 int Mud::Logic::Room::roomCount = 0;
 
+std::string Mud::Logic::Exit::DirectionNames[10] =
+        {
+                "north",
+                "south",
+                "east",
+                "west",
+                "northeast",
+                "northwest",
+                "southeast",
+                "southwest",
+                "up",
+                "down",
+        };
+
 int main()
 {
     std::cout << Mud::Server::BR_GREENTEXT << MUDNAME << Mud::Server::PLAINTEXT << " version "
@@ -35,23 +49,24 @@ int main()
 
     std::cout << "Loading Rooms...\n";
     world.GenerateRoom("You are in the void!", 0, 0,0,0);
+    uint16_t cExits1 = (1 << static_cast<int>(Mud::Logic::Direction::EAST));
     world.GenerateRoom("You are standing in the first dark room.  The walls are bare and the air is musty.",
-                       1, 0, 0, 0);
+                       1, 0, 0, 0, cExits1);
+
+    uint16_t cExits2 = (1 << static_cast<int>(Mud::Logic::Direction::EAST));
+    cExits2 |= (1 << static_cast<int>(Mud::Logic::Direction::WEST));
     world.GenerateRoom("You are standing in the second dark room.  There is a picture of a snow-covered "
                        "embankment with deer gazing at a log cabin.",
-                       1, 1, 0, 0);
+                       1, 1, 0, 0, cExits2);
+
+    uint16_t cExits3 = (1 << static_cast<int>(Mud::Logic::Direction::WEST));
     world.GenerateRoom("You are standing in the third dark room.  There is a picture of dogs shooting pool "
                        "and smoking cigars hanging on the wall.",
-                       1, 2, 0, 0);
+                       1, 2, 0, 0, cExits3);
     std::cout << "Rooms Loaded.\n";
 
     std::cout << "Loading Exits...\n";
-//    room1.AddExit(std::make_shared<Mud::Logic::Exit>(Mud::Logic::Direction::EAST));
-//
-//    room2.AddExit(std::make_shared<Mud::Logic::Exit>(Mud::Logic::Direction::EAST));
-//    room2.AddExit(std::make_shared<Mud::Logic::Exit>(Mud::Logic::Direction::WEST));
-//
-//    room3.AddExit(std::make_shared<Mud::Logic::Exit>(Mud::Logic::Direction::WEST));
+    // NOTE(jon): Load objects (portals)
     std::cout << "Exits Loaded.\n";
 
     std::cout << "World initialized." << std::endl;

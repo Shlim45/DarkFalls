@@ -46,21 +46,16 @@ namespace Mud::Logic
 
         Realm &GetRealm() { return m_realm; }
 
-        std::map<int, std::shared_ptr<Room>>::const_iterator Rooms() const { return m_rooms.begin(); }
+        void AddRoom(int x, int y, int z, int roomID);
 
-        void AddRoom(int x, int y, int z, std::shared_ptr<Room> toAdd);
-
-        std::shared_ptr<Room> &FindRoom(int roomId);
-
-        std::shared_ptr<Room> &FindRoom(int x, int y, int z);
+        int FindRoomID(int x, int y, int z);
 
         static int GetWorldCount() { return areaCount; }
 
     private:
         int m_areaId;
         std::string m_name;
-        std::map<int, std::shared_ptr<Room>> m_rooms;
-        std::map<std::tuple<int,int,int>, std::shared_ptr<Room>> m_coords;
+        std::map<std::tuple<int,int,int>, int> m_coords;
         Realm m_realm{};
     };
 

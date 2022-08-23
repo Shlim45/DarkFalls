@@ -6,9 +6,6 @@
 #include "code/Logic/MudInterface.hpp"
 #include "code/Logic/Player.hpp"
 #include "code/World/World.hpp"
-#include "code/World/Area.hpp"
-#include "code/World/Room.hpp"
-#include "code/World/Exit.hpp"
 
 using namespace Mud::Grammar;
 
@@ -43,16 +40,7 @@ void LookCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Log
     auto roomID = player->Location();
     auto &room = world.FindRoom(roomID);
 
-//    if (roomID == 0 || room == nullptr)
-//    {
-//        response << "[" << Server::BR_REDTEXT << "The Void" << Server::PLAINTEXT << "]"
-//                 << Server::NEWLINE << "You\'re in the void!" << Server::NEWLINE;
-//    }
-//    else
-//    {
-        response << room->HandleLook(player) << Server::NEWLINE;
-//    }
-
+    response << room->HandleLook(player) << Server::NEWLINE;
 }
 
 void QuitCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
@@ -70,98 +58,228 @@ void NorthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Lo
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
-    auto &room = world.FindRoom(roomID);
-    auto exits          = room->Exits();
-    auto &area               = world.FindArea("City of Tamia");
-    std::tuple<int,int,int> coords = room->Coords();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
 
-    for (auto &exit : exits)
+    if (room->get()->HasCardinalExit(Logic::Direction::NORTH))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::NORTH);
+    else
     {
-        if (exit->Destination() == Logic::Direction::NORTH)
-        {
-            // valid direction
-            exit->AdjustXYZByDirection(coords, Logic::Direction::NORTH);
-            break;
-        }
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
     }
 
-    auto newRoom = area->FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom->AddPlayer(player);
-    player->Tell("You travel north." + Server::NEWLINE + newRoom->HandleLook(player));
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel north." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
 void SouthCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
-    auto &room = world.FindRoom(roomID);
-    auto exits          = room->Exits();
-    auto &area               = world.FindArea(1);
-    std::tuple<int,int,int> coords = room->Coords();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
 
-    for (auto &exit : exits)
+    if (room->get()->HasCardinalExit(Logic::Direction::SOUTH))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::SOUTH);
+    else
     {
-        if (exit->Destination() == Logic::Direction::SOUTH)
-        {
-            // valid direction
-            exit->AdjustXYZByDirection(coords, Logic::Direction::SOUTH);
-            break;
-        }
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
     }
 
-    auto newRoom = area->FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom->AddPlayer(player);
-    player->Tell("You travel south." + Server::NEWLINE + newRoom->HandleLook(player));
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel south." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
 void EastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
-    auto &room = world.FindRoom(roomID);
-    auto exits          = room->Exits();
-    auto &area               = world.FindArea(1);
-    std::tuple<int,int,int> coords = room->Coords();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
 
-    for (auto &exit : exits)
+    if (room->get()->HasCardinalExit(Logic::Direction::EAST))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::EAST);
+    else
     {
-        if (exit->Destination() == Logic::Direction::EAST)
-        {
-            // valid direction
-            exit->AdjustXYZByDirection(coords, Logic::Direction::EAST);
-            break;
-        }
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
     }
 
-    auto newRoom = area->FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom->AddPlayer(player);
-    player->Tell("You travel east." + Server::NEWLINE + newRoom->HandleLook(player));
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel east." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }
 
 void WestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
 {
     auto player            = mudInterface->GetPlayer();
     auto roomID = player->Location();
-    auto &room = world.FindRoom(roomID);
-    auto exits          = room->Exits();
-    auto &area               = world.FindArea(1);
-    std::tuple<int,int,int> coords = room->Coords();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
 
-    for (auto &exit : exits)
+    if (room->get()->HasCardinalExit(Logic::Direction::WEST))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::WEST);
+    else
     {
-        if (exit->Destination() == Logic::Direction::WEST)
-        {
-            // valid direction
-            exit->AdjustXYZByDirection(coords, Logic::Direction::WEST);
-            break;
-        }
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
     }
 
-    auto newRoom = area->FindRoom(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
-    room->RemovePlayer(player);
-    newRoom->AddPlayer(player);
-    player->Tell("You travel west." + Server::NEWLINE + newRoom->HandleLook(player));
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel west." + Server::NEWLINE + newRoom->get()->HandleLook(player));
+}
+
+void NorthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+{
+    auto player            = mudInterface->GetPlayer();
+    auto roomID = player->Location();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
+
+    if (room->get()->HasCardinalExit(Logic::Direction::NORTHEAST))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::NORTHEAST);
+    else
+    {
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
+    }
+
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel northeast." + Server::NEWLINE + newRoom->get()->HandleLook(player));
+}
+
+void NorthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+{
+    auto player            = mudInterface->GetPlayer();
+    auto roomID = player->Location();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
+
+    if (room->get()->HasCardinalExit(Logic::Direction::NORTHWEST))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::NORTHWEST);
+    else
+    {
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
+    }
+
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel northwest." + Server::NEWLINE + newRoom->get()->HandleLook(player));
+}
+
+void SouthEastCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+{
+    auto player            = mudInterface->GetPlayer();
+    auto roomID = player->Location();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
+
+    if (room->get()->HasCardinalExit(Logic::Direction::SOUTHEAST))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::SOUTHEAST);
+    else
+    {
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
+    }
+
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel southeast." + Server::NEWLINE + newRoom->get()->HandleLook(player));
+}
+
+void SouthWestCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+{
+    auto player            = mudInterface->GetPlayer();
+    auto roomID = player->Location();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
+
+    if (room->get()->HasCardinalExit(Logic::Direction::SOUTHWEST))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::SOUTHWEST);
+    else
+    {
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
+    }
+
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel southwest." + Server::NEWLINE + newRoom->get()->HandleLook(player));
+}
+
+void UpCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+{
+    auto player            = mudInterface->GetPlayer();
+    auto roomID = player->Location();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
+
+    if (room->get()->HasCardinalExit(Logic::Direction::UP))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::UP);
+    else
+    {
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
+    }
+
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel up." + Server::NEWLINE + newRoom->get()->HandleLook(player));
+}
+
+void DownCommand::Execute(std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+{
+    auto player            = mudInterface->GetPlayer();
+    auto roomID = player->Location();
+    auto room = &world.FindRoom(roomID);
+    auto area               = &world.FindArea(room->get()->AreaID());
+    std::tuple<int,int,int> coords = room->get()->Coords();
+
+    if (room->get()->HasCardinalExit(Logic::Direction::DOWN))
+        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::DOWN);
+    else
+    {
+        player->Tell("That direction seems to lead to NOWHERE!");
+        return;
+    }
+
+    int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
+    auto newRoom = &world.FindRoom(newRoomID);
+    room->get()->RemovePlayer(player);
+    newRoom->get()->AddPlayer(player);
+    player->Tell("You travel down." + Server::NEWLINE + newRoom->get()->HandleLook(player));
 }

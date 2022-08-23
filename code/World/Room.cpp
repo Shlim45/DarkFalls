@@ -5,7 +5,6 @@
 #include "Room.hpp"
 #include "code/Server/Text.hpp"
 #include "code/Logic/Player.hpp"
-#include "code/World/Exit.hpp"
 
 using namespace Mud::Logic;
 
@@ -17,14 +16,36 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
                + Server::NEWLINE + Server::NEWLINE
                + RoomDescription() + Server::NEWLINE;
 
-    const size_t NUM_EXITS = m_exits.size();
+    if (m_cardinalExits > 0)
+    {
+        std::string sExits = Server::NEWLINE + "Obvious exits: ";
+
+        int numCardinals{};
+
+        for (int i = 0; i < 10; i++)
+        {
+            if (m_cardinalExits & (1 << i))
+            {
+                numCardinals++;
+                sExits += Server::ColorizeText(Exit::DirectionNames[i], Server::BROWNTEXT);
+                sExits += ", ";
+            }
+        }
+
+        if (numCardinals)
+            sOutput += sExits.substr(0, sExits.length()-2) + "." + Server::NEWLINE;
+        else
+            sOutput += sExits + "none" + Server::NEWLINE;
+    }
+
+/*    const size_t NUM_EXITS = m_exits.size();
     if (NUM_EXITS > 0)
     {
         int count = 0;
 
         std::string sExits = Server::NEWLINE + "Obvious exits: ";
 
-        for (auto e : m_exits)
+        for (const auto& e : m_exits)
         {
             count++;
             if (count > 1 && count == NUM_EXITS)
@@ -37,7 +58,7 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
         }
 
         sOutput += sExits;
-    }
+    }*/
 
     const size_t NUM_PLAYERS = m_players.size() - 1;
 
@@ -46,7 +67,7 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
         int count = 0;
 
         std::string sPlayers = Server::NEWLINE + "Also there is ";
-        for (auto p : m_players)
+        for (const auto& p : m_players)
         {
             if (p != player)
             {
@@ -88,4 +109,16 @@ void Room::RemoveMonster(const std::shared_ptr<Mob> &monster)
 {
     monster->SetLocation(0);
     m_monsters.erase(monster);
+}
+
+void Room::AddCardinalExit(Direction dir)
+{
+    int shift = static_cast<int>(dir);
+    uint16_t newDir = 1 << shift;
+    m_cardinalExits |= newDir;
+}
+
+bool Room::HasCardinalExit(Direction dir)
+{
+    return m_cardinalExits & (1 << static_cast<int>(dir));
 }

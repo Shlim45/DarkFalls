@@ -8,7 +8,6 @@
 #include "../Server/ConnectionBase.hpp"
 #include "Player.hpp"
 #include "code/World/World.hpp"
-#include "code/World/Room.hpp"
 
 using namespace Mud::Logic;
 

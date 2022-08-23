@@ -53,13 +53,16 @@ void World::GenerateArea(const std::string &areaName)
     AddArea(newArea);
 }
 
-void World::GenerateRoom(const std::string &description, int areaID, int x, int y, int z)
+void World::GenerateRoom(const std::string &description, int areaID, int x, int y, int z, uint16_t cExits)
 {
     auto area = &FindArea(areaID);
     int roomID = Room::GetWorldCount();
     std::unique_ptr<Room> newRoom = std::make_unique<Room>(roomID, description);
+    area->get()->AddRoom(x, y, z, roomID);
     newRoom->SetArea(area->get()->Name());
+    newRoom->SetAreaID(areaID);
     newRoom->SetCoords(x, y, z);
+    newRoom->SetCardinalExits(cExits);
     AddRoom(newRoom);
 }
 

@@ -6,6 +6,7 @@
 #define DARKFALLS_ROOM_HPP
 
 #include "code/Logic/includes.hpp"
+#include "Exit.hpp"
 
 namespace Mud::Logic
 {
@@ -44,6 +45,10 @@ namespace Mud::Logic
 
         std::string Area() const { return m_areaName; }
 
+        void SetAreaID(int newArea) { m_areaId = newArea; }
+
+        int AreaID() { return m_areaId; }
+
         std::set<std::shared_ptr<Player>>::const_iterator Players() const;
 
         void AddPlayer(const std::shared_ptr<Player>& player);
@@ -62,6 +67,14 @@ namespace Mud::Logic
 
         void RemoveExit(const std::shared_ptr<Exit>& exit) { m_exits.erase(exit); }
 
+        void AddCardinalExit(Direction dir);
+
+        void SetCardinalExits(uint16_t newCardinals) { m_cardinalExits = newCardinals; }
+
+        uint16_t CardinalExits() const { return m_cardinalExits; }
+
+        bool HasCardinalExit(Direction dir);
+
         std::string RoomDescription() const { return m_description; }
 
         std::string HandleLook(const std::shared_ptr<Player>& player) const;
@@ -72,8 +85,11 @@ namespace Mud::Logic
 
     private:
         int m_roomId;
+        int m_areaId;
         std::string m_areaName;
         std::string m_description;
+
+        uint16_t m_cardinalExits{};
 
         // TODO(jon): std::set instead of list
         std::set<std::shared_ptr<Exit>> m_exits;

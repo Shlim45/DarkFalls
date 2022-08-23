@@ -33,7 +33,7 @@ Grammar::Grammar()
     auto west = std::make_shared<WestCommand>();
     m_commands["west"] = west;
     m_commands["w"] = west;
-/*
+
     auto northeast = std::make_shared<NorthEastCommand>();
     m_commands["northeast"] = northeast;
     m_commands["ne"] = northeast;
@@ -56,7 +56,7 @@ Grammar::Grammar()
 
     auto down = std::make_shared<DownCommand>();
     m_commands["down"] = down;
-    m_commands["d"] = down;*/
+    m_commands["d"] = down;
 }
 
 void Grammar::Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const

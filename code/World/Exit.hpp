@@ -31,6 +31,9 @@ namespace Mud::Logic
             {
             }
 
+
+            static std::string DirectionNames[10];
+
             bool operator==(Exit &rhs)
             {
                 return rhs.m_direction == m_direction;
