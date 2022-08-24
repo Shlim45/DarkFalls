@@ -33,15 +33,17 @@ void MudInterface::HandleLine(const std::string &line)
         auto name = tokenizer.GetString();
 
         std::shared_ptr<Player> player = std::make_shared<Player>(name, m_connection);
-        m_player = player;
-        m_world.FindRoom(1)->AddPlayer(player);
-        m_connection << "Hello, " << Server::YELLOWTEXT << player->Name() << Server::PLAINTEXT << Server::NEWLINE
+        m_world.AddOnlinePlayer(player);
+        m_player = m_world.FindPlayer(name);
+        m_connection << "Hello, " << Server::YELLOWTEXT << m_player->Name() << Server::PLAINTEXT << Server::NEWLINE
                      << "Enter password: " << Server::ECHOOFF;
         m_interfaceState = InterfaceState::WAITING_FOR_PASS;
     } break;
 
     case InterfaceState::WAITING_FOR_PASS:
     {
+        m_world.FindRoom(1)->AddPlayer(m_player);
+
         m_connection << Server::ECHOON << Server::NEWLINE << "Logged in." << Server::NEWLINE
                      << "> ";
         m_interfaceState = InterfaceState::LOGGED_IN;
@@ -60,7 +62,7 @@ std::ostream &MudInterface::ostream()
     return m_connection.ostream();
 }
 
-std::shared_ptr<Player> MudInterface::GetPlayer()
+std::shared_ptr<Player> &MudInterface::GetPlayer()
 {
     return m_player;
 }

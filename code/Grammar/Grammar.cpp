@@ -19,6 +19,7 @@ Grammar::Grammar()
     m_commands["l"] = std::make_shared<LookCommand>();
     m_commands["quit"] = std::make_shared<QuitCommand>();
     m_commands["say"] = std::make_shared<SayCommand>();
+    m_commands["who"] = std::make_shared<WhoCommand>();
 
     /* Movement */
     auto north = std::make_shared<NorthCommand>();

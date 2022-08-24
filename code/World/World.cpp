@@ -34,7 +34,6 @@ std::unique_ptr<Area> &World::FindArea(int areaID)
 void World::AddRoom(std::unique_ptr<Room> &toAdd)
 {
     m_rooms.insert(std::make_pair<int, std::unique_ptr<Room>>(toAdd->RoomID(), std::move(toAdd)));
-
 }
 
 std::unique_ptr<Room> &World::FindRoom(int roomId)
@@ -76,3 +75,37 @@ std::map<int, std::unique_ptr<Area>>::const_iterator World::Areas() const
     return m_areas.begin();
 }
 
+void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &connection)
+{
+    std::shared_ptr<Player> newPlayer = std::make_shared<Player>(name, connection);
+    m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player> >(newPlayer->Name(), std::move(newPlayer)));
+}
+
+std::shared_ptr<Player> &World::FindPlayer(std::string &name)
+{
+    auto player = m_playersOnline.find(name);
+    if (player != m_playersOnline.end())
+        return player->second;
+    else
+        return m_playersOnline.begin()->second;
+}
+
+void World::AddOnlinePlayer(std::shared_ptr<Player> &toAdd)
+{
+    m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player>>( toAdd->Name(), std::move(toAdd)));
+}
+
+void World::RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove)
+{
+    for (auto p = m_playersOnline.begin(); p != m_playersOnline.end(); p++)
+        if (p->second == toRemove)
+        {
+            m_playersOnline.erase(p);
+            break;
+        }
+}
+
+std::map<std::string, std::shared_ptr<Player> > &World::Players()
+{
+    return m_playersOnline;
+}

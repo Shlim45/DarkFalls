@@ -8,6 +8,7 @@
 #include "code/Logic/includes.hpp"
 #include "Area.hpp"
 #include "Room.hpp"
+#include "code/Logic/Player.hpp"
 
 namespace Mud::Logic
 {
@@ -33,6 +34,15 @@ namespace Mud::Logic
 
         void GenerateRoom(const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
 
+        void GeneratePlayer(const std::string &name, Server::ConnectionBase &connection);
+
+        void AddOnlinePlayer(std::shared_ptr<Player> &toAdd);
+        void RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove);
+
+        std::shared_ptr<Player> &FindPlayer(std::string &name);
+        std::map<std::string, std::shared_ptr<Player> > &Players();
+
+
         enum class Realm
         {
             IMMORTAL = 0,
@@ -44,7 +54,8 @@ namespace Mud::Logic
 
     private:
         std::map<int, std::unique_ptr<Room> > m_rooms;
-        std::map<int, std::unique_ptr<Area>> m_areas;
+        std::map<int, std::unique_ptr<Area> > m_areas;
+        std::map<std::string, std::shared_ptr<Player> > m_playersOnline;
     };
 
 } // Logic

@@ -47,6 +47,11 @@ class SayCommand : public Command
     void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;
 };
 
+class WhoCommand : public Command
+{
+    void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;
+};
+
 class QuitCommand : public Command
 {
     void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;

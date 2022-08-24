@@ -74,6 +74,7 @@ void QuitCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
         room->RemovePlayer(player);
     player->Tell(Server::NEWLINE + "Bye bye!" + Server::NEWLINE);
     player->Quit();
+    world.RemoveOnlinePlayer(player);
 }
 
 void NorthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
@@ -318,4 +319,33 @@ void SayCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared
     }
 
     mudInterface->ostream() << "You say, '" << sayWhat << "'" << Server::NEWLINE;
+}
+
+void WhoCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                         Mud::Logic::World &world) const
+{
+    auto &response = mudInterface->ostream();
+//    auto player = mudInterface->GetPlayer();
+//    auto roomID = player->Location();
+//    auto &room = world.FindRoom(roomID);
+
+    auto whoTarget = commands.CombineRemaining();
+    if (whoTarget.length() == 0 || whoTarget == "all")
+    {
+        auto onlinePlayers = &world.Players();
+        for (auto p = onlinePlayers->begin(); p != onlinePlayers->end(); p++)
+            response << "  " << p->second->Name() << Server::NEWLINE;
+        response << Server::NEWLINE << "There are " << onlinePlayers->size() << " players online in DarkFalls." << Server::NEWLINE;
+    }
+    else
+    {
+        auto onlinePlayers = &world.Players();
+        for (auto p = onlinePlayers->begin(); p != onlinePlayers->end(); p++)
+            if (p->second->Name() == whoTarget)
+            {
+                response << p->second->Name() << " is online in room " << p->second->Location() << "." << Server::NEWLINE;
+                return;
+            }
+        response << "Player not found." << Server::NEWLINE;
+    }
 }

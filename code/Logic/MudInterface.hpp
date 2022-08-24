@@ -31,7 +31,7 @@ public:
 
     void HandleLine(const std::string &line);
     std::ostream &ostream();
-    std::shared_ptr<Player> GetPlayer();
+    std::shared_ptr<Player> &GetPlayer();
 
 private:
     Grammar::Grammar m_grammar;

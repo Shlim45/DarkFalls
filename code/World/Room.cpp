@@ -93,16 +93,22 @@ std::set<std::shared_ptr<Player>>::const_iterator Room::Players() const
     return m_players.begin();
 }
 
-void Room::AddPlayer(const std::shared_ptr<Player> &player)
+void Room::AddPlayer(const std::shared_ptr<Player>& player)
 {
-    m_players.insert(player);
-    player->SetLocation(m_roomId);
+    if (player)
+    {
+        m_players.insert(player);
+        player->SetLocation(m_roomId);
+    }
 }
 
 void Room::RemovePlayer(const std::shared_ptr<Player> &player)
 {
-    player->SetLocation(0);
-    m_players.erase(player);
+    if (player)
+    {
+        player->SetLocation(0);
+        m_players.erase(player);
+    }
 }
 
 void Room::RemoveMonster(const std::shared_ptr<Mob> &monster)
