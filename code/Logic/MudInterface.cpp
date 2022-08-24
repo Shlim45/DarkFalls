@@ -42,7 +42,9 @@ void MudInterface::HandleLine(const std::string &line)
 
     case InterfaceState::WAITING_FOR_PASS:
     {
-        m_world.FindRoom(1)->AddPlayer(m_player);
+        auto &startRoom = m_world.FindRoom(1);
+        startRoom->AddPlayer(m_player);
+        startRoom->Show(m_player->Name() + " appears in a puff of smoke.", m_player);
 
         m_connection << Server::ECHOON << Server::NEWLINE << "Logged in." << Server::NEWLINE
                      << "> ";

@@ -75,8 +75,10 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
                 if (count > 1 && count == NUM_PLAYERS)
                     sPlayers += "and ";
                 sPlayers += Server::ColorizeText(p->Name(), Server::BR_GREENTEXT);
-                if (NUM_PLAYERS > 1 && count < NUM_PLAYERS)
+                if (NUM_PLAYERS > 2 && count < NUM_PLAYERS)
                     sPlayers += ", ";
+                else if (NUM_PLAYERS > 1 && count < NUM_PLAYERS)
+                    sPlayers += " ";
                 else
                     sPlayers += "." + Server::NEWLINE;
             }
@@ -138,4 +140,11 @@ std::shared_ptr<Player> Room::FindPlayer(const std::string &name)
     }
 
     return nullptr;
+}
+
+void Room::Show(const std::string &message, const std::shared_ptr<Player> &ignore)
+{
+    for (const auto& p : m_players)
+        if (p != ignore)
+            p->Tell(Server::NEWLINE + message);
 }

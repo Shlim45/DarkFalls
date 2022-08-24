@@ -80,6 +80,8 @@ namespace Mud::Logic
 
         std::tuple<int,int,int> Coords() { return m_coords; }
 
+        void Show(const std::string &message, const std::shared_ptr<Player> &ignore);
+
     private:
         int m_roomId;
         int m_areaId{};
