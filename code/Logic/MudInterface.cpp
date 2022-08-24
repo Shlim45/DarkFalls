@@ -46,15 +46,15 @@ void MudInterface::HandleLine(const std::string &line)
         startRoom->AddPlayer(m_player);
         startRoom->Show(m_player->Name() + " appears in a puff of smoke.", m_player);
 
-        m_connection << Server::ECHOON << Server::NEWLINE << "Logged in." << Server::NEWLINE
-                     << "> ";
+        m_connection << Server::ECHOON << Server::NEWLINE << "Logged in." << Server::NEWLINE;
+
+        startRoom->HandleLook(m_player);
         m_interfaceState = InterfaceState::LOGGED_IN;
     } break;
 
     case InterfaceState::LOGGED_IN:
     {
         m_grammar.Parse(tokenizer, std::make_shared<MudInterface>(*this), m_world);
-        m_connection << m_player->Name() << " > ";
     } break;
     }
 }

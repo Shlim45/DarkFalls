@@ -18,12 +18,6 @@ void Command::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_pt
     response << "Command found!" << Server::NEWLINE;
 }
 
-void HelloCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
-{
-    auto &response = mudInterface->ostream();
-    response << "Hello there, " << mudInterface->GetPlayer()->Name() << "!" << Server::NEWLINE;
-}
-
 void HealthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto &response = mudInterface->ostream();

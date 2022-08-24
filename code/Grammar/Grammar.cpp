@@ -12,7 +12,6 @@ using namespace Mud::Grammar;
 Grammar::Grammar()
 {
     /* Miscellaneous */
-    m_commands["hello"] = std::make_shared<HelloCommand>();
     m_commands["health"] = std::make_shared<HealthCommand>();
     m_commands["h"] = std::make_shared<HealthCommand>();
     m_commands["look"] = std::make_shared<LookCommand>();
