@@ -17,6 +17,8 @@ namespace Mud::Logic
     public:
         World() {}
 
+        /* AREAS */
+
         std::map<int, std::unique_ptr<Area>>::const_iterator Areas() const;
 
         void AddArea(std::unique_ptr<Area> &toAdd);
@@ -26,6 +28,8 @@ namespace Mud::Logic
 
         void GenerateArea(const std::string& areaName);
 
+        /* ROOMS */
+
         std::map<int, std::unique_ptr<Room>>::const_iterator Rooms();
 
         void AddRoom(std::unique_ptr<Room> &toAdd);
@@ -33,6 +37,8 @@ namespace Mud::Logic
         std::unique_ptr<Room> &FindRoom(int roomId);
 
         void GenerateRoom(const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
+
+        /* PLAYERS */
 
         void GeneratePlayer(const std::string &name, Server::ConnectionBase &connection);
 
@@ -42,15 +48,7 @@ namespace Mud::Logic
         std::shared_ptr<Player> &FindPlayer(std::string &name);
         std::map<std::string, std::shared_ptr<Player> > &Players();
 
-
-        enum class Realm
-        {
-            IMMORTAL = 0,
-            EVIL = 1,
-            CHAOS = 2,
-            GOOD = 3,
-            KAID = 4
-        };
+        void BroadcastMessage(const std::string &message, const Realm targetRealm = Realm::NONE) const;
 
     private:
         std::map<int, std::unique_ptr<Room> > m_rooms;

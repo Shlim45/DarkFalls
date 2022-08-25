@@ -21,13 +21,15 @@ void Command::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_pt
 void HealthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
     auto &response = mudInterface->ostream();
+    const auto &curVitals = mudInterface->GetPlayer()->CurState();
+    const auto &maxVitals = mudInterface->GetPlayer()->MaxState();
 
-    response << " Hits: " << Server::BR_BLUETEXT << mudInterface->GetPlayer()->Health() << "/"
-             << mudInterface->GetPlayer()->MaxHealth() << Server::PLAINTEXT << Server::NEWLINE
-             << "  Fat: " << Server::BR_GREENTEXT << mudInterface->GetPlayer()->Fatigue() << "/"
-             << mudInterface->GetPlayer()->MaxFatigue() << Server::PLAINTEXT << Server::NEWLINE
-             << "Power: " << Server::BR_REDTEXT << mudInterface->GetPlayer()->Power() << "/"
-             << mudInterface->GetPlayer()->MaxPower() << Server::PLAINTEXT << Server::NEWLINE;
+    response << " Hits: " << Server::BR_BLUETEXT << curVitals.Health() << "/"
+             << curVitals.Health() << Server::PLAINTEXT << Server::NEWLINE
+             << "  Fat: " << Server::BR_GREENTEXT << curVitals.Fatigue() << "/"
+             << curVitals.Fatigue() << Server::PLAINTEXT << Server::NEWLINE
+             << "Power: " << Server::BR_REDTEXT << curVitals.Power() << "/"
+             << curVitals.Power() << Server::PLAINTEXT << Server::NEWLINE;
 }
 
 void LookCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const

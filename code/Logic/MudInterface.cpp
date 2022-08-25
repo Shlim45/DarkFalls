@@ -33,6 +33,10 @@ void MudInterface::HandleLine(const std::string &line)
         auto name = tokenizer.GetString();
 
         std::shared_ptr<Player> player = std::make_shared<Player>(name, m_connection);
+        player->MaxState().SetHealth(10);
+        player->MaxState().SetFatigue(10);
+        player->MaxState().SetPower(10);
+        player->CurState().RecoverMobState(player->MaxState());
         m_world.AddOnlinePlayer(player);
         m_player = m_world.FindPlayer(name);
         m_connection << "Hello, " << Server::YELLOWTEXT << m_player->Name() << Server::PLAINTEXT << Server::NEWLINE
@@ -46,9 +50,8 @@ void MudInterface::HandleLine(const std::string &line)
         startRoom->AddPlayer(m_player);
         startRoom->Show(m_player->Name() + " appears in a puff of smoke.", m_player);
 
-        m_connection << Server::ECHOON << Server::NEWLINE << "Logged in." << Server::NEWLINE;
-
-        startRoom->HandleLook(m_player);
+        m_connection << Server::ECHOON << Server::NEWLINE << "Logged in."
+                     << Server::NEWLINE << startRoom->HandleLook(m_player);
         m_interfaceState = InterfaceState::LOGGED_IN;
     } break;
 

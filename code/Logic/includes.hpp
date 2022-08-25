@@ -13,4 +13,43 @@
 #include <set>
 #include <iostream>
 
+namespace Mud::Logic
+{
+    enum class Realm
+    {
+        NONE,
+        EVIL,
+        CHAOS,
+        GOOD,
+        KAID,
+        IMMORTAL
+    };
+
+    enum class MobPosition
+    {
+        STANDING,
+        KNEELING,
+        SITTING,
+        LAYING
+    };
+
+    enum class MobLifeState
+    {
+        ALIVE,
+        UNCONSCIOUS,
+        DEAD
+    };
+
+//    typedef struct
+//    {
+//        uint16_t health;
+//        uint16_t fatigue;
+//        uint16_t power;
+//
+//        MobPosition position;
+//        MobLifeState lifeState;
+//    } MobState;
+}
+
+
 #endif //DARKFALLS_COMMON_HPP

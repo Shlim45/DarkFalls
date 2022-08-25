@@ -6,22 +6,21 @@
 #define DARKFALLS_MOB_HPP
 
 #include "includes.hpp"
+#include "MobState.hpp"
 
 namespace Mud::Logic
 {
 class Room;
+enum class Realm;
 
 class Mob
 {
 public:
-    explicit Mob(std::string name) : m_name(std::move(name))
+    explicit Mob(std::string name)
+    : m_name(std::move(name)),
+    m_curState(MobState()), m_maxState(MobState())
     {
-        m_health = 10;
-        m_maxHealth = 10;
-        m_fatigue = 10;
-        m_maxFatigue = 10;
-        m_power = 10;
-        m_maxPower = 10;
+
     }
     ~Mob() { m_location = 0; }
 
@@ -36,20 +35,16 @@ public:
     int Location() const { return m_location; }
     void SetLocation(int newLocation) { m_location = newLocation; }
 
-    int Health() const { return m_health; }
-    int MaxHealth() const { return m_maxHealth; }
-    int Fatigue() const { return m_fatigue; }
-    int MaxFatigue() const { return m_maxFatigue; }
-    int Power() const { return m_power; }
-    int MaxPower() const { return m_maxPower; }
+    MobState &CurState() { return m_curState; }
+    MobState &MaxState() { return m_maxState; }
 
 protected:
     std::string m_name;
     int m_location{};
 
-    int m_health, m_maxHealth;
-    int m_fatigue, m_maxFatigue;
-    int m_power, m_maxPower;
+    Realm m_realm{};
+    MobState m_curState;
+    MobState m_maxState;
 };
 
 } // Mud

@@ -109,3 +109,10 @@ std::map<std::string, std::shared_ptr<Player> > &World::Players()
 {
     return m_playersOnline;
 }
+
+void World::BroadcastMessage(const std::string &message, const Realm targetRealm) const
+{
+    if (targetRealm == Realm::NONE)
+        for (auto &p : m_playersOnline)
+            p.second->Tell(message);
+}
