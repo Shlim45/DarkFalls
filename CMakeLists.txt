@@ -15,6 +15,7 @@ set(SRCS
         code/Grammar/Command.cpp
         code/Logic/MudInterface.cpp
         code/Logic/Mob.cpp
+        code/Logic/PlayerAccount.cpp
         code/World/Room.cpp
         code/World/Area.cpp
         code/World/World.cpp

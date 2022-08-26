@@ -47,6 +47,8 @@ void LookCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     }
 
     auto lookAt = room->FindPlayer(lookAtWhat);
+    if (lookAtWhat == "me")
+        lookAt = mudInterface->GetPlayer();
     if (lookAt == nullptr)
     {
         response << "You don't see them here." << Server::NEWLINE;

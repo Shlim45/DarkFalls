@@ -45,7 +45,7 @@ namespace Mud::Logic
         void AddOnlinePlayer(std::shared_ptr<Player> &toAdd);
         void RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove);
 
-        std::shared_ptr<Player> &FindPlayer(std::string &name);
+        std::shared_ptr<Player> &FindPlayer(const std::string &name);
         std::map<std::string, std::shared_ptr<Player> > &Players();
 
         void BroadcastMessage(const std::string &message, const Realm targetRealm = Realm::NONE) const;

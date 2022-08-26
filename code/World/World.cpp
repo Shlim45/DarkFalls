@@ -77,11 +77,16 @@ std::map<int, std::unique_ptr<Area>>::const_iterator World::Areas() const
 
 void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &connection)
 {
-    std::shared_ptr<Player> newPlayer = std::make_shared<Player>(name, connection);
-    m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player> >(newPlayer->Name(), std::move(newPlayer)));
+    std::shared_ptr<Player> player = std::make_shared<Player>(name, connection);
+    player->MaxState().SetHealth(10);
+    player->MaxState().SetFatigue(10);
+    player->MaxState().SetPower(10);
+    player->CurState().RecoverMobState(player->MaxState());
+
+    m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
 }
 
-std::shared_ptr<Player> &World::FindPlayer(std::string &name)
+std::shared_ptr<Player> &World::FindPlayer(const std::string &name)
 {
     auto player = m_playersOnline.find(name);
     if (player != m_playersOnline.end())

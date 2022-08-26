@@ -8,6 +8,7 @@
 #include "../Server/ConnectionBase.hpp"
 #include "Player.hpp"
 #include "code/World/World.hpp"
+#include "PlayerAccount.hpp"
 
 using namespace Mud::Logic;
 
@@ -31,27 +32,45 @@ void MudInterface::HandleLine(const std::string &line)
     case InterfaceState::WAITING_FOR_USER:
     {
         auto name = tokenizer.GetString();
+        if (m_account == nullptr)
+            m_account = std::move(std::make_shared<PlayerAccount>(name));
 
-        std::shared_ptr<Player> player = std::make_shared<Player>(name, m_connection);
-        player->MaxState().SetHealth(10);
-        player->MaxState().SetFatigue(10);
-        player->MaxState().SetPower(10);
-        player->CurState().RecoverMobState(player->MaxState());
-        m_world.AddOnlinePlayer(player);
-        m_player = m_world.FindPlayer(name);
-        m_connection << "Hello, " << Server::YELLOWTEXT << m_player->Name() << Server::PLAINTEXT << Server::NEWLINE
-                     << "Enter password: " << Server::ECHOOFF;
+        m_connection << "Enter password: " << Server::ECHOOFF;
         m_interfaceState = InterfaceState::WAITING_FOR_PASS;
     } break;
 
     case InterfaceState::WAITING_FOR_PASS:
     {
+        // TODO(jon): Password Hashing
+        auto pass = tokenizer.GetString();
+        if (!m_account->ComparePasswordHash(pass))
+        {
+            m_connection << Server::NEWLINE << "Invalid username/password." << Server::NEWLINE << Server::NEWLINE;
+            if (m_account->IncrementFailedLogins())
+            {
+                m_connection.Close();
+                return;
+            }
+            m_connection << "Enter username: " << Server::ECHOON;
+            m_interfaceState = InterfaceState::WAITING_FOR_USER;
+            break;
+        }
+
+        m_account->HandleLogin(*this);
+        // Create Player
+        m_world.GeneratePlayer(m_account->Name(), m_connection);
+
+        // Add player to account
+        m_player = m_world.FindPlayer(m_account->Name());
+        m_account->AddPlayer(m_player);
+
         auto &startRoom = m_world.FindRoom(1);
         startRoom->AddPlayer(m_player);
         startRoom->Show(m_player->Name() + " appears in a puff of smoke.", m_player);
 
-        m_connection << Server::ECHOON << Server::NEWLINE << "Logged in."
-                     << Server::NEWLINE << startRoom->HandleLook(m_player);
+        m_connection << Server::ECHOON << Server::NEWLINE << Server::NEWLINE
+                     << "Logged in as " << Server::GREENTEXT << m_player->Name() << Server::PLAINTEXT << "."
+                     << Server::NEWLINE << Server::NEWLINE << startRoom->HandleLook(m_player);
         m_interfaceState = InterfaceState::LOGGED_IN;
     } break;
 
@@ -70,4 +89,14 @@ std::ostream &MudInterface::ostream()
 std::shared_ptr<Player> &MudInterface::GetPlayer()
 {
     return m_player;
+}
+
+Mud::Server::ConnectionBase &MudInterface::Connection() const
+{
+    return m_connection;
+}
+
+std::shared_ptr<PlayerAccount> &MudInterface::GetAccount()
+{
+    return m_account;
 }

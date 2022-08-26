@@ -37,14 +37,14 @@ int main()
               << Mud::Server::YELLOWTEXT << MAJOR << "." << MINOR << "." << PATCH << Mud::Server::PLAINTEXT
               << " started.\n";
 
-    std::cout << "Initializing World...\n";
+    std::cout << "\nInitializing World...\n\n";
     Mud::Logic::World world;
 
     std::cout << "Loading Areas...\n";
 
     world.GenerateArea("The Void");
     world.GenerateArea("City of Tamia");
-    std::cout << Mud::Logic::Area::GetWorldCount() << " Areas Loaded.\n";
+    std::cout << Mud::Logic::Area::GetWorldCount() << " Areas Loaded.\n\n";
 
     std::cout << "Loading Rooms...\n";
 
@@ -64,13 +64,13 @@ int main()
                        "and smoking cigars hanging on the wall.",
                        1, 2, 0, 0, cExits3);
 
-    std::cout << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
+    std::cout << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n\n";
 
     std::cout << "Loading Exits...\n";
     // NOTE(jon): Load objects (portals)
-    std::cout << "Exits Loaded.\n";
+    std::cout << "Exits Loaded.\n\n";
 
-    std::cout << "World initialized." << std::endl;
+    std::cout << "World initialized.\n" << std::endl;
 
     Mud::Server::Server server(PORT, world);
     server.Run();

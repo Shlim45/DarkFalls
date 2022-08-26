@@ -39,16 +39,6 @@ namespace Mud::Logic
         UNCONSCIOUS,
         DEAD
     };
-
-//    typedef struct
-//    {
-//        uint16_t health;
-//        uint16_t fatigue;
-//        uint16_t power;
-//
-//        MobPosition position;
-//        MobLifeState lifeState;
-//    } MobState;
 }
 
 

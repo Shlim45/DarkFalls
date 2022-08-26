@@ -34,12 +34,6 @@ namespace Mud::Logic
             return rhs.m_name == m_name;
         }
 
-//        friend std::ostream &operator<<(std::ostream &os, const Area &a)
-//        {
-//            os << a.m_name;
-//            return os;
-//        }
-
         int AreaID() { return m_areaId; }
 
         std::string Name() const { return m_name; }

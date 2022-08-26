@@ -50,6 +50,11 @@ public:
         m_socket.shutdown(SocketType::shutdown_receive);
     }
 
+    boost::asio::ip::address IPAddress()
+    {
+        return m_socket.remote_endpoint().address();
+    }
+
 protected:
     explicit ConnectionBase(SocketType &&socket)
             : m_socket(std::move(socket)),

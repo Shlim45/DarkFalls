@@ -38,6 +38,8 @@ public:
     MobState &CurState() { return m_curState; }
     MobState &MaxState() { return m_maxState; }
 
+    Realm GetRealm() const { return m_realm; }
+
 protected:
     std::string m_name;
     int m_location{};
