@@ -5,6 +5,7 @@
 #include "Command.hpp"
 #include "code/Logic/MudInterface.hpp"
 #include "code/Logic/Player.hpp"
+#include "code/Logic/PlayerAccount.hpp"
 #include "code/World/World.hpp"
 #include "code/Dictionary/Tokenizer.hpp"
 
@@ -16,6 +17,19 @@ void Command::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_pt
 
     auto &response = mudInterface->ostream();
     response << "Command found!" << Server::NEWLINE;
+}
+
+void AccountCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
+{
+//    mudInterface->ostream() << mudInterface->GetAccount() << Server::NEWLINE;
+    auto &os = mudInterface->ostream();
+    const auto &pa = mudInterface->GetAccount();
+    os << "Username:    " << pa->UserName() << Server::NEWLINE
+       << "Players:     " << Server::NEWLINE;
+    for (const auto &p : pa->Players())
+        os << " " << p->Name() << Server::NEWLINE;
+    os << "Last Active: " << pa->LastDateTime() << Server::NEWLINE
+       << "Last IP:     " << pa->LastIP() << Server::NEWLINE << Server::NEWLINE;
 }
 
 void HealthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const

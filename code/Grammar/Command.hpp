@@ -26,6 +26,11 @@ public:
     virtual void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const;
 };
 
+class AccountCommand : public Command
+{
+    void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;
+};
+
 class HealthCommand : public Command
 {
     void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;

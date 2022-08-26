@@ -22,3 +22,15 @@ void PlayerAccount::HandleLogout(std::shared_ptr<Player> &player)
     m_state = AccountState::OFFLINE;
     time(&m_lastActive);
 }
+
+//std::ostream &Mud::Logic::operator<<(std::ostream &os, const PlayerAccount &pa)
+//{
+//    os << "Username: " << pa.m_userName << "\r\n"
+//       << "Players:\r\n";
+//    for (const auto &p : pa.Players())
+//        os << " " << p->UserName() << "\r\n";
+//    os << "Last Active: " << pa.LastDateTime() << "\r\n"
+//       << "Last IP: " << pa.LastIP() << "\r\n\r\n";
+//
+//    return os;
+//}

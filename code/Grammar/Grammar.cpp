@@ -12,10 +12,13 @@ using namespace Mud::Grammar;
 Grammar::Grammar()
 {
     /* Miscellaneous */
-    m_commands["health"] = std::make_shared<HealthCommand>();
-    m_commands["h"] = std::make_shared<HealthCommand>();
-    m_commands["look"] = std::make_shared<LookCommand>();
-    m_commands["l"] = std::make_shared<LookCommand>();
+    m_commands["account"] = std::make_shared<AccountCommand>();
+    auto health = std::make_shared<HealthCommand>();
+    m_commands["health"] = health;
+    m_commands["h"] = health;
+    auto look = std::make_shared<LookCommand>();
+    m_commands["look"] = look;
+    m_commands["l"] = look;
     m_commands["quit"] = std::make_shared<QuitCommand>();
     m_commands["say"] = std::make_shared<SayCommand>();
     m_commands["who"] = std::make_shared<WhoCommand>();

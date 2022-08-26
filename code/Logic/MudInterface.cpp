@@ -31,9 +31,9 @@ void MudInterface::HandleLine(const std::string &line)
     case InterfaceState::NEW_CONNECTION:
     case InterfaceState::WAITING_FOR_USER:
     {
-        auto name = tokenizer.GetString();
+        auto userName = tokenizer.GetString();
         if (m_account == nullptr)
-            m_account = std::move(std::make_shared<PlayerAccount>(name));
+            m_account = std::move(std::make_shared<PlayerAccount>(userName));
 
         m_connection << "Enter password: " << Server::ECHOOFF;
         m_interfaceState = InterfaceState::WAITING_FOR_PASS;
@@ -58,10 +58,10 @@ void MudInterface::HandleLine(const std::string &line)
 
         m_account->HandleLogin(*this);
         // Create Player
-        m_world.GeneratePlayer(m_account->Name(), m_connection);
+        m_world.GeneratePlayer(m_account->UserName(), m_connection);
 
         // Add player to account
-        m_player = m_world.FindPlayer(m_account->Name());
+        m_player = m_world.FindPlayer(m_account->UserName());
         m_account->AddPlayer(m_player);
 
         auto &startRoom = m_world.FindRoom(1);

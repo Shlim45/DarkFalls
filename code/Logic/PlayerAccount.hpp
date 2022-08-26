@@ -26,14 +26,14 @@ namespace Mud::Logic
             ONLINE
         };
 
-        explicit PlayerAccount(std::string &name)
-        : m_name(std::move(name)), m_lastRealm(Realm::NONE), m_state(AccountState::OFFLINE),
+        explicit PlayerAccount(std::string &userName)
+        : m_userName(std::move(userName)), m_lastRealm(Realm::NONE), m_state(AccountState::OFFLINE),
           m_lastActive(time(nullptr))
         {
         }
 
-        std::string const &Name(){ return m_name; };
-        void SetName(const std::string &name) { m_name = name; }
+        std::string const &UserName(){ return m_userName; };
+        void SetName(const std::string &name) { m_userName = name; }
 
         std::string const &PasswordHash() { return m_passwordHash; }
         void SetPasswordHash(const std::string &newPass) { m_passwordHash = newPass; }
@@ -50,12 +50,15 @@ namespace Mud::Logic
 
         Realm LastRealm() { return m_lastRealm; }
         time_t LastActive() const { return m_lastActive; }
-        std::string LastDateTime() { return ctime(&m_lastActive); }
+        std::string LastDateTime() const { return ctime(&m_lastActive); }
+        std::string LastIP() const { return m_lastIP; }
 
         bool IncrementFailedLogins() { return (++m_failedLogins >= MAX_FAILED_LOGINS); }
 
+        friend std::ostream &operator<<(std::ostream &os, const PlayerAccount &pa);
+
     private:
-        std::string m_name;
+        std::string m_userName;
         std::string m_passwordHash;
 
         std::set<std::shared_ptr<Player> > m_players;
