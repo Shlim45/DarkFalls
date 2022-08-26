@@ -70,6 +70,14 @@ int main()
     // NOTE(jon): Load objects (portals)
     std::cout << "Exits Loaded.\n\n";
 
+    std::cout << "Loading Accounts...\n";
+    // NOTE(jon): Load objects (portals)
+    std::cout << "Accounts Loaded.\n\n";
+
+    std::cout << "Loading Players...\n";
+    // NOTE(jon): Load objects (portals)
+    std::cout << "Players Loaded.\n\n";
+
     std::cout << "World initialized.\n" << std::endl;
 
     Mud::Server::Server server(PORT, world);
