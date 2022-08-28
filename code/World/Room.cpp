@@ -5,6 +5,7 @@
 #include "Room.hpp"
 #include "code/Server/Text.hpp"
 #include "code/Logic/Player.hpp"
+#include "code/Logic/Monster.hpp"
 
 using namespace Mud::Logic;
 
@@ -66,7 +67,7 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
     {
         int count = 0;
 
-        std::string sPlayers = Server::NEWLINE + "Also there is ";
+        std::string sPlayers = Server::NEWLINE;
         for (const auto& p : m_players)
         {
             if (p != player)
@@ -80,11 +81,35 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
                 else if (NUM_PLAYERS > 1 && count < NUM_PLAYERS)
                     sPlayers += " ";
                 else
-                    sPlayers += "." + Server::NEWLINE;
+                    sPlayers += " is here." + Server::NEWLINE;
             }
         }
 
         sOutput += sPlayers;
+    }
+
+    const size_t NUM_MONSTERS = m_monsters.size();
+
+    if (NUM_MONSTERS > 0)
+    {
+        int count = 0;
+
+        std::string sMonsters = "Also there is ";
+        for (const auto& m : m_monsters)
+        {
+            count++;
+            if (count > 1 && count == NUM_MONSTERS)
+                sMonsters += "and ";
+            sMonsters += Server::ColorizeText(m->Name(), Server::BR_REDTEXT);
+            if (NUM_MONSTERS > 2 && count < NUM_MONSTERS)
+                sMonsters += ", ";
+            else if (NUM_MONSTERS > 1 && count < NUM_MONSTERS)
+                sMonsters += " ";
+            else
+                sMonsters += "." + Server::NEWLINE;
+        }
+
+        sOutput += sMonsters;
     }
 
     return sOutput + Server::NEWLINE;
@@ -113,9 +138,9 @@ void Room::RemovePlayer(const std::shared_ptr<Player> &player)
     }
 }
 
-void Room::RemoveMonster(const std::shared_ptr<Mob> &monster)
+void Room::RemoveMonster(const std::shared_ptr<Monster> &monster)
 {
-    monster->SetLocation(0);
+    monster.get()->SetLocation(0);
     m_monsters.erase(monster);
 }
 
@@ -147,4 +172,13 @@ void Room::Show(const std::string &message, const std::shared_ptr<Player> &ignor
     for (const auto& p : m_players)
         if (p != ignore)
             p->Tell(Server::NEWLINE + message);
+}
+
+void Room::AddMonster(const std::shared_ptr<Monster> &monster)
+{
+    if (monster)
+    {
+        monster->SetLocation(m_roomId);
+        m_monsters.insert(std::move(monster));
+    }
 }

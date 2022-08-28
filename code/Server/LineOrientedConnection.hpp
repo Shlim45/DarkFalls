@@ -5,8 +5,10 @@
 #ifndef DARKFALLS_LINEORIENTEDCONNECTION_HPP
 #define DARKFALLS_LINEORIENTEDCONNECTION_HPP
 
-#include "../Logic/MudInterface.hpp"
+//#include "../Logic/MudInterface.hpp"
 #include "ConnectionBase.hpp"
+#include "code/World/World.hpp"
+#include "code/Logic/MudInterface.hpp"
 
 namespace Mud
 {

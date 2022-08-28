@@ -22,7 +22,6 @@ public:
     {
 
     }
-    ~Mob() { m_location = 0; }
 
     virtual bool operator==(Mob &rhs)
     {
@@ -32,8 +31,14 @@ public:
     std::string Name() const { return m_name; }
     void SetName(std::string name) { m_name = std::move(name); }
 
+    virtual std::string Keyword() const;
+    virtual std::string DisplayName() const { return m_name; }
+
     int Location() const { return m_location; }
     void SetLocation(int newLocation) { m_location = newLocation; }
+
+    int Experience() const { return m_experience; }
+    void SetExperience(int exp) { m_experience = exp; };
 
     MobState &CurState() { return m_curState; }
     MobState &MaxState() { return m_maxState; }
@@ -43,6 +48,7 @@ public:
 protected:
     std::string m_name;
     int m_location{};
+    int m_experience{};
 
     Realm m_realm{};
     MobState m_curState;

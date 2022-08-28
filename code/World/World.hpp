@@ -6,56 +6,89 @@
 #define DARKFALLS_WORLD_HPP
 
 #include "code/Logic/includes.hpp"
-#include "Area.hpp"
-#include "Room.hpp"
-#include "code/Logic/Player.hpp"
 
-namespace Mud::Logic
+namespace Mud
 {
-    class World
-    {
-    public:
-        World() {}
+namespace Server
+{
+class ConnectionBase;
+}
 
-        /* AREAS */
+namespace Logic
+{
+class Area;
 
-        std::map<int, std::unique_ptr<Area>>::const_iterator Areas() const;
+class Room;
 
-        void AddArea(std::unique_ptr<Area> &toAdd);
+class Player;
 
-        std::unique_ptr<Area> &FindArea(const std::string& areaName);
-        std::unique_ptr<Area> &FindArea(int areaID);
+class Monster;
 
-        void GenerateArea(const std::string& areaName);
+class World
+{
+public:
+    World()
+    {}
 
-        /* ROOMS */
+    /* AREAS */
 
-        std::map<int, std::unique_ptr<Room>>::const_iterator Rooms();
+    std::map<int, std::unique_ptr<Area>>::const_iterator Areas() const;
 
-        void AddRoom(std::unique_ptr<Room> &toAdd);
+    void AddArea(std::unique_ptr<Area> &toAdd);
 
-        std::unique_ptr<Room> &FindRoom(int roomId);
+    std::unique_ptr<Area> &FindArea(const std::string &areaName);
 
-        void GenerateRoom(const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
+    std::unique_ptr<Area> &FindArea(int areaID);
 
-        /* PLAYERS */
+    void GenerateArea(const std::string &areaName);
 
-        void GeneratePlayer(const std::string &name, Server::ConnectionBase &connection);
+    /* ROOMS */
 
-        void AddOnlinePlayer(std::shared_ptr<Player> &toAdd);
-        void RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove);
+    std::map<int, std::unique_ptr<Room>>::const_iterator Rooms();
 
-        std::shared_ptr<Player> &FindPlayer(const std::string &name);
-        std::map<std::string, std::shared_ptr<Player> > &Players();
+    void AddRoom(std::unique_ptr<Room> &toAdd);
 
-        void BroadcastMessage(const std::string &message, const Realm targetRealm = Realm::NONE) const;
+    std::unique_ptr<Room> &FindRoom(int roomId);
 
-    private:
-        std::map<int, std::unique_ptr<Room> > m_rooms;
-        std::map<int, std::unique_ptr<Area> > m_areas;
-        std::map<std::string, std::shared_ptr<Player> > m_playersOnline;
-    };
+    void GenerateRoom(const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
+
+    /* PLAYERS */
+
+    void GeneratePlayer(const std::string &name, Mud::Server::ConnectionBase &connection);
+
+    void AddOnlinePlayer(std::shared_ptr<Player> &toAdd);
+
+    void RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove);
+
+    std::shared_ptr<Player> &FindPlayer(const std::string &name);
+
+    std::map<std::string, std::shared_ptr<Player> > &Players();
+
+    /* MONSTERS */
+
+    void GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw);
+
+    void AddMonster(std::shared_ptr<Monster> &toAdd);
+
+    void RemoveMonster(const std::shared_ptr<Monster> &toRemove);
+
+    void AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::unique_ptr<Room> &room);
+
+    void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::unique_ptr<Room> &room);
+
+    std::shared_ptr<Monster> &FindMonster(const std::string &name);
+
+    std::map<uint32_t, std::shared_ptr<Monster> > &Monsters();
+
+    void BroadcastMessage(const std::string &message, Realm targetRealm = Realm::NONE) const;
+
+private:
+    std::map<int, std::unique_ptr<Room> > m_rooms;
+    std::map<int, std::unique_ptr<Area> > m_areas;
+    std::map<std::string, std::shared_ptr<Player> > m_playersOnline;
+    std::map<uint32_t, std::shared_ptr<Monster> > m_monsterDB;
+};
 
 } // Logic
-
+} // Mud
 #endif //DARKFALLS_WORLD_HPP

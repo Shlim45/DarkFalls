@@ -69,10 +69,10 @@ const std::string &Tokenizer::ReadNextString()
         {
             break;
         }
-        else if (*m_pos >= 'A' && *m_pos <= 'Z')
-        {
-            result.push_back(*m_pos - 'A' + 'a');
-        }
+//        else if (*m_pos >= 'A' && *m_pos <= 'Z')
+//        {
+//            result.push_back(*m_pos - 'A' + 'a');
+//        }
         else
         {
             result.push_back(*m_pos);

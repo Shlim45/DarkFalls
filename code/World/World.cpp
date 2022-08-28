@@ -3,6 +3,10 @@
 //
 
 #include "World.hpp"
+#include "Area.hpp"
+#include "Room.hpp"
+#include "code/Logic/Player.hpp"
+#include "code/Logic/Monster.hpp"
 
 using namespace Mud::Logic;
 
@@ -120,4 +124,57 @@ void World::BroadcastMessage(const std::string &message, const Realm targetRealm
     if (targetRealm == Realm::NONE)
         for (auto &p : m_playersOnline)
             p.second->Tell(message);
+}
+
+void World::GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw)
+{
+    std::shared_ptr<Monster> monster = std::make_shared<Monster>(mID, art, name, kw);
+    monster->MaxState().SetHealth(10);
+    monster->MaxState().SetFatigue(10);
+    monster->MaxState().SetPower(10);
+    monster->CurState().RecoverMobState(monster->MaxState());
+
+    AddMonster(monster);
+}
+
+void World::AddMonster(std::shared_ptr<Monster> &toAdd)
+{
+    m_monsterDB.insert(std::make_pair<uint32_t, std::shared_ptr<Monster> >(toAdd->MonsterID(), std::move(toAdd)));
+}
+
+void World::RemoveMonster(const std::shared_ptr<Monster> &toRemove)
+{
+    for (auto m = m_monsterDB.begin(); m != m_monsterDB.end(); m++)
+        if (m->first == toRemove->MonsterID())
+        {
+            m_monsterDB.erase(m);
+            return;
+        }
+}
+
+std::shared_ptr<Monster> &World::FindMonster(const std::string &name)
+{
+    std::shared_ptr<Monster> monster;
+    for (auto m = m_monsterDB.begin(); m != m_monsterDB.end(); m++)
+    {
+        if (m->second->Name() == name)
+            return m->second;
+        else
+            return m_monsterDB.begin()->second;
+    }
+}
+
+std::map<uint32_t, std::shared_ptr<Monster> > &World::Monsters()
+{
+    return m_monsterDB;
+}
+
+void World::AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::unique_ptr<Room> &room)
+{
+    room->AddMonster(toAdd);
+}
+
+void World::RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::unique_ptr<Room> &room)
+{
+    room->RemoveMonster(toRemove);
 }

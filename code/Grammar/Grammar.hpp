@@ -7,7 +7,7 @@
 
 #include <ostream>
 #include <map>
-#include <memory>
+//#include <memory>
 #include "Command.hpp"
 
 namespace Mud

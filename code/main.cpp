@@ -3,6 +3,7 @@
 #include "World/World.hpp"
 #include "World/Area.hpp"
 #include "World/Room.hpp"
+#include "Logic/Monster.hpp"
 #include "Server/Server.hpp"
 
 namespace
@@ -16,6 +17,7 @@ namespace
 
 int Mud::Logic::Area::areaCount = 0;
 int Mud::Logic::Room::roomCount = 0;
+int Mud::Logic::Monster::monsterCount = 0;
 
 std::string Mud::Logic::Exit::DirectionNames[10] =
         {
@@ -71,6 +73,23 @@ int main()
     std::cout << "Exits Loaded.\n\n";
 
     std::cout << "World initialized.\n" << std::endl;
+
+    std::cout << "Loading Monsters...\n";
+    world.GenerateMonster(1, "a", "traveler", "traveler");
+    world.GenerateMonster(2, "a", "farmer", "farmer");
+    world.GenerateMonster(3, "a", "wandering merchant", "merchant");
+    world.GenerateMonster(4, "a", "small dog", "dog");
+
+    world.FindRoom(1)->AddMonster(world.FindMonster("a traveler")->CopyOf());
+
+    world.FindRoom(2)->AddMonster(world.FindMonster("a wandering merchant")->CopyOf());
+    world.FindRoom(2)->AddMonster(world.FindMonster("a farmer")->CopyOf());
+
+    world.FindRoom(3)->AddMonster(world.FindMonster("a wandering merchant")->CopyOf());
+    world.FindRoom(3)->AddMonster(world.FindMonster("a farmer")->CopyOf());
+    world.FindRoom(3)->AddMonster(world.FindMonster("a small dog")->CopyOf());
+    world.FindRoom(3)->AddMonster(world.FindMonster("a traveler")->CopyOf());
+    std::cout << Mud::Logic::Monster::GetLoadedCount() << " Monsters loaded.\n\n";
 
     Mud::Server::Server server(PORT, world);
     server.Run();

@@ -36,6 +36,15 @@ namespace Mud::Logic
             m_connection.Close();
         }
 
+        void AdjExperience(int howMuch)
+        {
+            if (howMuch < 0 && howMuch < -m_experience)
+                howMuch = -m_experience;
+            m_experience += howMuch;
+        }
+
+        virtual std::string Keyword() const override { return m_name; }
+
     private:
         Server::ConnectionBase &m_connection;
     };
