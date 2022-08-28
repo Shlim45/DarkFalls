@@ -10,9 +10,8 @@
 
 namespace Mud::Logic
 {
-    class Mob;
+    class Monster;
     class Player;
-    class Exit;
 
     class Room
     {
@@ -52,11 +51,11 @@ namespace Mud::Logic
 
         std::shared_ptr<Player> FindPlayer(const std::string &name);
 
-        std::set<std::shared_ptr<Mob>>::const_iterator Monsters() { return m_monsters.begin(); }
+        std::set<std::shared_ptr<Monster>>::const_iterator Monsters() { return m_monsters.begin(); }
 
-        void AddMonster(const std::shared_ptr<Mob>& monster) { m_monsters.insert(monster); }
+        void AddMonster(const std::shared_ptr<Monster>& monster);
 
-        void RemoveMonster(const std::shared_ptr<Mob>& monster);
+        void RemoveMonster(const std::shared_ptr<Monster>& monster);
 
         std::set<std::shared_ptr<Exit>> Exits() { return m_exits; }
 
@@ -70,7 +69,7 @@ namespace Mud::Logic
 
         uint16_t CardinalExits() const { return m_cardinalExits; }
 
-        bool HasCardinalExit(Direction dir);
+        bool HasCardinalExit(Direction dir) const;
 
         std::string RoomDescription() const { return m_description; }
 
@@ -96,7 +95,7 @@ namespace Mud::Logic
         // players
         std::set<std::shared_ptr<Player>> m_players;
         // monsters
-        std::set<std::shared_ptr<Mob>> m_monsters;
+        std::set<std::shared_ptr<Monster>> m_monsters;
 
         std::tuple<int,int,int> m_coords;
     };

@@ -7,6 +7,8 @@
 #include "code/Logic/Player.hpp"
 #include "code/Logic/PlayerAccount.hpp"
 #include "code/World/World.hpp"
+#include "code/World/Area.hpp"
+#include "code/World/Room.hpp"
 #include "code/Dictionary/Tokenizer.hpp"
 
 using namespace Mud::Grammar;
