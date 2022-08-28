@@ -140,7 +140,7 @@ void Room::RemovePlayer(const std::shared_ptr<Player> &player)
 
 void Room::RemoveMonster(const std::shared_ptr<Monster> &monster)
 {
-    monster.get()->SetLocation(0);
+    monster->SetLocation(0);
     m_monsters.erase(monster);
 }
 
@@ -151,7 +151,7 @@ void Room::AddCardinalExit(Direction dir)
     m_cardinalExits |= newDir;
 }
 
-bool Room::HasCardinalExit(Direction dir)
+bool Room::HasCardinalExit(Direction dir) const
 {
     return m_cardinalExits & (1 << static_cast<int>(dir));
 }
@@ -179,6 +179,6 @@ void Room::AddMonster(const std::shared_ptr<Monster> &monster)
     if (monster)
     {
         monster->SetLocation(m_roomId);
-        m_monsters.insert(std::move(monster));
+        m_monsters.insert(monster);
     }
 }

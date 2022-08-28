@@ -6,6 +6,10 @@
 #define DARKFALLS_WORLD_HPP
 
 #include "code/Logic/includes.hpp"
+#include "Area.hpp"
+#include "Room.hpp"
+#include "code/Logic/Player.hpp"
+#include "code/Logic/Monster.hpp"
 
 namespace Mud
 {
@@ -16,13 +20,10 @@ class ConnectionBase;
 
 namespace Logic
 {
-class Area;
-
+/*class Area;
 class Room;
-
 class Player;
-
-class Monster;
+class Monster;*/
 
 class World
 {
@@ -72,11 +73,12 @@ public:
 
     void RemoveMonster(const std::shared_ptr<Monster> &toRemove);
 
-    void AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::unique_ptr<Room> &room);
+    static void AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::unique_ptr<Room> &room);
 
-    void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::unique_ptr<Room> &room);
+    static void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::unique_ptr<Room> &room);
 
     std::shared_ptr<Monster> &FindMonster(const std::string &name);
+    std::shared_ptr<Monster> &FindMonster(uint32_t monsterID);
 
     std::map<uint32_t, std::shared_ptr<Monster> > &Monsters();
 

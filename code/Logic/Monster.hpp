@@ -18,8 +18,7 @@ public:
     static int monsterCount;
     Monster() : Mob("generic mob"), m_monsterId(0), m_article("a"), m_keyword("mob")
     {
-        std::cout << "[DEBUG] Monster() called." << std::endl;
-        ++monsterCount;
+//        ++monsterCount;
     }
     explicit Monster(uint32_t id, std::string art, std::string name, std::string kw)
     : Mob(std::move(name)), m_monsterId(id), m_article(std::move(art)), m_keyword(std::move(kw))
@@ -27,7 +26,12 @@ public:
         ++monsterCount;
     }
 
-    uint32_t MonsterID() { return m_monsterId; }
+    bool operator==(Monster &rhs) const
+    {
+        return rhs.MonsterID() == MonsterID();
+    }
+
+    uint32_t MonsterID() const { return m_monsterId; }
 
     std::string Keyword() const override
     {
@@ -43,7 +47,12 @@ public:
 
     std::unique_ptr<Monster> CopyOf()
     {
-        return std::make_unique<Monster>(m_monsterId, m_article, m_name, m_keyword);
+        Monster monster;
+        monster.m_monsterId = m_monsterId;
+        monster.m_article = m_article;
+        monster.m_name = m_name;
+        monster.m_keyword = m_keyword;
+        return std::make_unique<Monster>(monster);
     }
 
     static int GetLoadedCount() { return monsterCount; }

@@ -3,10 +3,6 @@
 //
 
 #include "World.hpp"
-#include "Area.hpp"
-#include "Room.hpp"
-#include "code/Logic/Player.hpp"
-#include "code/Logic/Monster.hpp"
 
 using namespace Mud::Logic;
 
@@ -159,9 +155,17 @@ std::shared_ptr<Monster> &World::FindMonster(const std::string &name)
     {
         if (m->second->Name() == name)
             return m->second;
-        else
-            return m_monsterDB.begin()->second;
     }
+    return m_monsterDB.begin()->second;
+}
+
+std::shared_ptr<Monster> &World::FindMonster(const uint32_t monsterID)
+{
+    auto monster = m_monsterDB.find(monsterID);
+    if (monster != m_monsterDB.end())
+        return monster->second;
+    else
+        return m_monsterDB.begin()->second;
 }
 
 std::map<uint32_t, std::shared_ptr<Monster> > &World::Monsters()

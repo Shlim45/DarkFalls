@@ -80,15 +80,15 @@ int main()
     world.GenerateMonster(3, "a", "wandering merchant", "merchant");
     world.GenerateMonster(4, "a", "small dog", "dog");
 
-    world.FindRoom(1)->AddMonster(world.FindMonster("a traveler")->CopyOf());
+    world.FindRoom(1)->AddMonster(world.FindMonster(1)->CopyOf());
 
-    world.FindRoom(2)->AddMonster(world.FindMonster("a wandering merchant")->CopyOf());
-    world.FindRoom(2)->AddMonster(world.FindMonster("a farmer")->CopyOf());
+    world.FindRoom(2)->AddMonster(world.FindMonster(2)->CopyOf());
+    world.FindRoom(2)->AddMonster(world.FindMonster(3)->CopyOf());
 
-    world.FindRoom(3)->AddMonster(world.FindMonster("a wandering merchant")->CopyOf());
-    world.FindRoom(3)->AddMonster(world.FindMonster("a farmer")->CopyOf());
-    world.FindRoom(3)->AddMonster(world.FindMonster("a small dog")->CopyOf());
-    world.FindRoom(3)->AddMonster(world.FindMonster("a traveler")->CopyOf());
+    world.FindRoom(3)->AddMonster(world.FindMonster(4)->CopyOf());
+    world.FindRoom(3)->AddMonster(world.FindMonster(3)->CopyOf());
+    world.FindRoom(3)->AddMonster(world.FindMonster(2)->CopyOf());
+    world.FindRoom(3)->AddMonster(world.FindMonster(1)->CopyOf());
     std::cout << Mud::Logic::Monster::GetLoadedCount() << " Monsters loaded.\n\n";
 
     Mud::Server::Server server(PORT, world);

@@ -23,6 +23,9 @@ public:
 
     }
 
+    Mob() = default;
+    virtual ~Mob() = default;
+
     virtual bool operator==(Mob &rhs)
     {
         return rhs.Name() == Name();
@@ -31,7 +34,7 @@ public:
     std::string Name() const { return m_name; }
     void SetName(std::string name) { m_name = std::move(name); }
 
-    virtual std::string Keyword() const;
+    virtual std::string Keyword() const = 0;
     virtual std::string DisplayName() const { return m_name; }
 
     int Location() const { return m_location; }

@@ -12,7 +12,6 @@ namespace Mud::Logic
 {
     class Monster;
     class Player;
-    class Exit;
 
     class Room
     {
@@ -70,7 +69,7 @@ namespace Mud::Logic
 
         uint16_t CardinalExits() const { return m_cardinalExits; }
 
-        bool HasCardinalExit(Direction dir);
+        bool HasCardinalExit(Direction dir) const;
 
         std::string RoomDescription() const { return m_description; }
 
