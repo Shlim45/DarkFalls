@@ -23,12 +23,14 @@ public:
         WISDOM
     };
 
+    static uint8_t const NUM_STATS = 6;
+
     static std::vector<std::string> const StatNames;
 
     MobStats() = default;
 
     template <typename T>
-    uint8_t GetStat(T stat)
+    uint8_t GetStat(T stat) const
     {
         const int numStats = (sizeof(m_stats) / sizeof(m_stats[0]));
         if (stat >= 0 && stat < numStats)
@@ -38,7 +40,7 @@ public:
     }
 
     template <typename T>
-    void SetStat(T stat, uint8_t value)
+    void SetStat(T stat, const uint8_t value)
     {
         const int numStats = (sizeof(m_stats) / sizeof(m_stats[0]));
         if (stat >= 0 && stat < numStats)
