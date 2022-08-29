@@ -10,26 +10,23 @@
 #include "Room.hpp"
 #include "code/Logic/Player.hpp"
 #include "code/Logic/Monster.hpp"
+//#include "code/Server/Server.hpp"
 
 namespace Mud
 {
 namespace Server
 {
 class ConnectionBase;
+class Server;
 }
 
 namespace Logic
 {
-/*class Area;
-class Room;
-class Player;
-class Monster;*/
 
 class World
 {
 public:
-    World()
-    {}
+    World() = default;
 
     /* AREAS */
 
@@ -84,11 +81,20 @@ public:
 
     void BroadcastMessage(const std::string &message, Realm targetRealm = Realm::NONE) const;
 
+    void StartTicking(unsigned int interval);
+
+    void Tick();
+
+    void Shutdown();
+
 private:
     std::map<int, std::unique_ptr<Room> > m_rooms;
     std::map<int, std::unique_ptr<Area> > m_areas;
     std::map<std::string, std::shared_ptr<Player> > m_playersOnline;
     std::map<uint32_t, std::shared_ptr<Monster> > m_monsterDB;
+//    Mud::Server::Server &m_server;
+
+    bool m_ticking{};
 };
 
 } // Logic

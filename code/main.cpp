@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include "Server/Text.hpp"
 #include "World/World.hpp"
 #include "World/Area.hpp"
@@ -33,20 +34,38 @@ std::string Mud::Logic::Exit::DirectionNames[10] =
                 "down",
         };
 
+//void timer_start(std::function<void()> func, unsigned int interval)
+//{
+//    std::thread([func, interval]()
+//                {
+//        while(true)
+//        {
+//            auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
+//            func();
+//            std::this_thread::sleep_until(x);
+//        }
+//                }).detach();
+//}
+//
+//void periodic_func()
+//{
+//    std::cout << "[DEBUG]: periodic_func()" << std::endl;
+//}
+
 int main()
 {
     std::cout << Mud::Server::BR_GREENTEXT << MUDNAME << Mud::Server::PLAINTEXT << " version "
               << Mud::Server::YELLOWTEXT << MAJOR << "." << MINOR << "." << PATCH << Mud::Server::PLAINTEXT
               << " started.\n";
 
-    std::cout << "\nInitializing World...\n\n";
+    std::cout << "Initializing World...\n";
     Mud::Logic::World world;
 
     std::cout << "Loading Areas...\n";
 
     world.GenerateArea("The Void");
     world.GenerateArea("City of Tamia");
-    std::cout << Mud::Logic::Area::GetWorldCount() << " Areas Loaded.\n\n";
+    std::cout << Mud::Logic::Area::GetWorldCount() << " Areas Loaded.\n";
 
     std::cout << "Loading Rooms...\n";
 
@@ -66,23 +85,23 @@ int main()
                        "and smoking cigars hanging on the wall.",
                        1, 2, 0, 0, cExits3);
 
-    std::cout << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n\n";
+    std::cout << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
 
     std::cout << "Loading Exits...\n";
     // NOTE(jon): Load objects (portals)
-    std::cout << "Exits Loaded.\n\n";
+    std::cout << "Exits Loaded.\n";
 
     std::cout << "Loading Accounts...\n";
     // NOTE(jon): Load objects (portals)
-    std::cout << "Accounts Loaded.\n\n";
+    std::cout << "Accounts Loaded.\n";
 
     std::cout << "Loading Players...\n";
     // NOTE(jon): Load objects (portals)
-    std::cout << "Players Loaded.\n\n";
+    std::cout << "Players Loaded.\n";
 
     std::cout << "World initialized.\n" << std::endl;
 
-    std::cout << "Loading Monsters...\n";
+    std::cout << "Loading Monster templates...\n";
     world.GenerateMonster(1, "a", "traveler", "traveler");
     world.GenerateMonster(2, "a", "farmer", "farmer");
     world.GenerateMonster(3, "a", "wandering merchant", "merchant");
@@ -97,8 +116,11 @@ int main()
     world.FindRoom(3)->AddMonster(world.FindMonster(3)->CopyOf());
     world.FindRoom(3)->AddMonster(world.FindMonster(2)->CopyOf());
     world.FindRoom(3)->AddMonster(world.FindMonster(1)->CopyOf());
-    std::cout << Mud::Logic::Monster::GetLoadedCount() << " Monsters loaded.\n\n";
+    std::cout << Mud::Logic::Monster::GetLoadedCount() << " Monster templates loaded.\n";
 
+    world.StartTicking(7000);
+
+    std::cout << "\nInitializing Server...\n";
     Mud::Server::Server server(PORT, world);
     server.Run();
 

@@ -3,6 +3,7 @@
 //
 
 #include "World.hpp"
+#include "code/Server/Server.hpp"
 
 using namespace Mud::Logic;
 
@@ -81,7 +82,7 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
     player->MaxState().SetHealth(10);
     player->MaxState().SetFatigue(10);
     player->MaxState().SetPower(10);
-    player->CurState().RecoverMobState(player->MaxState());
+//    player->CurState().RecoverMobState(player->MaxState());
 
     m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
 }
@@ -181,4 +182,55 @@ void World::AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::unique_ptr<Ro
 void World::RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::unique_ptr<Room> &room)
 {
     room->RemoveMonster(toRemove);
+}
+
+void World::StartTicking(unsigned int interval)
+{
+    // const std::function<void()>& func,
+    m_ticking = true;
+    std::thread([this, interval]()
+                {
+                    while(m_ticking)
+                    {
+                        auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
+                        Tick();
+                        std::this_thread::sleep_until(x);
+                    }
+                }).detach();
+}
+
+void World::Tick()
+{
+    std::cout << "[DEBUG]: World.Tick()" << std::endl;
+    for (auto &p : m_playersOnline)
+    {
+        auto &player = p.second;
+        auto &maxState = player->MaxState();
+        if (player->CurState().Health() > 0)
+            player->CurState().AdjHealth(1, maxState);
+        player->CurState().AdjFatigue(1, maxState);
+        player->CurState().AdjPower(1, maxState);
+    }
+}
+
+void World::Shutdown()
+{
+    std::cout << "Shutting down World object..." << std::endl;
+    m_ticking = false;
+    std::cout << "Ticking stopped." << std::endl;
+    std::cout << "Destroying Monster objects." << std::endl;
+    for (auto &m : m_monsterDB)
+        delete m.second.get();
+    std::cout << "Destroying Player objects." << std::endl;
+    for (auto &p : m_playersOnline)
+        delete p.second.get();
+    std::cout << "Destroying Room objects." << std::endl;
+    for (auto &r : m_rooms)
+        delete r.second.get();
+    std::cout << "Destroying Area objects." << std::endl;
+    for (auto &a : m_areas)
+        delete a.second.get();
+    std::cout << "World Shutdown complete." << std::endl;
+//    std::cout << "Requesting Server shutdown..." << std::endl;
+//    m_server.Shutdown();
 }

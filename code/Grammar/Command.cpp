@@ -7,8 +7,6 @@
 #include "code/Logic/Player.hpp"
 #include "code/Logic/PlayerAccount.hpp"
 #include "code/World/World.hpp"
-#include "code/World/Area.hpp"
-#include "code/World/Room.hpp"
 #include "code/Dictionary/Tokenizer.hpp"
 
 using namespace Mud::Grammar;
@@ -41,11 +39,11 @@ void HealthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
     const auto &maxVitals = mudInterface->GetPlayer()->MaxState();
 
     response << " Hits: " << Server::BR_BLUETEXT << curVitals.Health() << "/"
-             << curVitals.Health() << Server::PLAINTEXT << Server::NEWLINE
+             << maxVitals.Health() << Server::PLAINTEXT << Server::NEWLINE
              << "  Fat: " << Server::BR_GREENTEXT << curVitals.Fatigue() << "/"
-             << curVitals.Fatigue() << Server::PLAINTEXT << Server::NEWLINE
+             << maxVitals.Fatigue() << Server::PLAINTEXT << Server::NEWLINE
              << "Power: " << Server::BR_REDTEXT << curVitals.Power() << "/"
-             << curVitals.Power() << Server::PLAINTEXT << Server::NEWLINE;
+             << maxVitals.Power() << Server::PLAINTEXT << Server::NEWLINE;
 }
 
 void LookCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
