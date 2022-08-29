@@ -7,6 +7,7 @@
 
 #include "includes.hpp"
 #include "MobState.hpp"
+#include "MobStats.hpp"
 
 namespace Mud::Logic
 {
@@ -18,10 +19,9 @@ class Mob
 public:
     explicit Mob(std::string name)
     : m_name(std::move(name)),
-    m_curState(MobState()), m_maxState(MobState())
-    {
-
-    }
+    m_curState(MobState()), m_maxState(MobState()),
+    m_baseStats(MobStats()), m_curStats(MobStats())
+    {}
 
     Mob() = default;
     virtual ~Mob() = default;
@@ -46,7 +46,11 @@ public:
     MobState &CurState() { return m_curState; }
     MobState &MaxState() { return m_maxState; }
 
+    MobStats &BaseStats() { return m_baseStats; }
+    MobStats &CurStats() { return m_curStats; }
+
     Realm GetRealm() const { return m_realm; }
+
 
 protected:
     std::string m_name;
@@ -56,6 +60,9 @@ protected:
     Realm m_realm{};
     MobState m_curState;
     MobState m_maxState;
+
+    MobStats m_baseStats{};
+    MobStats m_curStats{};
 };
 
 } // Mud

@@ -34,6 +34,16 @@ std::string Mud::Logic::Exit::DirectionNames[10] =
                 "down",
         };
 
+const std::vector<std::string> Mud::Logic::MobStats::StatNames =
+        {
+            "strength",
+            "constitution",
+            "agility",
+            "dexterity",
+            "intelligence",
+            "wisdom",
+        };
+
 //void timer_start(std::function<void()> func, unsigned int interval)
 //{
 //    std::thread([func, interval]()
