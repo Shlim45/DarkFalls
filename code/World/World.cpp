@@ -201,7 +201,10 @@ void World::StartTicking(unsigned int interval)
 
 void World::Tick()
 {
-    std::cout << "[DEBUG]: World.Tick()" << std::endl;
+    const auto ts = std::chrono::system_clock::now();
+    const auto t_time = std::chrono::system_clock::to_time_t(ts);
+    const auto time = std::ctime(&t_time);
+    std::cout << "[World]: Regenerating online player vitals at " << time;
     for (auto &p : m_playersOnline)
     {
         auto &player = p.second;
