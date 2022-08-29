@@ -81,7 +81,7 @@ public:
 
     void BroadcastMessage(const std::string &message, Realm targetRealm = Realm::NONE) const;
 
-    void StartTicking(unsigned int interval);
+    void StartTicking(uint16_t interval);
 
     void Tick();
 
@@ -95,6 +95,8 @@ private:
 //    Mud::Server::Server &m_server;
 
     bool m_ticking{};
+    uint64_t m_tickCount{};
+    uint16_t m_tickInterval{};
 };
 
 } // Logic

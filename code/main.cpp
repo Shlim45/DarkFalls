@@ -118,7 +118,7 @@ int main()
     world.FindRoom(3)->AddMonster(world.FindMonster(1)->CopyOf());
     std::cout << Mud::Logic::Monster::GetLoadedCount() << " Monster templates loaded.\n";
 
-    world.StartTicking(7000);
+    world.StartTicking(1000);
 
     std::cout << "\nInitializing Server...\n";
     Mud::Server::Server server(PORT, world);
