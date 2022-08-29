@@ -8,6 +8,7 @@
 #include "code/Logic/PlayerAccount.hpp"
 #include "code/World/World.hpp"
 #include "code/Dictionary/Tokenizer.hpp"
+#include "code/Logic/MobStats.hpp"
 
 using namespace Mud::Grammar;
 
@@ -24,7 +25,7 @@ void AccountCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_
 //    mudInterface->ostream() << mudInterface->GetAccount() << Server::NEWLINE;
     auto &os = mudInterface->ostream();
     const auto &pa = mudInterface->GetAccount();
-    os << "Username:    " << pa->UserName() << Server::NEWLINE
+    os << Server::NEWLINE << "Username:    " << pa->UserName() << Server::NEWLINE
        << "Players:     " << Server::NEWLINE;
     for (const auto &p : pa->Players())
         os << " " << p->Name() << Server::NEWLINE;
@@ -38,12 +39,13 @@ void HealthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
     const auto &curVitals = mudInterface->GetPlayer()->CurState();
     const auto &maxVitals = mudInterface->GetPlayer()->MaxState();
 
-    response << " Hits: " << Server::BR_BLUETEXT << curVitals.Health() << "/"
-             << maxVitals.Health() << Server::PLAINTEXT << Server::NEWLINE
-             << "  Fat: " << Server::BR_GREENTEXT << curVitals.Fatigue() << "/"
-             << maxVitals.Fatigue() << Server::PLAINTEXT << Server::NEWLINE
-             << "Power: " << Server::BR_REDTEXT << curVitals.Power() << "/"
-             << maxVitals.Power() << Server::PLAINTEXT << Server::NEWLINE;
+    response << Server::NEWLINE
+             << " Hits: " << Server::BR_BLUETEXT << curVitals.Health()<< Server::PLAINTEXT << "/"
+             << Server::BR_BLUETEXT << maxVitals.Health() << Server::PLAINTEXT << Server::NEWLINE
+             << "  Fat: " << Server::BR_GREENTEXT << curVitals.Fatigue()<< Server::PLAINTEXT << "/"
+             << Server::BR_GREENTEXT << maxVitals.Fatigue() << Server::PLAINTEXT << Server::NEWLINE
+             << "Power: " << Server::BR_REDTEXT << curVitals.Power()<< Server::PLAINTEXT << "/"
+             << Server::BR_REDTEXT << maxVitals.Power() << Server::PLAINTEXT << Server::NEWLINE;
 }
 
 void LookCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
@@ -403,11 +405,18 @@ InfoCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
 {
     auto &player = mudInterface->GetPlayer();
     auto &response = mudInterface->ostream();
-    response << "Name: " << player->Name() << Server::NEWLINE
+
+    response << Server::NEWLINE << "Name: " << player->Name() << Server::NEWLINE
              << "Experience: " << player->Experience() << Server::NEWLINE
              << "Hits: " << player->CurState().Health() << "/" << player->MaxState().Health()
              << " Fat: " << player->CurState().Fatigue() << "/" << player->MaxState().Fatigue()
              << " Power: " << player->CurState().Power() << "/" << player->MaxState().Power() << Server::NEWLINE
-             << "Statistics:" << Server::NEWLINE;
 
+             << Server::NEWLINE << "Statistics:" << Server::NEWLINE;
+    for (uint8_t i = 0; i < Mud::Logic::MobStats::NUM_STATS; i++)
+    {
+        int statValue = player->BaseStats().GetStat(i);
+        response << Server::YELLOWTEXT << Mud::Logic::MobStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+                 << statValue << Server::NEWLINE;
+    }
 }
