@@ -48,7 +48,7 @@ std::unique_ptr<Room> &World::FindRoom(int roomId)
 
 void World::GenerateArea(const std::string &areaName)
 {
-    int areaID = Area::GetWorldCount();
+    int areaID = Area::GetWorldCount() + 1;
     std::unique_ptr<Area> newArea = std::make_unique<Area>(areaID, areaName);
     AddArea(newArea);
 }

@@ -6,6 +6,7 @@
 #include "World/Room.hpp"
 #include "Logic/Monster.hpp"
 #include "Server/Server.hpp"
+//#include "Database/DBConnection.hpp"
 
 namespace
 {
@@ -57,6 +58,9 @@ int main()
     std::cout << Mud::Server::BR_GREENTEXT << MUDNAME << Mud::Server::PLAINTEXT << " version "
               << Mud::Server::YELLOWTEXT << MAJOR << "." << MINOR << "." << PATCH << Mud::Server::PLAINTEXT
               << " started.\n";
+
+//    Mud::DB::DBConnection dbconn;
+//    dbconn.QueryDB("SELECT * FROM Areas");
 
     std::cout << "Initializing World...\n";
     Mud::Logic::World world;
