@@ -1,0 +1,62 @@
+//
+// Created by shlim on 8/24/22.
+//
+
+#ifndef DARKFALLS_MOBSTATS_HPP
+#define DARKFALLS_MOBSTATS_HPP
+
+#include "includes.hpp"
+
+namespace Mud::Logic
+{
+
+class MobStats
+{
+public:
+    enum class Stat
+    {
+        STRENGTH,
+        CONSTITUTION,
+        AGILITY,
+        DEXTERITY,
+        INTELLIGENCE,
+        WISDOM
+    };
+
+    static std::vector<std::string> const StatNames;
+
+    MobStats() = default;
+
+    template <typename T>
+    uint8_t GetStat(T stat)
+    {
+        const int numStats = (sizeof(m_stats) / sizeof(m_stats[0]));
+        if (stat >= 0 && stat < numStats)
+            return m_stats[stat];
+
+        return '\0';
+    }
+
+    template <typename T>
+    void SetStat(T stat, uint8_t value)
+    {
+        const int numStats = (sizeof(m_stats) / sizeof(m_stats[0]));
+        if (stat >= 0 && stat < numStats)
+            m_stats[stat] = value;
+    }
+
+    void RecoverMobStats(const MobStats &baseStats)
+    {
+        const int numStats = (sizeof(m_stats) / sizeof(m_stats[0]));
+        for (int stat = 0; stat < numStats; stat++)
+            m_stats[stat] - baseStats.m_stats[stat];
+    }
+
+
+private:
+    uint8_t m_stats[6];
+};
+
+} // Logic
+
+#endif //DARKFALLS_MOBSTATS_HPP

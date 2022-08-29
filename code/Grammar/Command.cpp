@@ -396,3 +396,18 @@ void WhoCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared
         response << "Player not found." << Server::NEWLINE;
     }
 }
+
+void
+InfoCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                     Mud::Logic::World &world) const
+{
+    auto &player = mudInterface->GetPlayer();
+    auto &response = mudInterface->ostream();
+    response << "Name: " << player->Name() << Server::NEWLINE
+             << "Experience: " << player->Experience() << Server::NEWLINE
+             << "Hits: " << player->CurState().Health() << "/" << player->MaxState().Health()
+             << " Fat: " << player->CurState().Fatigue() << "/" << player->MaxState().Fatigue()
+             << " Power: " << player->CurState().Power() << "/" << player->MaxState().Power() << Server::NEWLINE
+             << "Statistics:" << Server::NEWLINE;
+
+}

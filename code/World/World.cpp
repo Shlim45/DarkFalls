@@ -89,6 +89,10 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
     player->MaxState().SetPower(10);
 //    player->CurState().RecoverMobState(player->MaxState());
 
+    for (int i = 0; i < 6; i++)
+        player->BaseStats().SetStat(i, 10);
+    player->CurStats().RecoverMobStats(player->BaseStats());
+
     m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
 }
 
@@ -246,6 +250,8 @@ void World::Shutdown()
     for (auto &a : m_areas)
         delete a.second.get();
     std::cout << "World Shutdown complete." << std::endl;
+
+    // TODO(jon): Shutdown command
 //    std::cout << "Requesting Server shutdown..." << std::endl;
 //    m_server.Shutdown();
 }
