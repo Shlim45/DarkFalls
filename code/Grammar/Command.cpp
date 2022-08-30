@@ -5,10 +5,10 @@
 #include "Command.hpp"
 #include "code/Logic/MudInterface.hpp"
 #include "code/Logic/Player.hpp"
+#include "code/Logic/Monster.hpp"
 #include "code/Logic/PlayerAccount.hpp"
 #include "code/World/World.hpp"
 #include "code/Dictionary/Tokenizer.hpp"
-#include "code/Logic/MobStats.hpp"
 
 using namespace Mud::Grammar;
 
@@ -77,6 +77,33 @@ void LookCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
              << "They are currently wearing:" << Server::NEWLINE
              << "  nothing" << Server::NEWLINE
              << "They are standing." << Server::NEWLINE << Server::NEWLINE;
+}
+
+void AttackCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
+{
+    auto &response = mudInterface->ostream();
+    auto player = mudInterface->GetPlayer();
+    auto roomID = player->Location();
+    auto &room = world.FindRoom(roomID);
+
+    auto attackWhat = commands.CombineRemaining();
+    if (attackWhat.length() == 0)
+    {
+        response << Server::NEWLINE << "You must specify a target." << Server::NEWLINE;
+        return;
+    }
+
+    auto pTarget = room->FindPlayer(attackWhat);
+    auto mTarget = room->FindMonster(attackWhat);
+    if (pTarget == nullptr && mTarget == nullptr)
+    {
+        response << Server::NEWLINE << "You don't see them here." << Server::NEWLINE;
+        return;
+    }
+    else if (pTarget)
+        world.CombatLibrary().HandleAttackPP(*player, *pTarget, world);
+    else if (mTarget)
+        world.CombatLibrary().HandleAttackPM(*player, *mTarget, world);
 }
 
 void QuitCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const

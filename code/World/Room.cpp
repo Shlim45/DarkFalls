@@ -159,10 +159,27 @@ bool Room::HasCardinalExit(Direction dir) const
 std::shared_ptr<Player> Room::FindPlayer(const std::string &name)
 {
     for (const auto& p : m_players)
-    {
         if (p->Name() == name)
             return p;
-    }
+
+    const auto len = name.length();
+    for (const auto& p : m_players)
+        if (p->Name().substr(0, len) == name)
+            return p;
+
+    return nullptr;
+}
+
+std::shared_ptr<Monster> Room::FindMonster(const std::string &name)
+{
+    for (const auto& m : m_monsters)
+        if (m->Name() == name)
+            return m;
+
+    const auto len = name.length();
+    for (const auto& m : m_monsters)
+        if (m->Name().substr(0, len) == name)
+            return m;
 
     return nullptr;
 }
