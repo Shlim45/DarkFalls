@@ -51,17 +51,16 @@ std::unique_ptr<Room> &World::FindRoom(int roomId)
         return m_rooms.begin()->second;
 }
 
-void World::GenerateArea(const std::string &areaName)
+void World::GenerateArea(int areaID, const std::string &areaName, Realm realm)
 {
-    int areaID = Area::GetWorldCount() + 1;
     std::unique_ptr<Area> newArea = std::make_unique<Area>(areaID, areaName);
+    newArea->SetRealm(realm);
     AddArea(newArea);
 }
 
-void World::GenerateRoom(const std::string &description, int areaID, int x, int y, int z, uint16_t cExits)
+void World::GenerateRoom(const int roomID, const std::string &description, int areaID, int x, int y, int z, uint16_t cExits)
 {
     auto area = &FindArea(areaID);
-    int roomID = Room::GetWorldCount();
     std::unique_ptr<Room> newRoom = std::make_unique<Room>(roomID, description);
     area->get()->AddRoom(x, y, z, roomID);
     newRoom->SetArea(area->get()->Name());

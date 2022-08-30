@@ -6,7 +6,7 @@
 #include "World/Room.hpp"
 #include "Logic/Monster.hpp"
 #include "Server/Server.hpp"
-//#include "Database/DBConnection.hpp"
+#include "Database/DBConnection.hpp"
 
 namespace
 {
@@ -69,49 +69,39 @@ int main()
               << Mud::Server::YELLOWTEXT << MAJOR << "." << MINOR << "." << PATCH << Mud::Server::PLAINTEXT
               << " started.\n";
 
-//    Mud::DB::DBConnection dbconn;
-//    dbconn.QueryDB("SELECT * FROM Areas");
+    const char *SQL_HOSTNAME = getenv("DFSERVER");
+    const char *SQL_USERNAME = getenv("DFUSER");
+    const char *SQL_PASSWORD = getenv("DFPASS");
+    if (!SQL_HOSTNAME || !SQL_USERNAME || !SQL_PASSWORD)
+    {
+        std::cerr << "[SQL_HOSTNAME]: Environment variables not found." << std::endl;
+        return 1;
+    }
+
+    Mud::DB::DBConnection dbconn(SQL_HOSTNAME, SQL_USERNAME, SQL_PASSWORD);
 
     std::cout << "Initializing World...\n";
     Mud::Logic::World world;
 
     std::cout << "Loading Areas...\n";
-
-    world.GenerateArea("The Void");
-    world.GenerateArea("City of Tamia");
-    std::cout << Mud::Logic::Area::GetWorldCount() << " Areas Loaded.\n";
+    dbconn.LoadAreas(world);
+    std::cout << "  " << Mud::Logic::Area::GetWorldCount() << " Areas Loaded.\n";
 
     std::cout << "Loading Rooms...\n";
-
-    world.GenerateRoom("You are in the void!", 0, 0,0,0);
-    uint16_t cExits1 = (1 << static_cast<int>(Mud::Logic::Direction::EAST));
-    world.GenerateRoom("You are standing in the first dark room.  The walls are bare and the air is musty.",
-                       1, 0, 0, 0, cExits1);
-
-    uint16_t cExits2 = (1 << static_cast<int>(Mud::Logic::Direction::EAST));
-    cExits2 |= (1 << static_cast<int>(Mud::Logic::Direction::WEST));
-    world.GenerateRoom("You are standing in the second dark room.  There is a picture of a snow-covered "
-                       "embankment with deer gazing at a log cabin.",
-                       1, 1, 0, 0, cExits2);
-
-    uint16_t cExits3 = (1 << static_cast<int>(Mud::Logic::Direction::WEST));
-    world.GenerateRoom("You are standing in the third dark room.  There is a picture of dogs shooting pool "
-                       "and smoking cigars hanging on the wall.",
-                       1, 2, 0, 0, cExits3);
-
-    std::cout << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
-
-    std::cout << "Loading Exits...\n";
-    // NOTE(jon): Load objects (portals)
-    std::cout << "Exits Loaded.\n";
-
-    std::cout << "Loading Accounts...\n";
-    // NOTE(jon): Load objects (portals)
-    std::cout << "Accounts Loaded.\n";
-
-    std::cout << "Loading Players...\n";
-    // NOTE(jon): Load objects (portals)
-    std::cout << "Players Loaded.\n";
+    dbconn.LoadRooms(world);
+    std::cout << "  " << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
+//
+//    std::cout << "Loading Exits...\n";
+//    // NOTE(jon): Load objects (portals)
+//    std::cout << "Exits Loaded.\n";
+//
+//    std::cout << "Loading Accounts...\n";
+//    // NOTE(jon): Load objects (portals)
+//    std::cout << "Accounts Loaded.\n";
+//
+//    std::cout << "Loading Players...\n";
+//    // NOTE(jon): Load objects (portals)
+//    std::cout << "Players Loaded.\n";
 
     std::cout << "World initialized.\n" << std::endl;
 

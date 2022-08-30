@@ -5,17 +5,10 @@
 #ifndef DARKFALLS_DBCONNECTION_HPP
 #define DARKFALLS_DBCONNECTION_HPP
 
-#include "../mysql-connector-cpp/jdbc/driver/mysql_connection.h"
-#include "../mysql-connector-cpp/jdbc/cppconn/driver.h"
-#include "../mysql-connector-cpp/jdbc/cppconn/exception.h"
-#include "../mysql-connector-cpp/jdbc/cppconn/prepared_statement.h"
-
-namespace
-{
-    const std::string server = "tcp://127.0.0.1:3306";
-    const std::string username = "mudhost";
-    const std::string password = "B@ckstab69";
-}
+#include <mysql-cppconn-8/jdbc/mysql_connection.h>
+#include <mysql-cppconn-8/jdbc/cppconn/driver.h>
+#include <mysql-cppconn-8/jdbc/cppconn/exception.h>
+#include <mysql-cppconn-8/jdbc/cppconn/prepared_statement.h>
 
 namespace Mud
 {
@@ -25,16 +18,16 @@ namespace DB
     class DBConnection
     {
     public:
-        DBConnection()
+        explicit DBConnection(const char *sql_hostname, const char *username, const char *password)
         {
             try
             {
                 m_driver = get_driver_instance();
-                m_con = m_driver->connect(server, username, password);
+                m_con = m_driver->connect(sql_hostname, username, password);
             }
             catch (sql::SQLException &e)
             {
-                std::cerr << "[DB]: Could not connect to database server. Error: " << e.what() << std::endl;
+                std::cerr << "[DB]: Could not connect to database sql_hostname. Error: " << e.what() << std::endl;
                 return;
             }
 
@@ -51,6 +44,48 @@ namespace DB
                           << ", " << rs->getString(2)
                           << ", " << rs->getInt(3)
                           << ")" << std::endl;
+
+            delete rs;
+            delete m_pstmt;
+        }
+
+        void LoadAreas(Logic::World &world)
+        {
+            const std::string query = "SELECT * FROM Areas";
+            m_pstmt = m_con->prepareStatement(query);
+            auto rs = m_pstmt->executeQuery();
+
+            while (rs->next())
+            {
+                int areaID = rs->getInt("areaID");
+                std::string name = rs->getString("name");
+                uint8_t realm = rs->getInt("realm");
+
+                world.GenerateArea(areaID, name, static_cast<Logic::Realm>(realm));
+            }
+
+            delete rs;
+            delete m_pstmt;
+        }
+
+        void LoadRooms(Logic::World &world)
+        {
+            const std::string query = "SELECT * FROM Rooms";
+            m_pstmt = m_con->prepareStatement(query);
+            auto rs = m_pstmt->executeQuery();
+
+            while (rs->next())
+            {
+                const int roomID = rs->getInt("roomID");
+                const int areaID = rs->getInt("areaID");
+                const std::string description = rs->getString("description");
+                const uint16_t cardinalExits = rs->getInt("cardinalExits");
+                const uint8_t xCoord = rs->getInt("xCoord");
+                const uint8_t yCoord = rs->getInt("yCoord");
+                const uint8_t zCoord = rs->getInt("zCoord");
+
+                world.GenerateRoom(roomID, description, areaID, xCoord, yCoord, zCoord, cardinalExits);
+            }
 
             delete rs;
             delete m_pstmt;

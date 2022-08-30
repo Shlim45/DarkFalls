@@ -38,7 +38,8 @@ namespace Mud::Logic
 
         std::string Name() const { return m_name; }
 
-        Realm &GetRealm() { return m_realm; }
+        void SetRealm(Realm realm) { m_realm = realm; }
+        Realm GetRealm() { return m_realm; }
 
         void AddRoom(int x, int y, int z, int roomID);
 

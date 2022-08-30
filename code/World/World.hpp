@@ -39,7 +39,7 @@ public:
 
     std::unique_ptr<Area> &FindArea(int areaID);
 
-    void GenerateArea(const std::string &areaName);
+    void GenerateArea(int areaID, const std::string &areaName, Realm realm);
 
     /* ROOMS */
 
@@ -49,7 +49,7 @@ public:
 
     std::unique_ptr<Room> &FindRoom(int roomId);
 
-    void GenerateRoom(const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
+    void GenerateRoom(int roomID, const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
 
     /* PLAYERS */
 
