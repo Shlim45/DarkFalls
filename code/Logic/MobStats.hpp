@@ -30,8 +30,9 @@ public:
     MobStats() = default;
 
     template <typename T>
-    uint8_t GetStat(T stat) const
+    uint8_t GetStat(T s) const
     {
+        const int stat = (int) s;
         const int numStats = (sizeof(m_stats) / sizeof(m_stats[0]));
         if (stat >= 0 && stat < numStats)
             return m_stats[stat];
@@ -40,8 +41,9 @@ public:
     }
 
     template <typename T>
-    void SetStat(T stat, const uint8_t value)
+    void SetStat(T s, const uint8_t value)
     {
+        const int stat = (int) s;
         const int numStats = (sizeof(m_stats) / sizeof(m_stats[0]));
         if (stat >= 0 && stat < numStats)
             m_stats[stat] = value;

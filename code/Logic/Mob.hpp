@@ -18,7 +18,7 @@ class Mob
 {
 public:
     explicit Mob(std::string name)
-    : m_name(std::move(name)),
+    : m_name(std::move(name)), m_level(1),
     m_curState(MobState()), m_maxState(MobState()),
     m_baseStats(MobStats()), m_curStats(MobStats())
     {}
@@ -34,14 +34,17 @@ public:
     std::string Name() const { return m_name; }
     void SetName(std::string name) { m_name = std::move(name); }
 
-    virtual std::string Keyword() const = 0;
+    virtual std::string Keyword() const { return m_name; };
     virtual std::string DisplayName() const { return m_name; }
 
     int Location() const { return m_location; }
     void SetLocation(int newLocation) { m_location = newLocation; }
 
-    int Experience() const { return m_experience; }
-    void SetExperience(int exp) { m_experience = exp; };
+    uint32_t Experience() const { return m_experience; }
+    void SetExperience(uint32_t exp) { m_experience = exp; };
+
+    uint8_t Level() const { return m_level; }
+    void SetLevel(uint8_t level) { m_level = level; };
 
     MobState &CurState() { return m_curState; }
     MobState &MaxState() { return m_maxState; }
@@ -55,7 +58,8 @@ public:
 protected:
     std::string m_name;
     int m_location{};
-    int m_experience{};
+    uint32_t m_experience{};
+    uint8_t m_level;
 
     Realm m_realm{};
     MobState m_curState;

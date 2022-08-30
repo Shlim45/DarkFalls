@@ -10,6 +10,7 @@
 #include "Room.hpp"
 #include "code/Logic/Player.hpp"
 #include "code/Logic/Monster.hpp"
+#include "code/Logic/Combat.hpp"
 //#include "code/Server/Server.hpp"
 
 namespace Mud
@@ -87,6 +88,8 @@ public:
 
     void Shutdown();
 
+    Combat &CombatLibrary() { return m_combatLib; }
+
 private:
     std::map<int, std::unique_ptr<Room> > m_rooms;
     std::map<int, std::unique_ptr<Area> > m_areas;
@@ -97,6 +100,8 @@ private:
     bool m_ticking{};
     uint64_t m_tickCount{};
     uint16_t m_tickInterval{};
+
+    Combat m_combatLib;
 };
 
 } // Logic

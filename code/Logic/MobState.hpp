@@ -48,8 +48,8 @@ public:
         else
         {
             // damage
-            if (howMuch > m_health)
-                howMuch = m_health;
+            if (-howMuch > m_health)
+                howMuch = -m_health;
         }
 
         m_health += howMuch;
