@@ -42,12 +42,23 @@ class LookCommand : public Command
 
 };
 
+class AttackCommand : public Command
+{
+    void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;
+
+};
+
 class SayCommand : public Command
 {
     void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;
 };
 
 class WhoCommand : public Command
+{
+    void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;
+};
+
+class InfoCommand : public Command
 {
     void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;
 };

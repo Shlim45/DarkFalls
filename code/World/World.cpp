@@ -7,6 +7,11 @@
 
 using namespace Mud::Logic;
 
+namespace
+{
+const uint16_t TICKS_PER_REGEN = 7;
+}
+
 
 void World::AddArea(std::unique_ptr<Area> &toAdd)
 {
@@ -83,6 +88,10 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
     player->MaxState().SetFatigue(10);
     player->MaxState().SetPower(10);
 //    player->CurState().RecoverMobState(player->MaxState());
+
+    for (int i = 0; i < 6; i++)
+        player->BaseStats().SetStat(i, 10);
+    player->CurStats().RecoverMobStats(player->BaseStats());
 
     m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
 }
@@ -184,15 +193,16 @@ void World::RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std:
     room->RemoveMonster(toRemove);
 }
 
-void World::StartTicking(unsigned int interval)
+void World::StartTicking(uint16_t interval)
 {
     // const std::function<void()>& func,
     m_ticking = true;
-    std::thread([this, interval]()
+    m_tickInterval = interval;
+    std::thread([this]()
                 {
                     while(m_ticking)
                     {
-                        auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
+                        auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(m_tickInterval);
                         Tick();
                         std::this_thread::sleep_until(x);
                     }
@@ -201,17 +211,23 @@ void World::StartTicking(unsigned int interval)
 
 void World::Tick()
 {
+     if (++m_tickCount == UINT64_MAX)
+        m_tickCount = 0;
     const auto ts = std::chrono::system_clock::now();
     const auto t_time = std::chrono::system_clock::to_time_t(ts);
     const auto time = std::ctime(&t_time);
-    std::cout << "[World]: Regenerating online player vitals at " << time;
     for (auto &p : m_playersOnline)
     {
         auto &player = p.second;
         auto &maxState = player->MaxState();
-        if (player->CurState().Health() > 0)
-            player->CurState().AdjHealth(1, maxState);
-        player->CurState().AdjFatigue(1, maxState);
+        if (m_tickCount % TICKS_PER_REGEN == 0)
+        {
+            std::cout << "[World]: Regenerating online player vitals at " << time;
+//            if (player->CurState().Health() > 0)
+                player->CurState().AdjHealth(1, maxState);
+            player->CurState().AdjFatigue(1, maxState);
+        }
+
         player->CurState().AdjPower(1, maxState);
     }
 }
@@ -234,6 +250,8 @@ void World::Shutdown()
     for (auto &a : m_areas)
         delete a.second.get();
     std::cout << "World Shutdown complete." << std::endl;
+
+    // TODO(jon): Shutdown command
 //    std::cout << "Requesting Server shutdown..." << std::endl;
 //    m_server.Shutdown();
 }

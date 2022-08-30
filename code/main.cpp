@@ -35,6 +35,16 @@ std::string Mud::Logic::Exit::DirectionNames[10] =
                 "down",
         };
 
+const std::vector<std::string> Mud::Logic::MobStats::StatNames =
+        {
+            "strength",
+            "constitution",
+            "agility",
+            "dexterity",
+            "intelligence",
+            "wisdom",
+        };
+
 //void timer_start(std::function<void()> func, unsigned int interval)
 //{
 //    std::thread([func, interval]()
@@ -122,7 +132,7 @@ int main()
     world.FindRoom(3)->AddMonster(world.FindMonster(1)->CopyOf());
     std::cout << Mud::Logic::Monster::GetLoadedCount() << " Monster templates loaded.\n";
 
-    world.StartTicking(7000);
+    world.StartTicking(1000);
 
     std::cout << "\nInitializing Server...\n";
     Mud::Server::Server server(PORT, world);

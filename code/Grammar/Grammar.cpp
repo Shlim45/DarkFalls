@@ -15,13 +15,18 @@ Grammar::Grammar()
     m_commands["account"] = std::make_shared<AccountCommand>();
     auto health = std::make_shared<HealthCommand>();
     m_commands["health"] = health;
-    m_commands["h"] = health;
+    m_commands["hea"] = health;
     auto look = std::make_shared<LookCommand>();
     m_commands["look"] = look;
     m_commands["l"] = look;
     m_commands["quit"] = std::make_shared<QuitCommand>();
     m_commands["say"] = std::make_shared<SayCommand>();
     m_commands["who"] = std::make_shared<WhoCommand>();
+    m_commands["info"] = std::make_shared<InfoCommand>();
+    auto attack = std::make_shared<AttackCommand>();
+    m_commands["attack"] = attack;
+    m_commands["att"] = attack;
+    m_commands["hit"] = attack;
 
     /* Movement */
     auto north = std::make_shared<NorthCommand>();

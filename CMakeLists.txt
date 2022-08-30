@@ -90,7 +90,7 @@ set(SRCS
         code/Grammar/Grammar.cpp
         code/Grammar/Command.cpp
         code/Logic/MudInterface.cpp
-        code/Logic/Mob.cpp
+        code/Logic/Combat.cpp
         code/Logic/PlayerAccount.cpp
         code/World/Room.cpp
         code/World/Area.cpp

@@ -13,6 +13,7 @@
 #include <set>
 #include <iostream>
 #include <thread>
+#include <vector>
 
 
 namespace Mud::Logic

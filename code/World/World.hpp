@@ -10,6 +10,7 @@
 #include "Room.hpp"
 #include "code/Logic/Player.hpp"
 #include "code/Logic/Monster.hpp"
+#include "code/Logic/Combat.hpp"
 //#include "code/Server/Server.hpp"
 
 namespace Mud
@@ -81,11 +82,13 @@ public:
 
     void BroadcastMessage(const std::string &message, Realm targetRealm = Realm::NONE) const;
 
-    void StartTicking(unsigned int interval);
+    void StartTicking(uint16_t interval);
 
     void Tick();
 
     void Shutdown();
+
+    Combat &CombatLibrary() { return m_combatLib; }
 
 private:
     std::map<int, std::unique_ptr<Room> > m_rooms;
@@ -95,6 +98,10 @@ private:
 //    Mud::Server::Server &m_server;
 
     bool m_ticking{};
+    uint64_t m_tickCount{};
+    uint16_t m_tickInterval{};
+
+    Combat m_combatLib;
 };
 
 } // Logic
