@@ -42,11 +42,13 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     }
 
     int roomID = -1;
+
     // Player
     auto gotoPlayer = world.FindPlayer(gotoWhat);
     if (gotoPlayer != nullptr)
         roomID = gotoPlayer->Location();
 
+    // Monster
     if (roomID < 0)
     {
         auto gotoMonster = world.FindMonster(gotoWhat);
@@ -54,6 +56,7 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
             roomID = gotoMonster->Location();
     }
 
+    // RoomID
     if (roomID < 0)
     {
         try
@@ -61,16 +64,17 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
             roomID = std::stoi(gotoWhat);
         }
         catch (std::invalid_argument &ignored)
-        {
-        }
+        { }
     }
 
+    // Same room
     if (roomID == room->RoomID())
     {
         response << Server::NEWLINE << "Done." << Server::NEWLINE << Server::NEWLINE;
         return;
     }
 
+    // Valid destination
     if (roomID >= 0)
     {
 
