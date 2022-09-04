@@ -95,13 +95,23 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
     m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
 }
 
-std::shared_ptr<Player> &World::FindPlayer(const std::string &name)
+std::shared_ptr<Player> World::FindPlayer(const std::string &name)
 {
-    auto player = m_playersOnline.find(name);
-    if (player != m_playersOnline.end())
-        return player->second;
-    else
-        return m_playersOnline.begin()->second;
+//    auto player = m_playersOnline.find(name);
+//    if (player != m_playersOnline.end())
+//        return player->second;
+//    else
+//        return m_playersOnline.begin()->second;
+    for (const auto& p : m_playersOnline)
+        if (p.second->Name() == name)
+            return p.second;
+
+    const auto len = name.length();
+    for (const auto& p : m_playersOnline)
+        if (p.second->Name().substr(0, len) == name)
+            return p.second;
+
+    return nullptr;
 }
 
 void World::AddOnlinePlayer(std::shared_ptr<Player> &toAdd)
@@ -157,15 +167,23 @@ void World::RemoveMonster(const std::shared_ptr<Monster> &toRemove)
         }
 }
 
-std::shared_ptr<Monster> &World::FindMonster(const std::string &name)
+std::shared_ptr<Monster> World::FindMonster(const std::string &name)
 {
-    std::shared_ptr<Monster> monster;
-    for (auto m = m_monsterDB.begin(); m != m_monsterDB.end(); m++)
+//    std::shared_ptr<Monster> monster;
+//    for (auto m = m_monsterDB.begin(); m != m_monsterDB.end(); m++)
+//    {
+//        if (m->second->Name() == name)
+//            return m->second;
+//    }
+//    return m_monsterDB.begin()->second;
+    for (const auto& r : m_rooms)
     {
-        if (m->second->Name() == name)
-            return m->second;
+        auto monster = r.second->FindMonster(name);
+        if (monster != nullptr)
+            return monster;
     }
-    return m_monsterDB.begin()->second;
+
+    return nullptr;
 }
 
 std::shared_ptr<Monster> &World::FindMonster(const uint32_t monsterID)

@@ -11,6 +11,9 @@ using namespace Mud::Grammar;
 
 Grammar::Grammar()
 {
+    /* Privileged */
+    m_commands["*goto"] = std::make_shared<GotoCommand>();
+
     /* Miscellaneous */
     m_commands["account"] = std::make_shared<AccountCommand>();
     auto health = std::make_shared<HealthCommand>();

@@ -59,7 +59,7 @@ public:
 
     void RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove);
 
-    std::shared_ptr<Player> &FindPlayer(const std::string &name);
+    std::shared_ptr<Player> FindPlayer(const std::string &name);
 
     std::map<std::string, std::shared_ptr<Player> > &Players();
 
@@ -75,7 +75,7 @@ public:
 
     static void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::unique_ptr<Room> &room);
 
-    std::shared_ptr<Monster> &FindMonster(const std::string &name);
+    std::shared_ptr<Monster> FindMonster(const std::string &name);
     std::shared_ptr<Monster> &FindMonster(uint32_t monsterID);
 
     std::map<uint32_t, std::shared_ptr<Monster> > &Monsters();

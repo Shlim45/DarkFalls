@@ -20,6 +20,75 @@ void Command::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_pt
     response << "Command found!" << Server::NEWLINE;
 }
 
+void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
+{
+    auto player = mudInterface->GetPlayer();
+    auto &response = mudInterface->ostream();
+    auto &room = world.FindRoom(player->Location());
+
+    if (!player->HasSecurityFlag(Mud::Security::Flag::GOTO))
+    {
+        response << Server::NEWLINE << "You do not have permission to do that."
+                 << Server::NEWLINE << Server::NEWLINE;
+        return;
+    }
+
+    auto gotoWhat = commands.CombineRemaining();
+    if (gotoWhat.length() == 0)
+    {
+        response << Server::NEWLINE << "You must specify a Player, Room, or Monster."
+                 << Server::NEWLINE << Server::NEWLINE;
+        return;
+    }
+
+    int roomID = -1;
+    // Player
+    auto gotoPlayer = world.FindPlayer(gotoWhat);
+    if (gotoPlayer != nullptr)
+        roomID = gotoPlayer->Location();
+
+    if (roomID < 0)
+    {
+        auto gotoMonster = world.FindMonster(gotoWhat);
+        if (gotoMonster != nullptr)
+            roomID = gotoMonster->Location();
+    }
+
+    if (roomID < 0)
+    {
+        try
+        {
+            roomID = std::stoi(gotoWhat);
+        }
+        catch (std::invalid_argument &ignored)
+        {
+        }
+    }
+
+    if (roomID == room->RoomID())
+    {
+        response << Server::NEWLINE << "Done." << Server::NEWLINE << Server::NEWLINE;
+        return;
+    }
+
+    if (roomID >= 0)
+    {
+
+        auto &gotoRoom = world.FindRoom(roomID);
+        room->RemovePlayer(player);
+        room->Show(player->Name() + " vanishes.", player);
+
+        gotoRoom->AddPlayer(player);
+        player->Tell("You go to Room #" + std::to_string(roomID) + "." + Server::NEWLINE + gotoRoom->HandleLook(player));
+        gotoRoom->Show(player->Name() + " appears.", player);
+    }
+    else
+    {
+        response << Server::NEWLINE << "You must specify an online Player, Monster, or RoomID."
+                 << Server::NEWLINE << Server::NEWLINE;
+    }
+}
+
 void AccountCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
 //    mudInterface->ostream() << mudInterface->GetAccount() << Server::NEWLINE;

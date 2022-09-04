@@ -6,9 +6,10 @@
 #define DARKFALLS_PLAYER_HPP
 
 #include <string>
-#include "code/Server/ConnectionBase.hpp"
 #include "Mob.hpp"
+#include "code/Server/ConnectionBase.hpp"
 #include "code/Server/Text.hpp"
+#include "Security.hpp"
 
 
 namespace Mud::Logic
@@ -43,10 +44,21 @@ namespace Mud::Logic
             m_experience += howMuch;
         }
 
-        virtual std::string Keyword() const override { return m_name; }
+        std::string Keyword() const override { return m_name; }
+
+        void SetRole(Security::Role newRole)
+        {
+            Security::SetRole(m_securityFlags, newRole);
+        }
+
+        bool HasSecurityFlag(Security::Flag toCheck) const
+        {
+            return Security::HasFlag(m_securityFlags, toCheck);
+        }
 
     private:
         Server::ConnectionBase &m_connection;
+        uint32_t m_securityFlags{};
     };
 
 } // Logic

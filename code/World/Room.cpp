@@ -172,6 +172,7 @@ std::shared_ptr<Player> Room::FindPlayer(const std::string &name)
 
 std::shared_ptr<Monster> Room::FindMonster(const std::string &name)
 {
+    // Full name
     for (const auto& m : m_monsters)
         if (m->Name() == name)
             return m;
@@ -179,6 +180,15 @@ std::shared_ptr<Monster> Room::FindMonster(const std::string &name)
     const auto len = name.length();
     for (const auto& m : m_monsters)
         if (m->Name().substr(0, len) == name)
+            return m;
+
+    // Keyword
+    for (const auto& m : m_monsters)
+        if (m->Keyword() == name)
+            return m;
+
+    for (const auto& m : m_monsters)
+        if (m->Keyword().substr(0, len) == name)
             return m;
 
     return nullptr;

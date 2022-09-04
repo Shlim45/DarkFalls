@@ -64,7 +64,20 @@ void MudInterface::HandleLine(const std::string &line)
 
         // Add player to account
         m_player = m_world.FindPlayer(m_account->UserName());
+        if (m_player == nullptr)
+        {
+            std::cerr << "[LOGIN]: Failed to find new player." << std::endl;
+
+            m_connection << Server::NEWLINE << "Player not found." << Server::NEWLINE << Server::NEWLINE;
+            m_connection << "Enter username: " << Server::ECHOON;
+            m_interfaceState = InterfaceState::WAITING_FOR_USER;
+            break;
+        }
+
         m_account->AddPlayer(m_player);
+
+        // set security clearance:
+        m_player->SetRole(Security::Role::GAME_MASTER);
 
         auto &startRoom = m_world.FindRoom(1);
         startRoom->AddPlayer(m_player);
