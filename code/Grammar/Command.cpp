@@ -93,6 +93,79 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     }
 }
 
+void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
+{
+    auto player = mudInterface->GetPlayer();
+    auto &response = mudInterface->ostream();
+    auto &room = world.FindRoom(player->Location());
+    auto cmds = commands.CombineRemaining();
+
+    if (!player->HasSecurityFlag(Mud::Security::Flag::CREATE))
+    {
+        response << Server::NEWLINE << "You do not have permission to do that."
+                 << Server::NEWLINE << Server::NEWLINE;
+        return;
+    }
+
+    size_t nextSpace = cmds.find_first_of(' ');
+    auto createWhat = cmds.substr(0, nextSpace);
+    if (createWhat.length() == 0)
+    {
+        response << Server::NEWLINE << "Create what?  You must specify AREA, ROOM, or MONSTER."
+                 << Server::NEWLINE << Server::NEWLINE;
+        return;
+    }
+
+
+    boost::to_upper(createWhat);
+    if (createWhat == "ROOM")
+    {
+        if (!player->HasSecurityFlag(Mud::Security::Flag::ROOMS))
+        {
+            response << Server::NEWLINE << "You do not have permission to create ROOMS."
+                     << Server::NEWLINE << Server::NEWLINE;
+            return;
+        }
+
+        auto roomDirection = cmds.substr(nextSpace+1, cmds.find_first_of(' ', nextSpace+1));
+        boost::to_lower(roomDirection);
+
+        Logic::Direction dir;
+        bool found;
+        for (int i = 0; i < Logic::CardinalExit::NUM_DIRECTIONS; i++)
+        {
+            if (Logic::CardinalExit::DirectionCodes[i] == roomDirection)
+            {
+                dir = static_cast<Logic::Direction>(i);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            response << Server::NEWLINE << "'" << roomDirection << "' is not a valid direction."
+                     << Server::NEWLINE << Server::NEWLINE;
+            return;
+        }
+
+        auto coords = room->Coords();
+        Logic::CardinalExit::AdjustXYZByDirection(coords, dir);
+
+        auto areaId = room->AreaID();
+        // Check if room exists
+        if (world.FindArea(areaId)->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords)) >= 0)
+        {
+            auto fullDirName = Logic::CardinalExit::DirectionNames[static_cast<int>(dir)];
+            response << Server::NEWLINE << "A room already exists to the " << fullDirName << ".  "
+                     << "Try adding a cardinal exit." << Server::NEWLINE << Server::NEWLINE;
+            return;
+        }
+
+
+    }
+}
+
 void AccountCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
 //    mudInterface->ostream() << mudInterface->GetAccount() << Server::NEWLINE;
@@ -203,7 +276,7 @@ void NorthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_pt
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::NORTH))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::NORTH);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::NORTH);
     else
     {
         player->Tell("You cannot travel in that direction.");
@@ -229,7 +302,7 @@ void SouthCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_pt
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::SOUTH))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::SOUTH);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::SOUTH);
     else
     {
         player->Tell("You cannot travel in that direction.");
@@ -255,7 +328,7 @@ void EastCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::EAST))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::EAST);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::EAST);
     else
     {
         player->Tell("You cannot travel in that direction.");
@@ -281,7 +354,7 @@ void WestCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::WEST))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::WEST);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::WEST);
     else
     {
         player->Tell("You cannot travel in that direction.");
@@ -307,7 +380,7 @@ void NorthEastCommand::Execute(Dictionary::Tokenizer &commands, const std::share
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::NORTHEAST))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::NORTHEAST);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::NORTHEAST);
     else
     {
         player->Tell("You cannot travel in that direction.");
@@ -333,7 +406,7 @@ void NorthWestCommand::Execute(Dictionary::Tokenizer &commands, const std::share
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::NORTHWEST))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::NORTHWEST);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::NORTHWEST);
     else
     {
         player->Tell("You cannot travel in that direction.");
@@ -359,7 +432,7 @@ void SouthEastCommand::Execute(Dictionary::Tokenizer &commands, const std::share
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::SOUTHEAST))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::SOUTHEAST);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::SOUTHEAST);
     else
     {
         player->Tell("You cannot travel in that direction.");
@@ -385,7 +458,7 @@ void SouthWestCommand::Execute(Dictionary::Tokenizer &commands, const std::share
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::SOUTHWEST))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::SOUTHWEST);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::SOUTHWEST);
     else
     {
         player->Tell("You cannot travel in that direction.");
@@ -411,7 +484,7 @@ void UpCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<L
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::UP))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::UP);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::UP);
     else
     {
         player->Tell("You cannot travel in that direction.");
@@ -437,7 +510,7 @@ void DownCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     std::tuple<int,int,int> coords = room->get()->Coords();
 
     if (room->get()->HasCardinalExit(Logic::Direction::DOWN))
-        Logic::Exit::AdjustXYZByDirection(coords, Logic::Direction::DOWN);
+        Logic::CardinalExit::AdjustXYZByDirection(coords, Logic::Direction::DOWN);
     else
     {
         player->Tell("You cannot travel in that direction.");

@@ -14,6 +14,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <boost/algorithm/string.hpp>
 
 
 namespace Mud::Logic

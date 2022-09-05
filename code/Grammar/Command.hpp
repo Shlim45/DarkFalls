@@ -31,6 +31,11 @@ class GotoCommand : public Command
     void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;
 };
 
+class CreateCommand : public Command
+{
+    void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;
+};
+
 class AccountCommand : public Command
 {
     void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const override;

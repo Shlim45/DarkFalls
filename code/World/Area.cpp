@@ -29,5 +29,5 @@ int Area::FindRoomID(int x, int y, int z)
     if (room != m_coords.end())
         return room->second;
 
-    return 0;
+    return -1;
 }

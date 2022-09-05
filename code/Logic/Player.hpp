@@ -40,20 +40,22 @@ namespace Mud::Logic
         void AdjExperience(int howMuch)
         {
             if (howMuch < 0 && howMuch < -m_experience)
-                howMuch = -m_experience;
-            m_experience += howMuch;
+                m_experience = 0;
+            else
+                m_experience += howMuch;
         }
 
-        std::string Keyword() const override { return m_name; }
+        [[nodiscard]] std::string Keyword() const override { return m_name; }
 
-        void SetRole(Security::Role newRole)
+        void SetSecurityRole(Security::Role newRole)
         {
             Security::SetRole(m_securityFlags, newRole);
         }
 
-        bool HasSecurityFlag(Security::Flag toCheck) const
+        [[nodiscard]] bool HasSecurityFlag(Security::Flag toCheck) const
         {
-            return Security::HasFlag(m_securityFlags, toCheck);
+            bool result = Security::HasFlag(m_securityFlags, toCheck);
+            return result;
         }
 
     private:

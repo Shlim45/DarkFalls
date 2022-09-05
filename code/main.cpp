@@ -11,7 +11,7 @@
 namespace
 {
     const int PORT = 4000;
-    const std::string MUDNAME = "DarkFalls";
+    const std::string MUD_NAME = "DarkFalls";
     const int MAJOR = 0;
     const int MINOR = 1;
     const int PATCH = 0;
@@ -21,7 +21,7 @@ int Mud::Logic::Area::areaCount = 0;
 int Mud::Logic::Room::roomCount = 0;
 int Mud::Logic::Monster::monsterCount = 0;
 
-std::string Mud::Logic::Exit::DirectionNames[10] =
+std::string Mud::Logic::CardinalExit::DirectionNames[NUM_DIRECTIONS] =
         {
                 "north",
                 "south",
@@ -33,6 +33,20 @@ std::string Mud::Logic::Exit::DirectionNames[10] =
                 "southwest",
                 "up",
                 "down",
+        };
+
+std::string Mud::Logic::CardinalExit::DirectionCodes[NUM_DIRECTIONS] =
+        {
+                "n",
+                "s",
+                "e",
+                "w",
+                "ne",
+                "nw",
+                "se",
+                "sw",
+                "u",
+                "d",
         };
 
 const std::vector<std::string> Mud::Logic::MobStats::StatNames =
@@ -65,7 +79,7 @@ const std::vector<std::string> Mud::Logic::MobStats::StatNames =
 
 int main()
 {
-    std::cout << Mud::Server::BR_GREENTEXT << MUDNAME << Mud::Server::PLAINTEXT << " version "
+    std::cout << Mud::Server::BR_GREENTEXT << MUD_NAME << Mud::Server::PLAINTEXT << " version "
               << Mud::Server::YELLOWTEXT << MAJOR << "." << MINOR << "." << PATCH << Mud::Server::PLAINTEXT
               << " started.\n";
 

@@ -13,6 +13,7 @@ Grammar::Grammar()
 {
     /* Privileged */
     m_commands["*goto"] = std::make_shared<GotoCommand>();
+    m_commands["*create"] = std::make_shared<CreateCommand>();
 
     /* Miscellaneous */
     m_commands["account"] = std::make_shared<AccountCommand>();

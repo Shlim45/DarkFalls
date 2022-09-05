@@ -18,7 +18,10 @@ namespace Security
         AREAS,
         MONSTERS,
         ITEMS,
-        PLAYERS
+        PLAYERS,
+        CREATE,
+        MODIFY,
+        DESTROY
     };
 
     enum class Role
@@ -35,7 +38,7 @@ namespace Security
     };
 
     template <typename... Ts>
-    static void SetFlags(uint32_t &secFlags, Ts... flagsToSet)
+    static void AddSecFlags(uint32_t & secFlags, Ts... flagsToSet)
     {
         const int size = sizeof...(flagsToSet);
         Flag flags[size] = {static_cast<Flag>(flagsToSet)... };
@@ -55,34 +58,41 @@ namespace Security
             case Role::NONE:
                 break;
             case Role::STAFF:
-                SetFlags(secFlags, Flag::GOTO, Flag::TRANSFER);
+                AddSecFlags(secFlags, Flag::GOTO, Flag::TRANSFER);
                 break;
             case Role::LANDS:
-                SetFlags(secFlags, Flag::GOTO, Flag::TRANSFER, Flag::AREAS, Flag::ROOMS);
+                AddSecFlags(secFlags, Flag::GOTO, Flag::TRANSFER, Flag::AREAS, Flag::ROOMS,
+                            Flag::CREATE, Flag::MODIFY);
                 break;
             case Role::MONSTERS:
-                SetFlags(secFlags, Flag::GOTO, Flag::TRANSFER, Flag::AREAS, Flag::ROOMS,
-                                        Flag::MONSTERS);
+                AddSecFlags(secFlags, Flag::GOTO, Flag::TRANSFER, Flag::AREAS, Flag::ROOMS,
+                            Flag::MONSTERS, Flag::CREATE, Flag::MODIFY);
                 break;
             case Role::ITEMS:
-                SetFlags(secFlags, Flag::GOTO, Flag::TRANSFER, Flag::AREAS, Flag::ROOMS,
-                                        Flag::MONSTERS, Flag::ITEMS);
+                AddSecFlags(secFlags, Flag::GOTO, Flag::TRANSFER, Flag::AREAS, Flag::ROOMS,
+                            Flag::MONSTERS, Flag::ITEMS, Flag::CREATE, Flag::MODIFY);
                 break;
             case Role::PLAYERS:
             case Role::REALM_MASTER:
+                AddSecFlags(secFlags, Flag::GOTO, Flag::TRANSFER, Flag::AREAS, Flag::ROOMS,
+                            Flag::MONSTERS, Flag::ITEMS, Flag::PLAYERS,
+                            Flag::CREATE, Flag::MODIFY);
+                break;
             case Role::GAME_MASTER:
-                SetFlags(secFlags, Flag::GOTO, Flag::TRANSFER, Flag::AREAS, Flag::ROOMS,
-                                        Flag::MONSTERS, Flag::ITEMS, Flag::PLAYERS);
+                AddSecFlags(secFlags, Flag::GOTO, Flag::TRANSFER, Flag::AREAS, Flag::ROOMS,
+                            Flag::MONSTERS, Flag::ITEMS, Flag::PLAYERS,
+                            Flag::CREATE, Flag::MODIFY, Flag::DESTROY);
                 break;
             case Role::DEVELOPER:
-                SetFlags(secFlags, ALL_FLAGS);
+                secFlags = ALL_FLAGS;
+//                AddSecFlags(secFlags, ALL_FLAGS);
                 break;
         }
     }
 
     static bool HasFlag(uint32_t flags, Flag flag)
     {
-        return (flags & (1 << static_cast<uint32_t>(flag))) == 1;
+        return (flags & (1 << static_cast<uint32_t>(flag)));
     }
 
 } // Security

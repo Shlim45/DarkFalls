@@ -6,7 +6,7 @@
 #define DARKFALLS_ROOM_HPP
 
 #include "code/Logic/includes.hpp"
-#include "Exit.hpp"
+#include "CardinalExit.hpp"
 
 namespace Mud::Logic
 {

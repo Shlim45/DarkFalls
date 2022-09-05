@@ -28,7 +28,7 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
             if (m_cardinalExits & (1 << i))
             {
                 numCardinals++;
-                sExits += Server::ColorizeText(Exit::DirectionNames[i], Server::BROWNTEXT);
+                sExits += Server::ColorizeText(CardinalExit::DirectionNames[i], Server::BROWNTEXT);
                 sExits += ", ";
             }
         }

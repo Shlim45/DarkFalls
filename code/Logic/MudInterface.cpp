@@ -77,7 +77,7 @@ void MudInterface::HandleLine(const std::string &line)
         m_account->AddPlayer(m_player);
 
         // set security clearance:
-        m_player->SetRole(Security::Role::GAME_MASTER);
+        m_player->SetSecurityRole(Security::Role::GAME_MASTER);
 
         auto &startRoom = m_world.FindRoom(1);
         startRoom->AddPlayer(m_player);
