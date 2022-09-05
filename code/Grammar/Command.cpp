@@ -41,31 +41,78 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
         return;
     }
 
-    int roomID = -1;
+    int roomID = 0;
 
     // Player
     auto gotoPlayer = world.FindPlayer(gotoWhat);
-    if (gotoPlayer != nullptr)
+    if (gotoPlayer)
         roomID = gotoPlayer->Location();
 
-    // Monster
-    if (roomID < 0)
+    if (roomID)
     {
-        auto gotoMonster = world.FindMonster(gotoWhat);
-        if (gotoMonster != nullptr)
-            roomID = gotoMonster->Location();
+        // Same room
+        if (roomID == room->RoomID())
+        {
+            response << Server::NEWLINE << "Done." << Server::NEWLINE << Server::NEWLINE;
+            return;
+        }
+
+        auto &gotoRoom = world.FindRoom(roomID);
+        if (gotoRoom)
+        {
+            room->RemovePlayer(player);
+            room->Show(player->Name() + " vanishes.", player);
+
+            gotoRoom->AddPlayer(player);
+            player->Tell(
+                    "You go to Room #" + std::to_string(roomID) + "." + Server::NEWLINE + gotoRoom->HandleLook(player));
+            gotoRoom->Show(player->Name() + " appears.", player);
+            return;
+        }
+    }
+
+    // Monster
+
+    auto gotoMonster = world.FindMonster(gotoWhat);
+    if (gotoMonster)
+        roomID = gotoMonster->Location();
+
+    if (roomID)
+    {
+        // Same room
+        if (roomID == room->RoomID())
+        {
+            response << Server::NEWLINE << "Done." << Server::NEWLINE << Server::NEWLINE;
+            return;
+        }
+
+        auto &gotoRoom = world.FindRoom(roomID);
+        if (gotoRoom->RoomID()) // prevent going to the void!
+        {
+            room->RemovePlayer(player);
+            room->Show(player->Name() + " vanishes.", player);
+
+            gotoRoom->AddPlayer(player);
+            player->Tell(
+                    "You go to Room #" + std::to_string(roomID) + "." + Server::NEWLINE + gotoRoom->HandleLook(player));
+            gotoRoom->Show(player->Name() + " appears.", player);
+            return;
+        }
     }
 
     // RoomID
-    if (roomID < 0)
+
+    try
     {
-        try
-        {
-            roomID = std::stoi(gotoWhat);
-        }
-        catch (std::invalid_argument &ignored)
-        { }
+        roomID = std::stoi(gotoWhat);
     }
+    catch (std::invalid_argument &ignored)
+    {
+        response << Server::NEWLINE << "You must specify an online Player, Monster, or RoomID."
+                 << Server::NEWLINE << Server::NEWLINE;
+        return;
+    }
+
 
     // Same room
     if (roomID == room->RoomID())
