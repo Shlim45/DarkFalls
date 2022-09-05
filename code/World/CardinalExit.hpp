@@ -75,6 +75,34 @@ namespace Mud::Logic
             }
         }
 
+        static Direction GetOppositeDirection(const Direction dir)
+        {
+            switch (dir)
+            {
+                case Direction::NORTH:
+                    return Direction::SOUTH;
+                case Direction::SOUTH:
+                    return Direction::NORTH;
+                case Direction::EAST:
+                    return Direction::WEST;
+                case Direction::WEST:
+                    return Direction::EAST;
+                case Direction::NORTHEAST:
+                    return Direction::SOUTHWEST;
+                case Direction::NORTHWEST:
+                    return Direction::SOUTHEAST;
+                case Direction::SOUTHEAST:
+                    return Direction::NORTHWEST;
+                case Direction::SOUTHWEST:
+                    return Direction::NORTHEAST;
+                case Direction::UP:
+                    return Direction::DOWN;
+                case Direction::DOWN:
+                    return Direction::UP;
+            }
+            return dir;
+        }
+
 //    private:
 //        Direction m_direction;
 //        std::string const m_names[NUM_DIRECTIONS] =

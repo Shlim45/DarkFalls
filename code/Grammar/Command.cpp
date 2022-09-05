@@ -160,7 +160,26 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
             return;
         }
 
+        auto newRoomID = Logic::Room::GetWorldCount();
+        Logic::Direction oppositeDir = Logic::CardinalExit::GetOppositeDirection(dir);
+        uint16_t cardinalExits = oppositeDir != dir
+                ? (1 << static_cast<uint16_t>(oppositeDir))
+                : 0;
+        world.GenerateRoom(newRoomID, "You're standing in a bare room.", areaId,
+                           std::get<0>(coords), std::get<1>(coords), std::get<2>(coords), cardinalExits);
+        room->AddCardinalExit(dir);
 
+        auto &gotoRoom = world.FindRoom(newRoomID);
+        room->RemovePlayer(player);
+        room->Show(player->Name() + " vanishes.", player);
+
+        gotoRoom->AddPlayer(player);
+        player->Tell("You go to Created Room #" + std::to_string(newRoomID) + "." + Server::NEWLINE + gotoRoom->HandleLook(player));
+        gotoRoom->Show(player->Name() + " appears.", player);
+    }
+    else
+    {
+        response << Server::NEWLINE << "You may only create ROOM for now." << Server::NEWLINE << Server::NEWLINE;
     }
 }
 
