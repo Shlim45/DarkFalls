@@ -10,6 +10,7 @@
 
 namespace Mud::Logic
 {
+    class Mob;
     class Monster;
     class Player;
 
@@ -33,17 +34,17 @@ namespace Mud::Logic
 
         static int GetWorldCount() { return roomCount; }
 
-        int RoomID() const { return m_roomId; }
+        [[nodiscard]] int RoomID() const { return m_roomId; }
 
         void SetArea(std::string name) { m_areaName = std::move(name); }
 
-        std::string Area() const { return m_areaName; }
+        [[nodiscard]] std::string Area() const { return m_areaName; }
 
         void SetAreaID(int newArea) { m_areaId = newArea; }
 
         int AreaID() { return m_areaId; }
 
-        std::set<std::shared_ptr<Player>>::const_iterator Players() const;
+        [[nodiscard]] std::set<std::shared_ptr<Player>>::const_iterator Players() const;
 
         void AddPlayer(const std::shared_ptr<Player>& player);
 
@@ -68,19 +69,28 @@ namespace Mud::Logic
 
         void SetCardinalExits(uint16_t newCardinals) { m_cardinalExits = newCardinals; }
 
-        uint16_t CardinalExits() const { return m_cardinalExits; }
+        [[nodiscard]] uint16_t CardinalExits() const { return m_cardinalExits; }
 
-        bool HasCardinalExit(Direction dir) const;
+        [[nodiscard]] bool HasCardinalExit(Direction dir) const;
 
-        std::string RoomDescription() const { return m_description; }
+        [[nodiscard]] std::string RoomDescription() const { return m_description; }
 
-        std::string HandleLook(const std::shared_ptr<Player>& player) const;
+        [[nodiscard]] std::string HandleLook(const std::shared_ptr<Player>& player) const;
 
         void SetCoords(int x, int y, int z) { m_coords = std::make_tuple(x,y,z); }
 
         std::tuple<int,int,int> Coords() { return m_coords; }
 
-        void Show(const std::string &message, const std::shared_ptr<Player> &ignore);
+        void ShowOthers(const std::string &message, const std::shared_ptr<Player> &source);
+
+        void Show(const std::string &sMessage, const std::shared_ptr<Player> &source,
+                  const std::string &oMessage);
+
+        void Show(const std::string &sMessage, const std::shared_ptr<Player> &source,
+                  const std::string &tMessage, const std::shared_ptr<Player> &target,
+                  const std::string &oMessage);
+
+        void Show(const std::string &message, const Player &source, const Mob &target);
 
     private:
         int m_roomId;

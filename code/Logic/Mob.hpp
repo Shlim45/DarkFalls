@@ -31,19 +31,19 @@ public:
         return rhs.Name() == Name();
     }
 
-    std::string Name() const { return m_name; }
+    [[nodiscard]] std::string Name() const { return m_name; }
     void SetName(std::string name) { m_name = std::move(name); }
 
-    virtual std::string Keyword() const { return m_name; };
-    virtual std::string DisplayName() const { return m_name; }
+    [[nodiscard]] virtual std::string Keyword() const { return m_name; };
+    [[nodiscard]] virtual std::string DisplayName() const { return m_name; }
 
-    int Location() const { return m_location; }
+    [[nodiscard]] int Location() const { return m_location; }
     void SetLocation(int newLocation) { m_location = newLocation; }
 
-    uint32_t Experience() const { return m_experience; }
+    [[nodiscard]] uint32_t Experience() const { return m_experience; }
     void SetExperience(uint32_t exp) { m_experience = exp; };
 
-    uint8_t Level() const { return m_level; }
+    [[nodiscard]] uint8_t Level() const { return m_level; }
     void SetLevel(uint8_t level) { m_level = level; };
 
     MobState &CurState() { return m_curState; }
@@ -52,14 +52,14 @@ public:
     MobStats &BaseStats() { return m_baseStats; }
     MobStats &CurStats() { return m_curStats; }
 
-    Realm GetRealm() const { return m_realm; }
+    [[nodiscard]] Realm GetRealm() const { return m_realm; }
 
 
 protected:
     std::string m_name;
     int m_location{};
     uint32_t m_experience{};
-    uint8_t m_level;
+    uint8_t m_level{};
 
     Realm m_realm{};
     MobState m_curState;

@@ -7,6 +7,7 @@
 
 #include <string>
 #include "Mob.hpp"
+#include "Monster.hpp"
 #include "code/Server/ConnectionBase.hpp"
 #include "code/Server/Text.hpp"
 #include "Security.hpp"
@@ -23,6 +24,16 @@ namespace Mud::Logic
         {}
 
         bool operator==(Player &rhs) const
+        {
+            return rhs.Name() == Name();
+        }
+
+        bool operator==(Monster &rhs) const
+        {
+            return false;
+        }
+
+        bool operator==(Mob &rhs) const
         {
             return rhs.Name() == Name();
         }

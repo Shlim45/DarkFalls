@@ -194,11 +194,16 @@ std::shared_ptr<Monster> Room::FindMonster(const std::string &name)
     return nullptr;
 }
 
-void Room::Show(const std::string &message, const std::shared_ptr<Player> &ignore)
+void Room::ShowOthers(const std::string &message, const std::shared_ptr<Player> &source)
 {
-    for (const auto& p : m_players)
-        if (p != ignore)
-            p->Tell(Server::NEWLINE + message);
+    std::string msg = message;
+    size_t pos = msg.find("%s");
+    if (pos != std::string::npos)
+        msg.replace(pos, 2, source->DisplayName());
+
+    for (const auto &p : m_players)
+        if (p != source)
+            p->Tell(Server::NEWLINE + msg);
 }
 
 void Room::AddMonster(const std::shared_ptr<Monster> &monster)
@@ -207,5 +212,78 @@ void Room::AddMonster(const std::shared_ptr<Monster> &monster)
     {
         monster->SetLocation(m_roomId);
         m_monsters.insert(monster);
+    }
+}
+
+void Room::Show(const std::string &sMessage, const std::shared_ptr<Player> &source, const std::string &oMessage)
+{
+    std::string msg;
+    size_t pos;
+
+    for (const auto &p : m_players)
+    {
+        if (p == source)
+        {
+            msg = sMessage;
+            pos = msg.find("%s");
+            if (pos != std::string::npos)
+                msg.replace(pos, 2, "You");
+        }
+        else
+        {
+            msg = oMessage;
+            pos = msg.find("%s");
+            if (pos != std::string::npos)
+                msg.replace(pos, 2, source->DisplayName());
+        }
+        p->Tell(Server::NEWLINE + msg);
+    }
+}
+
+void Room::Show(const std::string &sMessage, const std::shared_ptr<Player> &source, const std::string &tMessage,
+                const std::shared_ptr<Player> &target, const std::string &oMessage)
+{
+
+}
+
+void Room::Show(const std::string &message, const Player &source, const Mob &target)
+{
+    std::string msg;
+    size_t pos;
+
+    for (const auto &p : m_players)
+    {
+        msg = message;
+        if (p->DisplayName() == source.DisplayName())
+        {
+            pos = msg.find("%s");
+            if (pos != std::string::npos)
+                msg.replace(pos, 2, "You");
+
+            pos = msg.find("%t");
+            if (pos != std::string::npos)
+                msg.replace(pos, 2, target.DisplayName());
+        }
+        else if (p->DisplayName() == target.DisplayName())
+        {
+            pos = msg.find("%t");
+            if (pos != std::string::npos)
+                msg.replace(pos, 2, "You");
+
+            pos = msg.find("%s");
+            if (pos != std::string::npos)
+                msg.replace(pos, 2, source.DisplayName());
+        }
+        else
+        {
+            pos = msg.find("%s");
+            if (pos != std::string::npos)
+                msg.replace(pos, 2, source.DisplayName());
+
+            pos = msg.find("%t");
+            if (pos != std::string::npos)
+                msg.replace(pos, 2, target.DisplayName());
+        }
+        p->Tell(Server::NEWLINE + msg);
     }
 }

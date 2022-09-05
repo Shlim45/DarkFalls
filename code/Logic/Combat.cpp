@@ -35,7 +35,7 @@ uint16_t Combat::CalculateMaxDamage(Mob &attacker, Mob &defender,
 //    auto actualDmg = maxDmg * (3841 + RandomInt(0,255)) / 4096;
 //
 //    defender.CurState().AdjHealth(actualDmg, defender.MaxState());
-//    room->Show(attacker.Name() + " attacks " + defender.Name()
+//    room->ShowOthers(attacker.Name() + " attacks " + defender.Name()
 //                            + " for " + std::to_string(actualDmg) + " damage!", nullptr);
 //}
 
@@ -47,8 +47,10 @@ void Combat::HandleAttackPP(Player &attacker, Player &defender, World &world)
     auto actualDmg = maxDmg * (3841 + RandomInt(0,255)) / 4096;
 
     defender.CurState().AdjHealth(-actualDmg, defender.MaxState());
-    room->Show(attacker.Name() + " attacks " + defender.Name()
-                            + " for " + std::to_string(actualDmg) + " damage!", nullptr);
+//    room->ShowOthers(attacker.Name() + " attacks " + defender.Name()
+//                            + " for " + std::to_string(actualDmg) + " damage!", nullptr);
+    const std::string output = "%s attacks %t for " + std::to_string(actualDmg) + " damage!";
+    room->Show(output, attacker, defender);
     if (defender.CurState().Health() == 0)
         defender.Tell("You are almost dead!");
 }
@@ -61,8 +63,8 @@ void Combat::HandleAttackPM(Player &attacker, Monster &defender, World &world)
     auto actualDmg = maxDmg * (3841 + RandomInt(0,255)) / 4096;
 
     defender.CurState().AdjHealth(-actualDmg, defender.MaxState());
-    room->Show(attacker.Name() + " attacks " + defender.Name()
-                            + " for " + std::to_string(actualDmg) + " damage!", nullptr);
+    room->ShowOthers(attacker.Name() + " attacks " + defender.Name()
+                     + " for " + std::to_string(actualDmg) + " damage!", nullptr);
 }
 
 void Combat::HandleAttackMP(Monster &attacker, Player &defender, World &world)
@@ -73,8 +75,8 @@ void Combat::HandleAttackMP(Monster &attacker, Player &defender, World &world)
     auto actualDmg = maxDmg * (3841 + RandomInt(0,255)) / 4096;
 
     defender.CurState().AdjHealth(actualDmg, defender.MaxState());
-    room->Show(attacker.Name() + " attacks " + defender.Name()
-                            + " for " + std::to_string(actualDmg) + " damage!", nullptr);
+    room->ShowOthers(attacker.Name() + " attacks " + defender.Name()
+                     + " for " + std::to_string(actualDmg) + " damage!", nullptr);
 
     if (defender.CurState().Health() == 0)
         defender.Tell("You are almost dead!");
@@ -88,8 +90,8 @@ void Combat::HandleAttackMM(Monster &attacker, Monster &defender, World &world)
     auto actualDmg = maxDmg * (3841 + RandomInt(0,255)) / 4096;
 
     defender.CurState().AdjHealth(actualDmg, defender.MaxState());
-    room->Show(attacker.Name() + " attacks " + defender.Name()
-                            + " for " + std::to_string(actualDmg) + " damage!", nullptr);
+    room->ShowOthers(attacker.Name() + " attacks " + defender.Name()
+                     + " for " + std::to_string(actualDmg) + " damage!", nullptr);
 }
 
 int Combat::RandomInt(int min, int max)

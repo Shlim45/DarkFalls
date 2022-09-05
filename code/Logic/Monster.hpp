@@ -31,14 +31,25 @@ public:
         return rhs.MonsterID() == MonsterID();
     }
 
-    uint32_t MonsterID() const { return m_monsterId; }
+    bool operator==(Mob &rhs) const
+    {
+        // TODO(jon): Add MobID to MOB class
+        return rhs.DisplayName() == DisplayName() && rhs.Location() == Location();
+    }
 
-    std::string Keyword() const override
+    bool operator==(Player &rhs) const
+    {
+        return false;
+    }
+
+    [[nodiscard]] uint32_t MonsterID() const { return m_monsterId; }
+
+    [[nodiscard]] std::string Keyword() const override
     {
         return m_keyword;
     }
 
-    std::string DisplayName() const override
+    [[nodiscard]] std::string DisplayName() const override
     {
         if (m_article.length())
             return m_article + " " + m_name;
