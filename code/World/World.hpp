@@ -63,6 +63,12 @@ public:
 
     std::map<std::string, std::shared_ptr<Player> > &Players();
 
+    void MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, bool quietly = false);
+    void MovePlayer(const std::shared_ptr<Player> &toMove, const std::unique_ptr<Room> &newRoom, bool quietly = false);
+
+    void WalkPlayer(const std::shared_ptr<Player> &toMove, int newRoomID, Logic::Direction dir);
+    void WalkPlayer(const std::shared_ptr<Player> &toMove, const std::unique_ptr<Room> &toRoom, Logic::Direction dir);
+
     /* MONSTERS */
 
     void GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw);

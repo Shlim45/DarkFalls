@@ -272,3 +272,51 @@ void World::Shutdown()
 //    std::cout << "Requesting Server shutdown..." << std::endl;
 //    m_server.Shutdown();
 }
+
+void World::MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, bool quietly)
+{
+    auto &newRoom = FindRoom(newRoomID);
+    return MovePlayer(toMove, newRoom, quietly);
+}
+
+void World::MovePlayer(const std::shared_ptr<Player> &toMove, const std::unique_ptr<Room> &newRoom, bool quietly)
+{
+    auto &oldRoom = FindRoom(toMove->Location());
+    oldRoom->RemovePlayer(toMove);
+    if (!quietly)
+        oldRoom->Show(toMove->Name() + " vanishes.", toMove);
+
+    newRoom->AddPlayer(toMove);
+    if (!quietly)
+    {
+        toMove->Tell(Server::NEWLINE + newRoom->HandleLook(toMove));
+        newRoom->Show(toMove->Name() + " appears.", toMove);
+    }
+}
+
+void World::WalkPlayer(const std::shared_ptr<Player> &toMove, int newRoomID, Direction dir)
+{
+    auto &toRoom = FindRoom(newRoomID);
+    return WalkPlayer(toMove, toRoom, dir);
+}
+
+void World::WalkPlayer(const std::shared_ptr<Player> &toMove, const std::unique_ptr<Room> &toRoom, Direction dir)
+{
+    auto &fromRoom = FindRoom(toMove->Location());
+
+    Direction oppositeDir = CardinalExit::GetOppositeDirection(dir);
+    const auto toDir = CardinalExit::DirectionNames[static_cast<int>(dir)];
+    auto fromDir = CardinalExit::DirectionNames[static_cast<int>(oppositeDir)];
+
+    if (fromDir == "up")
+        fromDir = "above";
+    else if (fromDir == "down")
+        fromDir = "below";
+
+    fromRoom->Show(toMove->Name() + " leaves " + toDir + ".", toMove);
+
+    MovePlayer(toMove, toRoom, true);
+
+    toMove->Tell("You travel " + toDir + "." + Server::NEWLINE + toRoom->HandleLook(toMove));
+    toRoom->Show(toMove->Name() + " arrives from the " + fromDir + ".", toMove);
+}
