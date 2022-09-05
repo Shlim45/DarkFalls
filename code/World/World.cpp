@@ -13,12 +13,12 @@ const uint16_t TICKS_PER_REGEN = 7;
 }
 
 
-void World::AddArea(std::unique_ptr<Area> &toAdd)
+void World::AddArea(std::shared_ptr<Area> &toAdd)
 {
-    m_areas.insert(std::make_pair<int, std::unique_ptr<Area>>(toAdd->AreaID(), std::move(toAdd)));
+    m_areas.insert(std::make_pair<int, std::shared_ptr<Area>>(toAdd->AreaID(), std::move(toAdd)));
 }
 
-std::unique_ptr<Area> &Mud::Logic::World::FindArea(const std::string &areaName)
+std::shared_ptr<Area> &Mud::Logic::World::FindArea(const std::string &areaName)
 {
     for (auto a = m_areas.begin(); a != m_areas.end(); a++)
     {
@@ -28,7 +28,7 @@ std::unique_ptr<Area> &Mud::Logic::World::FindArea(const std::string &areaName)
     return m_areas.begin()->second;
 }
 
-std::unique_ptr<Area> &World::FindArea(int areaID)
+std::shared_ptr<Area> &World::FindArea(int areaID)
 {
     auto area = m_areas.find(areaID);
     if (area != m_areas.end())
@@ -37,12 +37,12 @@ std::unique_ptr<Area> &World::FindArea(int areaID)
         return m_areas.begin()->second;
 }
 
-void World::AddRoom(std::unique_ptr<Room> &toAdd)
+void World::AddRoom(std::shared_ptr<Room> &toAdd)
 {
-    m_rooms.insert(std::make_pair<int, std::unique_ptr<Room>>(toAdd->RoomID(), std::move(toAdd)));
+    m_rooms.insert(std::make_pair<int, std::shared_ptr<Room>>(toAdd->RoomID(), std::move(toAdd)));
 }
 
-std::unique_ptr<Room> &World::FindRoom(int roomId)
+std::shared_ptr<Room> &World::FindRoom(int roomId)
 {
     auto room = m_rooms.find(roomId);
     if (room != m_rooms.end())
@@ -53,7 +53,7 @@ std::unique_ptr<Room> &World::FindRoom(int roomId)
 
 void World::GenerateArea(int areaID, const std::string &areaName, Realm realm)
 {
-    std::unique_ptr<Area> newArea = std::make_unique<Area>(areaID, areaName);
+    std::shared_ptr<Area> newArea = std::make_unique<Area>(areaID, areaName);
     newArea->SetRealm(realm);
     AddArea(newArea);
 }
@@ -61,7 +61,7 @@ void World::GenerateArea(int areaID, const std::string &areaName, Realm realm)
 void World::GenerateRoom(const int roomID, const std::string &description, int areaID, int x, int y, int z, uint16_t cExits)
 {
     auto area = &FindArea(areaID);
-    std::unique_ptr<Room> newRoom = std::make_unique<Room>(roomID, description);
+    std::shared_ptr<Room> newRoom = std::make_unique<Room>(roomID, description);
     area->get()->AddRoom(x, y, z, roomID);
     newRoom->SetArea(area->get()->Name());
     newRoom->SetAreaID(areaID);
@@ -70,14 +70,14 @@ void World::GenerateRoom(const int roomID, const std::string &description, int a
     AddRoom(newRoom);
 }
 
-std::map<int, std::unique_ptr<Room>>::const_iterator World::Rooms()
+std::map<int, std::shared_ptr<Room>> &World::Rooms()
 {
-    return m_rooms.begin();
+    return m_rooms;
 }
 
-std::map<int, std::unique_ptr<Area>>::const_iterator World::Areas() const
+std::map<int, std::shared_ptr<Area>> &World::Areas()
 {
-    return m_areas.begin();
+    return m_areas;
 }
 
 void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &connection)
@@ -92,22 +92,22 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
         player->BaseStats().SetStat(i, 10);
     player->CurStats().RecoverMobStats(player->BaseStats());
 
-    m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
+    m_playerDB.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
 }
 
 std::shared_ptr<Player> World::FindPlayer(const std::string &name)
 {
-//    auto player = m_playersOnline.find(name);
-//    if (player != m_playersOnline.end())
+//    auto player = m_playerDB.find(name);
+//    if (player != m_playerDB.end())
 //        return player->second;
 //    else
-//        return m_playersOnline.begin()->second;
-    for (const auto& p : m_playersOnline)
+//        return m_playerDB.begin()->second;
+    for (const auto& p : m_playerDB)
         if (p.second->Name() == name)
             return p.second;
 
     const auto len = name.length();
-    for (const auto& p : m_playersOnline)
+    for (const auto& p : m_playerDB)
         if (p.second->Name().substr(0, len) == name)
             return p.second;
 
@@ -116,28 +116,28 @@ std::shared_ptr<Player> World::FindPlayer(const std::string &name)
 
 void World::AddOnlinePlayer(std::shared_ptr<Player> &toAdd)
 {
-    m_playersOnline.insert(std::make_pair<std::string, std::shared_ptr<Player>>( toAdd->Name(), std::move(toAdd)));
+    m_playerDB.insert(std::make_pair<std::string, std::shared_ptr<Player>>(toAdd->Name(), std::move(toAdd)));
 }
 
 void World::RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove)
 {
-    for (auto p = m_playersOnline.begin(); p != m_playersOnline.end(); p++)
+    for (auto p = m_playerDB.begin(); p != m_playerDB.end(); p++)
         if (p->second == toRemove)
         {
-            m_playersOnline.erase(p);
+            m_playerDB.erase(p);
             break;
         }
 }
 
 std::map<std::string, std::shared_ptr<Player> > &World::Players()
 {
-    return m_playersOnline;
+    return m_playerDB;
 }
 
 void World::BroadcastMessage(const std::string &message, const Realm targetRealm) const
 {
     if (targetRealm == Realm::NONE)
-        for (auto &p : m_playersOnline)
+        for (auto &p : m_playerDB)
             p.second->Tell(message);
 }
 
@@ -169,13 +169,6 @@ void World::RemoveMonster(const std::shared_ptr<Monster> &toRemove)
 
 std::shared_ptr<Monster> World::FindMonster(const std::string &name)
 {
-//    std::shared_ptr<Monster> monster;
-//    for (auto m = m_monsterDB.begin(); m != m_monsterDB.end(); m++)
-//    {
-//        if (m->second->Name() == name)
-//            return m->second;
-//    }
-//    return m_monsterDB.begin()->second;
     for (const auto& r : m_rooms)
     {
         auto monster = r.second->FindMonster(name);
@@ -200,12 +193,12 @@ std::map<uint32_t, std::shared_ptr<Monster> > &World::Monsters()
     return m_monsterDB;
 }
 
-void World::AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::unique_ptr<Room> &room)
+void World::AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::shared_ptr<Room> &room)
 {
     room->AddMonster(toAdd);
 }
 
-void World::RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::unique_ptr<Room> &room)
+void World::RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::shared_ptr<Room> &room)
 {
     room->RemoveMonster(toRemove);
 }
@@ -233,7 +226,7 @@ void World::Tick()
     const auto ts = std::chrono::system_clock::now();
     const auto t_time = std::chrono::system_clock::to_time_t(ts);
     const auto time = std::ctime(&t_time);
-    for (auto &p : m_playersOnline)
+    for (auto &p : m_playerDB)
     {
         auto &player = p.second;
         auto &maxState = player->MaxState();
@@ -254,18 +247,18 @@ void World::Shutdown()
     std::cout << "Shutting down World object..." << std::endl;
     m_ticking = false;
     std::cout << "Ticking stopped." << std::endl;
-    std::cout << "Destroying Monster objects." << std::endl;
+/*    std::cout << "Destroying Monster objects." << std::endl;
     for (auto &m : m_monsterDB)
         delete m.second.get();
     std::cout << "Destroying Player objects." << std::endl;
-    for (auto &p : m_playersOnline)
+    for (auto &p : m_playerDB)
         delete p.second.get();
     std::cout << "Destroying Room objects." << std::endl;
     for (auto &r : m_rooms)
         delete r.second.get();
     std::cout << "Destroying Area objects." << std::endl;
     for (auto &a : m_areas)
-        delete a.second.get();
+        delete a.second.get();*/
     std::cout << "World Shutdown complete." << std::endl;
 
     // TODO(jon): Shutdown command
@@ -279,7 +272,7 @@ void World::MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, boo
     return MovePlayer(toMove, newRoom, quietly);
 }
 
-void World::MovePlayer(const std::shared_ptr<Player> &toMove, const std::unique_ptr<Room> &newRoom, bool quietly)
+void World::MovePlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &newRoom, bool quietly)
 {
     auto &oldRoom = FindRoom(toMove->Location());
     oldRoom->RemovePlayer(toMove);
@@ -300,7 +293,7 @@ void World::WalkPlayer(const std::shared_ptr<Player> &toMove, int newRoomID, Dir
     return WalkPlayer(toMove, toRoom, dir);
 }
 
-void World::WalkPlayer(const std::shared_ptr<Player> &toMove, const std::unique_ptr<Room> &toRoom, Direction dir)
+void World::WalkPlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &toRoom, Direction dir)
 {
     auto &fromRoom = FindRoom(toMove->Location());
 
@@ -319,4 +312,9 @@ void World::WalkPlayer(const std::shared_ptr<Player> &toMove, const std::unique_
 
     toMove->Tell("You travel " + toDir + "." + Server::NEWLINE + toRoom->HandleLook(toMove));
     toRoom->Show(toMove->Name() + " arrives from the " + fromDir + ".", toMove);
+}
+
+void World::ForEachArea(std::function<void()> func)
+{
+
 }

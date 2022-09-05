@@ -12,84 +12,29 @@
 
 namespace Mud
 {
+namespace Logic
+{
+    class World;
+}
 namespace DB
 {
     // https://docs.microsoft.com/en-us/azure/mysql/single-server/connect-cpp
     class DBConnection
     {
     public:
-        explicit DBConnection(const char *sql_hostname, const char *username, const char *password)
-        {
-            try
-            {
-                m_driver = get_driver_instance();
-                m_con = m_driver->connect(sql_hostname, username, password);
-            }
-            catch (sql::SQLException &e)
-            {
-                std::cerr << "[DB]: Could not connect to database sql_hostname. Error: " << e.what() << std::endl;
-                return;
-            }
+        explicit DBConnection(const char *sql_hostname, const char *username, const char *password);
 
-            m_con->setSchema("DarkFalls");
-        }
+        void QueryDB(const std::string &query);
 
-        void QueryDB(const std::string &query)
-        {
-            m_pstmt = m_con->prepareStatement(query);
-            auto rs = m_pstmt->executeQuery();
+        void InitializeDB();
 
-            while (rs->next())
-                std::cout << "Reading from table=(" << rs->getInt(1)
-                          << ", " << rs->getString(2)
-                          << ", " << rs->getInt(3)
-                          << ")" << std::endl;
+        void LoadAreas(Logic::World &world);
+        void SaveAreas(Logic::World &world);
+        void SaveArea(Logic::World &world, int areaID);
 
-            delete rs;
-            delete m_pstmt;
-        }
-
-        void LoadAreas(Logic::World &world)
-        {
-            const std::string query = "SELECT * FROM Areas";
-            m_pstmt = m_con->prepareStatement(query);
-            auto rs = m_pstmt->executeQuery();
-
-            while (rs->next())
-            {
-                int areaID = rs->getInt("areaID");
-                std::string name = rs->getString("name");
-                uint8_t realm = rs->getInt("realm");
-
-                world.GenerateArea(areaID, name, static_cast<Logic::Realm>(realm));
-            }
-
-            delete rs;
-            delete m_pstmt;
-        }
-
-        void LoadRooms(Logic::World &world)
-        {
-            const std::string query = "SELECT * FROM Rooms";
-            m_pstmt = m_con->prepareStatement(query);
-            auto rs = m_pstmt->executeQuery();
-
-            while (rs->next())
-            {
-                const int roomID = rs->getInt("roomID");
-                const int areaID = rs->getInt("areaID");
-                const std::string description = rs->getString("description");
-                const uint16_t cardinalExits = rs->getInt("cardinalExits");
-                const uint8_t xCoord = rs->getInt("xCoord");
-                const uint8_t yCoord = rs->getInt("yCoord");
-                const uint8_t zCoord = rs->getInt("zCoord");
-
-                world.GenerateRoom(roomID, description, areaID, xCoord, yCoord, zCoord, cardinalExits);
-            }
-
-            delete rs;
-            delete m_pstmt;
-        }
+        void LoadRooms(Logic::World &world);
+        void SaveRooms(Logic::World &world);
+        void SaveRoom(Logic::World &world, int roomID);
 
         void ShutdownDB()
         {

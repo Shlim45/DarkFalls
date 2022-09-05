@@ -31,23 +31,25 @@ public:
 
     /* AREAS */
 
-    std::map<int, std::unique_ptr<Area>>::const_iterator Areas() const;
+    std::map<int, std::shared_ptr<Area>> &Areas();
 
-    void AddArea(std::unique_ptr<Area> &toAdd);
+    void AddArea(std::shared_ptr<Area> &toAdd);
 
-    std::unique_ptr<Area> &FindArea(const std::string &areaName);
+    std::shared_ptr<Area> &FindArea(const std::string &areaName);
 
-    std::unique_ptr<Area> &FindArea(int areaID);
+    std::shared_ptr<Area> &FindArea(int areaID);
 
     void GenerateArea(int areaID, const std::string &areaName, Realm realm);
 
+    void ForEachArea(std::function<void()> func);
+
     /* ROOMS */
 
-    std::map<int, std::unique_ptr<Room>>::const_iterator Rooms();
+    std::map<int, std::shared_ptr<Room>> &Rooms();
 
-    void AddRoom(std::unique_ptr<Room> &toAdd);
+    void AddRoom(std::shared_ptr<Room> &toAdd);
 
-    std::unique_ptr<Room> &FindRoom(int roomId);
+    std::shared_ptr<Room> &FindRoom(int roomId);
 
     void GenerateRoom(int roomID, const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
 
@@ -64,10 +66,10 @@ public:
     std::map<std::string, std::shared_ptr<Player> > &Players();
 
     void MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, bool quietly = false);
-    void MovePlayer(const std::shared_ptr<Player> &toMove, const std::unique_ptr<Room> &newRoom, bool quietly = false);
+    void MovePlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &newRoom, bool quietly = false);
 
     void WalkPlayer(const std::shared_ptr<Player> &toMove, int newRoomID, Logic::Direction dir);
-    void WalkPlayer(const std::shared_ptr<Player> &toMove, const std::unique_ptr<Room> &toRoom, Logic::Direction dir);
+    void WalkPlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &toRoom, Logic::Direction dir);
 
     /* MONSTERS */
 
@@ -77,9 +79,9 @@ public:
 
     void RemoveMonster(const std::shared_ptr<Monster> &toRemove);
 
-    static void AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::unique_ptr<Room> &room);
+    static void AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::shared_ptr<Room> &room);
 
-    static void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::unique_ptr<Room> &room);
+    static void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::shared_ptr<Room> &room);
 
     std::shared_ptr<Monster> FindMonster(const std::string &name);
     std::shared_ptr<Monster> &FindMonster(uint32_t monsterID);
@@ -97,9 +99,9 @@ public:
     Combat &CombatLibrary() { return m_combatLib; }
 
 private:
-    std::map<int, std::unique_ptr<Room> > m_rooms;
-    std::map<int, std::unique_ptr<Area> > m_areas;
-    std::map<std::string, std::shared_ptr<Player> > m_playersOnline;
+    std::map<int, std::shared_ptr<Room> > m_rooms;
+    std::map<int, std::shared_ptr<Area> > m_areas;
+    std::map<std::string, std::shared_ptr<Player> > m_playerDB;
     std::map<uint32_t, std::shared_ptr<Monster> > m_monsterDB;
 //    Mud::Server::Server &m_server;
 

@@ -93,6 +93,7 @@ int main()
     }
 
     Mud::DB::DBConnection dbconn(SQL_HOSTNAME, SQL_USERNAME, SQL_PASSWORD);
+    dbconn.InitializeDB();
 
     std::cout << "Initializing World...\n";
     Mud::Logic::World world;
@@ -141,6 +142,10 @@ int main()
     std::cout << "\nInitializing Server...\n";
     Mud::Server::Server server(PORT, world);
     server.Run();
+
+    dbconn.SaveAreas(world);
+    dbconn.SaveRooms(world);
+    world.Shutdown();
 
     std::cout << "Program terminated normally." << std::endl;
     return 0;
