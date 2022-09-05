@@ -35,6 +35,11 @@ const std::string &Tokenizer::GetString()
     {
         return NO_STRING;
     }
+    else if (*m_pos == ' ')
+    {
+        AdvanceThroughSpaces();
+        return ReadNextString();
+    }
     else
     {
         return ReadNextString();
@@ -90,6 +95,17 @@ void Tokenizer::AdvanceToNextToken()
         if (*m_pos == TELNET_IAC)
             IgnoreTelnetCommand();
         else if (*m_pos >= ' ' && *m_pos < ASCII_DEL)
+            break;
+    }
+}
+
+void Tokenizer::AdvanceThroughSpaces()
+{
+    for (; m_pos != m_end; ++m_pos)
+    {
+        if (*m_pos == TELNET_IAC)
+            IgnoreTelnetCommand();
+        else if (*m_pos > ' ' && *m_pos < ASCII_DEL)
             break;
     }
 }

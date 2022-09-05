@@ -29,6 +29,7 @@ public:
 
 private:
     void AdvanceToNextToken();
+    void AdvanceThroughSpaces();
     const std::string &ReadNextString();
     void IgnoreTelnetCommand();
 

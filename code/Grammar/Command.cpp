@@ -98,7 +98,6 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
     auto player = mudInterface->GetPlayer();
     auto &response = mudInterface->ostream();
     auto &room = world.FindRoom(player->Location());
-    auto cmds = commands.CombineRemaining();
 
     if (!player->HasSecurityFlag(Mud::Security::Flag::CREATE))
     {
@@ -107,8 +106,7 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
         return;
     }
 
-    size_t nextSpace = cmds.find_first_of(' ');
-    auto createWhat = cmds.substr(0, nextSpace);
+    auto createWhat = commands.GetString();
     if (createWhat.length() == 0)
     {
         response << Server::NEWLINE << "Create what?  You must specify AREA, ROOM, or MONSTER."
@@ -127,7 +125,7 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
             return;
         }
 
-        auto roomDirection = cmds.substr(nextSpace+1, cmds.find_first_of(' ', nextSpace+1));
+        auto roomDirection = commands.GetString();
         boost::to_lower(roomDirection);
 
         Logic::Direction dir;
@@ -168,7 +166,6 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
 
 void AccountCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface, Logic::World &world) const
 {
-//    mudInterface->ostream() << mudInterface->GetAccount() << Server::NEWLINE;
     auto &os = mudInterface->ostream();
     const auto &pa = mudInterface->GetAccount();
     os << Server::NEWLINE << "Username:    " << pa->UserName() << Server::NEWLINE
@@ -201,7 +198,7 @@ void LookCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     auto roomID = player->Location();
     auto &room = world.FindRoom(roomID);
 
-    auto lookAtWhat = commands.CombineRemaining();
+    auto lookAtWhat = commands.GetString();
     if (lookAtWhat.length() == 0)
     {
         response << room->HandleLook(player) << Server::NEWLINE;
@@ -232,7 +229,7 @@ void AttackCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
     auto roomID = player->Location();
     auto &room = world.FindRoom(roomID);
 
-    auto attackWhat = commands.CombineRemaining();
+    auto attackWhat = commands.GetString();
     if (attackWhat.length() == 0)
     {
         response << Server::NEWLINE << "You must specify a target." << Server::NEWLINE;
@@ -547,11 +544,8 @@ void WhoCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared
                          Mud::Logic::World &world) const
 {
     auto &response = mudInterface->ostream();
-//    auto player = mudInterface->GetPlayer();
-//    auto roomID = player->Location();
-//    auto &room = world.FindRoom(roomID);
 
-    auto whoTarget = commands.CombineRemaining();
+    auto whoTarget = commands.GetString();
     if (whoTarget.length() == 0 || whoTarget == "all")
     {
         auto onlinePlayers = &world.Players();
