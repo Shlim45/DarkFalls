@@ -194,18 +194,6 @@ std::shared_ptr<Monster> Room::FindMonster(const std::string &name)
     return nullptr;
 }
 
-void Room::ShowOthers(const std::string &message, const std::shared_ptr<Player> &source)
-{
-    std::string msg = message;
-    size_t pos = msg.find("%s");
-    if (pos != std::string::npos)
-        msg.replace(pos, 2, source->DisplayName());
-
-    for (const auto &p : m_players)
-        if (p != source)
-            p->Tell(Server::NEWLINE + msg);
-}
-
 void Room::AddMonster(const std::shared_ptr<Monster> &monster)
 {
     if (monster)
@@ -215,14 +203,14 @@ void Room::AddMonster(const std::shared_ptr<Monster> &monster)
     }
 }
 
-void Room::Show(const std::string &sMessage, const std::shared_ptr<Player> &source, const std::string &oMessage)
+void Room::Show(const std::string &sMessage, Mob &source, const std::string &oMessage)
 {
     std::string msg;
     size_t pos;
 
     for (const auto &p : m_players)
     {
-        if (p == source)
+        if (*p == source)
         {
             msg = sMessage;
             pos = msg.find("%s");
@@ -234,27 +222,27 @@ void Room::Show(const std::string &sMessage, const std::shared_ptr<Player> &sour
             msg = oMessage;
             pos = msg.find("%s");
             if (pos != std::string::npos)
-                msg.replace(pos, 2, source->DisplayName());
+                msg.replace(pos, 2, source.DisplayName());
         }
         p->Tell(Server::NEWLINE + msg);
     }
 }
 
-void Room::Show(const std::string &sMessage, const std::shared_ptr<Player> &source, const std::string &tMessage,
-                const std::shared_ptr<Player> &target, const std::string &oMessage)
+void Room::Show(const std::string &sMessage, Mob &source, const std::string &tMessage,
+                Mob &target, const std::string &oMessage)
 {
 
 }
 
-void Room::Show(const std::string &message, const Player &source, const Mob &target)
+void Room::Show(const std::string &message, Mob &source, Mob &target, const std::string &oMessage)
 {
     std::string msg;
     size_t pos;
 
-    for (const auto &p : m_players)
+    for (auto &p : m_players)
     {
         msg = message;
-        if (p->DisplayName() == source.DisplayName())
+        if (*p == source)
         {
             pos = msg.find("%s");
             if (pos != std::string::npos)
@@ -264,7 +252,7 @@ void Room::Show(const std::string &message, const Player &source, const Mob &tar
             if (pos != std::string::npos)
                 msg.replace(pos, 2, target.DisplayName());
         }
-        else if (p->DisplayName() == target.DisplayName())
+        else if (*p == target)
         {
             pos = msg.find("%t");
             if (pos != std::string::npos)
@@ -276,6 +264,9 @@ void Room::Show(const std::string &message, const Player &source, const Mob &tar
         }
         else
         {
+            if (oMessage.length())
+                msg = oMessage;
+
             pos = msg.find("%s");
             if (pos != std::string::npos)
                 msg.replace(pos, 2, source.DisplayName());
@@ -286,4 +277,16 @@ void Room::Show(const std::string &message, const Player &source, const Mob &tar
         }
         p->Tell(Server::NEWLINE + msg);
     }
+}
+
+void Room::ShowOthers(const std::string &message, Mob &source)
+{
+    std::string msg = message;
+    size_t pos = msg.find("%s");
+    if (pos != std::string::npos)
+        msg.replace(pos, 2, source.DisplayName());
+
+    for (auto &p : m_players)
+        if (*p != source)
+            p->Tell(Server::NEWLINE + msg);
 }

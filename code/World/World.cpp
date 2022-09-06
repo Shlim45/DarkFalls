@@ -277,13 +277,13 @@ void World::MovePlayer(const std::shared_ptr<Player> &toMove, const std::shared_
     auto &oldRoom = FindRoom(toMove->Location());
     oldRoom->RemovePlayer(toMove);
     if (!quietly)
-        oldRoom->ShowOthers(toMove->Name() + " vanishes.", toMove);
+        oldRoom->ShowOthers(toMove->Name() + " vanishes.", *toMove);
 
     newRoom->AddPlayer(toMove);
     if (!quietly)
     {
         toMove->Tell(Server::NEWLINE + newRoom->HandleLook(toMove));
-        newRoom->ShowOthers(toMove->Name() + " appears.", toMove);
+        newRoom->ShowOthers(toMove->Name() + " appears.", *toMove);
     }
 }
 
@@ -306,12 +306,12 @@ void World::WalkPlayer(const std::shared_ptr<Player> &toMove, const std::shared_
     else if (fromDir == "down")
         fromDir = "below";
 
-    fromRoom->ShowOthers(toMove->Name() + " leaves " + toDir + ".", toMove);
+    fromRoom->ShowOthers(toMove->Name() + " leaves " + toDir + ".", *toMove);
 
     MovePlayer(toMove, toRoom, true);
 
     toMove->Tell("You travel " + toDir + "." + Server::NEWLINE + toRoom->HandleLook(toMove));
-    toRoom->ShowOthers(toMove->Name() + " arrives from the " + fromDir + ".", toMove);
+    toRoom->ShowOthers(toMove->Name() + " arrives from the " + fromDir + ".", *toMove);
 }
 
 void World::ForEachArea(std::function<void()> func)

@@ -42,7 +42,7 @@ namespace Mud::Logic
 
         void SetAreaID(int newArea) { m_areaId = newArea; }
 
-        int AreaID() { return m_areaId; }
+        [[nodiscard]] int AreaID() const { return m_areaId; }
 
         [[nodiscard]] std::set<std::shared_ptr<Player>>::const_iterator Players() const;
 
@@ -81,16 +81,16 @@ namespace Mud::Logic
 
         std::tuple<int,int,int> Coords() { return m_coords; }
 
-        void ShowOthers(const std::string &message, const std::shared_ptr<Player> &source);
+        void ShowOthers(const std::string &message, Mob &source);
 
-        void Show(const std::string &sMessage, const std::shared_ptr<Player> &source,
+        void Show(const std::string &sMessage, Mob &source,
                   const std::string &oMessage);
 
-        void Show(const std::string &sMessage, const std::shared_ptr<Player> &source,
-                  const std::string &tMessage, const std::shared_ptr<Player> &target,
+        void Show(const std::string &sMessage, Mob &source,
+                  const std::string &tMessage, Mob &target,
                   const std::string &oMessage);
 
-        void Show(const std::string &message, const Player &source, const Mob &target);
+        void Show(const std::string &message, Mob &source, Mob &target, const std::string &oMessage = "");
 
     private:
         int m_roomId;

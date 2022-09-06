@@ -203,11 +203,11 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
 
         auto &gotoRoom = world.FindRoom(newRoomID);
         room->RemovePlayer(player);
-        room->ShowOthers(player->Name() + " vanishes.", player);
+        room->ShowOthers(player->Name() + " vanishes.", *player);
 
         gotoRoom->AddPlayer(player);
         player->Tell("You go to Created Room #" + std::to_string(newRoomID) + "." + Server::NEWLINE + gotoRoom->HandleLook(player));
-        gotoRoom->ShowOthers(player->Name() + " appears.", player);
+        gotoRoom->ShowOthers(player->Name() + " appears.", *player);
     }
     else
     {
@@ -307,7 +307,7 @@ void QuitCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     auto &room = world.FindRoom(roomID);
     if (room != nullptr)
     {
-        room->ShowOthers(player->Name() + " disappears in a puff of smoke.", player);
+        room->ShowOthers(player->Name() + " disappears in a puff of smoke.", *player);
         room->RemovePlayer(player);
     }
     player->Tell(Server::NEWLINE + "Bye bye!" + Server::NEWLINE);
@@ -536,8 +536,8 @@ void SayCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared
     }
 
     auto &room = world.FindRoom(player->Location());
-    mudInterface->ostream() << "You say, '" << sayWhat << "'" << Server::NEWLINE;
-    room->ShowOthers(player->Name() + " says, '" + sayWhat + "'", player);
+//    mudInterface->ostream() << "You say, '" << sayWhat << "'" << Server::NEWLINE;
+    room->Show("%s say, '" + sayWhat + "'", *player, "%s says, '" + sayWhat + "'");
 }
 
 void WhoCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,

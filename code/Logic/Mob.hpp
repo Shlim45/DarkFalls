@@ -31,6 +31,11 @@ public:
         return rhs.Name() == Name();
     }
 
+    virtual bool operator!=(Mob &rhs)
+    {
+        return rhs.Name() != Name();
+    }
+
     [[nodiscard]] std::string Name() const { return m_name; }
     void SetName(std::string name) { m_name = std::move(name); }
 

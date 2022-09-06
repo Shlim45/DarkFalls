@@ -38,6 +38,21 @@ namespace Mud::Logic
             return rhs.Name() == Name();
         }
 
+        bool operator!=(Player &rhs) const
+        {
+            return rhs.Name() != Name();
+        }
+
+        bool operator!=(Monster &rhs) const
+        {
+            return true;
+        }
+
+        bool operator!=(Mob &rhs) const
+        {
+            return rhs.Name() != Name();
+        }
+
         void Tell(const std::string& message)
         {
             m_connection << message << Server::NEWLINE;

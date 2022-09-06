@@ -42,6 +42,22 @@ public:
         return false;
     }
 
+    bool operator!=(Monster &rhs) const
+    {
+        return rhs.MonsterID() != MonsterID();
+    }
+
+    bool operator!=(Mob &rhs) const
+    {
+        // TODO(jon): Add MobID to MOB class
+        return rhs.DisplayName() != DisplayName() && rhs.Location() == Location();
+    }
+
+    bool operator!=(Player &rhs) const
+    {
+        return true;
+    }
+
     [[nodiscard]] uint32_t MonsterID() const { return m_monsterId; }
 
     [[nodiscard]] std::string Keyword() const override

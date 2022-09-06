@@ -81,7 +81,7 @@ void MudInterface::HandleLine(const std::string &line)
 
         auto &startRoom = m_world.FindRoom(1);
         startRoom->AddPlayer(m_player);
-        startRoom->ShowOthers(m_player->Name() + " appears in a puff of smoke.", m_player);
+        startRoom->ShowOthers(m_player->Name() + " appears in a puff of smoke.", *m_player);
 
         m_connection << Server::ECHOON << Server::NEWLINE << Server::NEWLINE
                      << "Logged in as " << Server::GREENTEXT << m_player->Name() << Server::PLAINTEXT << "."
