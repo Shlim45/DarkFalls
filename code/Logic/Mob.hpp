@@ -9,71 +9,118 @@
 #include "MobState.hpp"
 #include "MobStats.hpp"
 
-namespace Mud::Logic
+namespace Mud
 {
-class Room;
-enum class Realm;
-
-class Mob
+namespace Security
 {
-public:
-    explicit Mob(std::string name)
-    : m_name(std::move(name)), m_level(1),
-    m_curState(MobState()), m_maxState(MobState()),
-    m_baseStats(MobStats()), m_curStats(MobStats())
-    {}
+    enum class Flag;
+    enum class Role;
+}
+namespace Logic
+{
+    class Room;
 
-    Mob() = default;
-    virtual ~Mob() = default;
+    enum class Realm;
 
-    virtual bool operator==(Mob &rhs)
+    class Mob
     {
-        return rhs.Name() == Name();
-    }
+    public:
+        explicit Mob(std::string name)
+                : m_name(std::move(name)), m_level(1),
+                  m_curState(MobState()), m_maxState(MobState()),
+                  m_baseStats(MobStats()), m_curStats(MobStats())
+        {}
 
-    virtual bool operator!=(Mob &rhs)
-    {
-        return rhs.Name() != Name();
-    }
+        Mob() = default;
 
-    [[nodiscard]] std::string Name() const { return m_name; }
-    void SetName(std::string name) { m_name = std::move(name); }
+        virtual ~Mob() = default;
 
-    [[nodiscard]] virtual std::string Keyword() const { return m_name; };
-    [[nodiscard]] virtual std::string DisplayName() const { return m_name; }
+        virtual bool operator==(Mob &rhs)
+        {
+            return rhs.Name() == Name();
+        }
 
-    [[nodiscard]] int Location() const { return m_location; }
-    void SetLocation(int newLocation) { m_location = newLocation; }
+        virtual bool operator!=(Mob &rhs)
+        {
+            return rhs.Name() != Name();
+        }
 
-    [[nodiscard]] uint32_t Experience() const { return m_experience; }
-    void SetExperience(uint32_t exp) { m_experience = exp; };
+        [[nodiscard]] std::string Name() const
+        { return m_name; }
 
-    [[nodiscard]] uint8_t Level() const { return m_level; }
-    void SetLevel(uint8_t level) { m_level = level; };
+        void SetName(std::string name)
+        { m_name = std::move(name); }
 
-    MobState &CurState() { return m_curState; }
-    MobState &MaxState() { return m_maxState; }
+        [[nodiscard]] virtual std::string Keyword() const
+        { return m_name; };
 
-    MobStats &BaseStats() { return m_baseStats; }
-    MobStats &CurStats() { return m_curStats; }
+        [[nodiscard]] virtual std::string DisplayName() const
+        { return m_name; }
 
-    [[nodiscard]] Realm GetRealm() const { return m_realm; }
+        [[nodiscard]] int Location() const
+        { return m_location; }
+
+        void SetLocation(int newLocation)
+        { m_location = newLocation; }
+
+        [[nodiscard]] uint32_t Experience() const
+        { return m_experience; }
+
+        void SetExperience(uint32_t exp)
+        { m_experience = exp; };
+
+        [[nodiscard]] uint8_t Level() const
+        { return m_level; }
+
+        void SetLevel(uint8_t level)
+        { m_level = level; };
+
+        MobState &CurState()
+        { return m_curState; }
+
+        MobState &MaxState()
+        { return m_maxState; }
+
+        MobStats &BaseStats()
+        { return m_baseStats; }
+
+        MobStats &CurStats()
+        { return m_curStats; }
+
+        [[nodiscard]] Realm GetRealm() const
+        { return m_realm; }
+
+        virtual void Tell(const std::string &message)
+        {}
+
+        virtual void Quit()
+        {}
+
+        virtual void AdjExperience(int howMuch)
+        {}
+
+        virtual void SetSecurityRole(Security::Role role)
+        {}
+
+        [[nodiscard]] virtual bool HasSecurityFlag(Security::Flag toCheck) const
+        { return false; }
 
 
-protected:
-    std::string m_name;
-    int m_location{};
-    uint32_t m_experience{};
-    uint8_t m_level{};
+    protected:
+        std::string m_name;
+        int m_location{};
+        uint32_t m_experience{};
+        uint8_t m_level{};
 
-    Realm m_realm{};
-    MobState m_curState;
-    MobState m_maxState;
+        Realm m_realm{};
+        MobState m_curState;
+        MobState m_maxState;
 
-    MobStats m_baseStats{};
-    MobStats m_curStats{};
-};
+        MobStats m_baseStats{};
+        MobStats m_curStats{};
+    };
 
+} // Logic
 } // Mud
 
 #endif //DARKFALLS_MOB_HPP

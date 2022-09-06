@@ -23,18 +23,13 @@ public:
     Combat() = default;
     ~Combat() = default;
 
-//    template <typename T>
-//    void HandleAttack(T &attacker, T &defender, World &world);
-    void HandleAttackPP(Player &attacker, Player &defender, World &world);
-    void HandleAttackPM(Player &attacker, Monster &defender, World &world);
-    void HandleAttackMP(Monster &attacker, Player &defender, World &world);
-    void HandleAttackMM(Monster &attacker, Monster &defender, World &world);
-
     int RandomInt(int min, int max);
 
+    void HandleAttack(Mob &attacker, Mob &defender, World &world);
+
 private:
-    uint16_t CalculateBaseDamage(Mob &attacker);
-    uint16_t CalculateMaxDamage(Mob &attacker, Mob &defender, uint16_t baseDamage);
+    static uint16_t CalculateBaseDamage(Mob &attacker);
+    static uint16_t CalculateMaxDamage(Mob &attacker, Mob &defender, uint16_t baseDamage);
 
 private:
     std::default_random_engine m_defEngine;

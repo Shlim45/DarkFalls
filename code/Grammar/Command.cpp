@@ -302,9 +302,11 @@ void AttackCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
         return;
     }
     else if (pTarget)
-        world.CombatLibrary().HandleAttackPP(*player, *pTarget, world);
+        world.CombatLibrary().HandleAttack(*player, *pTarget, world);
+//        world.CombatLibrary().HandleAttackPP(*player, *pTarget, world);
     else if (mTarget)
-        world.CombatLibrary().HandleAttackPM(*player, *mTarget, world);
+        world.CombatLibrary().HandleAttack(*player, *mTarget, world);
+//        world.CombatLibrary().HandleAttackPM(*player, *mTarget, world);
 }
 
 void QuitCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
@@ -349,18 +351,18 @@ void WhoCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared
     if (whoTarget.length() == 0 || whoTarget == "all")
     {
         auto onlinePlayers = &world.Players();
-        for (auto p = onlinePlayers->begin(); p != onlinePlayers->end(); p++)
-            response << "  " << p->second->Name() << Server::NEWLINE;
+        for (auto & onlinePlayer : *onlinePlayers)
+            response << "  " << onlinePlayer.second->Name() << Server::NEWLINE;
         response << Server::NEWLINE << "There are " << onlinePlayers->size()
                  << " players online in DarkFalls." << Server::NEWLINE;
     }
     else
     {
         auto onlinePlayers = &world.Players();
-        for (auto p = onlinePlayers->begin(); p != onlinePlayers->end(); p++)
-            if (p->second->Name() == whoTarget)
+        for (auto & onlinePlayer : *onlinePlayers)
+            if (onlinePlayer.second->Name() == whoTarget)
             {
-                response << p->second->Name() << " is online in room " << p->second->Location() << "." << Server::NEWLINE;
+                response << onlinePlayer.second->Name() << " is online in room " << onlinePlayer.second->Location() << "." << Server::NEWLINE;
                 return;
             }
         response << "Player not found." << Server::NEWLINE;
