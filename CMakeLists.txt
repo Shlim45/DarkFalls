@@ -17,10 +17,10 @@ include_directories( ${Boost_INCLUDE_DIR} . )
 #  MYSQLCONNECTORCPP_ROOT_DIR - path to start searching for the module
 
 set(MYSQLCONNECTORCPP_ROOT_DIR
-        "/usr/include/mysql-cppconn-8" # ${MYSQLCONNECTORCPP_ROOT_DIR}
+        "${MYSQLCONNECTORCPP_ROOT_DIR}"
         CACHE
         PATH
-        "Where to start looking for this component.")
+        "/usr/include/mysql-cppconn-8") # Where to start looking for this component.
 
 if(WIN32)
     find_path(MYSQLCONNECTORCPP_INCLUDE_DIR

@@ -74,7 +74,8 @@ Grammar::Grammar()
     m_commands["d"] = down;
 }
 
-void Grammar::Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const
+void Grammar::Parse(Dictionary::Tokenizer &tokenizer, const std::shared_ptr<Logic::MudInterface>& mudInterface,
+                    Logic::World &world) const
 {
     const auto &verb = tokenizer.GetString();
     const auto verbCommand = m_commands.find(verb);

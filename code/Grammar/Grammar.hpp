@@ -28,7 +28,8 @@ class Grammar
 {
 public:
     Grammar();
-    void Parse(Dictionary::Tokenizer &tokenizer, std::shared_ptr<Logic::MudInterface> mudInterface, Logic::World &world) const;
+    void Parse(Dictionary::Tokenizer &tokenizer, const std::shared_ptr<Logic::MudInterface>& mudInterface,
+               Logic::World &world) const;
 
 private:
     std::map<std::string, std::shared_ptr<Command> > m_commands;
