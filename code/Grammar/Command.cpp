@@ -397,25 +397,20 @@ MoveCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
     boost::to_lower(cmd);
 
     Logic::Direction dir = Logic::CardinalExit::GetDirectionFromString(cmd);
-    if (dir == Logic::Direction::INVALID)
-    {
-        mudInterface->ostream() << Server::NEWLINE << "'" << cmd << "' is an invalid direction."
-                                << Server::NEWLINE;
-    }
 
     auto player            = mudInterface->GetPlayer();
     auto &room = world.FindRoom(player->Location());
-    auto area               = &world.FindArea(room->AreaID());
     std::tuple<int,int,int> coords = room->Coords();
 
-    if (room->HasCardinalExit(dir))
-        Logic::CardinalExit::AdjustXYZByDirection(coords, dir);
-    else
+    if (!room->HasCardinalExit(dir))
     {
         player->Tell("You cannot travel in that direction.");
         return;
     }
 
+    Logic::CardinalExit::AdjustXYZByDirection(coords, dir);
+
+    auto area = &world.FindArea(room->AreaID());
     int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
 
     world.WalkPlayer(player, newRoomID, dir);

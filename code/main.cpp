@@ -18,6 +18,7 @@ namespace
 }
 
 int Mud::Logic::Area::areaCount = 0;
+
 int Mud::Logic::Room::roomCount = 0;
 int Mud::Logic::Monster::monsterCount = 0;
 

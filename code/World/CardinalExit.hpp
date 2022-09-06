@@ -42,37 +42,47 @@ namespace Mud::Logic
                 case Direction::NORTH:
                     std::get<Y>(coords) += 1;
                     break;
+
                 case Direction::SOUTH:
                     std::get<Y>(coords) -= 1;
                     break;
+
                 case Direction::EAST:
                     std::get<X>(coords) += 1;
                     break;
+
                 case Direction::WEST:
                     std::get<X>(coords) -= 1;
                     break;
+
                 case Direction::NORTHEAST:
                     std::get<X>(coords) += 1;
                     std::get<Y>(coords) += 1;
                     break;
+
                 case Direction::NORTHWEST:
                     std::get<X>(coords) -= 1;
                     std::get<Y>(coords) += 1;
                     break;
+
                 case Direction::SOUTHEAST:
                     std::get<X>(coords) += 1;
                     std::get<Y>(coords) -= 1;
                     break;
+
                 case Direction::SOUTHWEST:
                     std::get<X>(coords) -= 1;
                     std::get<Y>(coords) -= 1;
                     break;
+
                 case Direction::UP:
                     std::get<Z>(coords) += 1;
                     break;
+
                 case Direction::DOWN:
                     std::get<Z>(coords) -= 1;
                     break;
+
                 case Direction::INVALID:
                     break;
             }

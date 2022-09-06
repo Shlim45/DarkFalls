@@ -34,9 +34,9 @@ namespace Mud::Logic
             return rhs.m_name == m_name;
         }
 
-        int AreaID() { return m_areaId; }
+        [[nodiscard]] int AreaID() const { return m_areaId; }
 
-        std::string Name() const { return m_name; }
+        [[nodiscard]] std::string Name() const { return m_name; }
 
         void SetRealm(Realm realm) { m_realm = realm; }
         Realm GetRealm() { return m_realm; }
@@ -44,11 +44,12 @@ namespace Mud::Logic
         void AddRoom(int x, int y, int z, int roomID);
 
         int FindRoomID(int x, int y, int z);
+        int FindRoomID(std::tuple<int, int, int> &coords);
 
         static int GetWorldCount() { return areaCount; }
 
     private:
-        int m_areaId;
+        int m_areaId{};
         std::string m_name;
         std::map<std::tuple<int,int,int>, int> m_coords;
         Realm m_realm{};
