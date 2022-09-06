@@ -12,6 +12,7 @@ namespace Mud::Logic
 {
     enum class Direction
     {
+        INVALID = -1,
         NORTH,
         SOUTH,
         EAST,
@@ -72,6 +73,8 @@ namespace Mud::Logic
                 case Direction::DOWN:
                     std::get<Z>(coords) -= 1;
                     break;
+                case Direction::INVALID:
+                    break;
             }
         }
 
@@ -99,39 +102,23 @@ namespace Mud::Logic
                     return Direction::DOWN;
                 case Direction::DOWN:
                     return Direction::UP;
+                case Direction::INVALID:
+                    return dir;
             }
             return dir;
         }
 
-//    private:
-//        Direction m_direction;
-//        std::string const m_names[NUM_DIRECTIONS] =
-//                {
-//                        "north",
-//                        "south",
-//                        "east",
-//                        "west",
-//                        "northeast",
-//                        "northwest",
-//                        "southeast",
-//                        "southwest",
-//                        "up",
-//                        "down",
-//                };
-//
-//        std::string const m_codes[NUM_DIRECTIONS] =
-//                {
-//                        "n",
-//                        "s",
-//                        "e",
-//                        "w",
-//                        "ne",
-//                        "nw",
-//                        "se",
-//                        "sw",
-//                        "u",
-//                        "d",
-//                };
+        static Direction GetDirectionFromString(const std::string &str)
+        {
+            auto query = str;
+            boost::to_lower(query);
+
+            for (int i = 0; i < Logic::CardinalExit::NUM_DIRECTIONS; i++)
+                if (Logic::CardinalExit::DirectionCodes[i] == query || Logic::CardinalExit::DirectionNames[i] == query)
+                    return static_cast<Logic::Direction>(i);
+
+            return Direction::INVALID;
+        }
     };
 
 } // Mud::Logic

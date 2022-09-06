@@ -25,6 +25,9 @@ public:
 
     const std::string &GetString();
 
+    const std::string &GetCommand();
+
+    std::string Combine(char delim = ' ');
     std::string CombineRemaining(const std::string &delim = " ");
 
 private:

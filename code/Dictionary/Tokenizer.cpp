@@ -46,6 +46,35 @@ const std::string &Tokenizer::GetString()
     }
 }
 
+const std::string &Tokenizer::GetCommand()
+{
+    auto &result = m_cache.front();
+    return result;
+}
+
+std::string Tokenizer::Combine(const char delim)
+{
+    std::string cacheResult;
+    if (!m_cache.empty())
+    {
+        for (const auto &c : m_cache)
+            cacheResult.append(c).push_back(delim);
+    }
+
+    auto &result = m_cache.emplace_back();
+    m_cacheIterator = m_cache.end();
+    for (++m_pos; m_pos != m_end; ++m_pos)
+    {
+        if (*m_pos < ' ' || *m_pos >= ASCII_DEL)
+            break;
+        else if (*m_pos == ' ')
+            result.push_back(delim);
+        else
+            result.push_back(*m_pos);
+    }
+    return cacheResult + result;
+}
+
 std::string Tokenizer::CombineRemaining(const std::string &delim)
 {
     auto &result = m_cache.emplace_back();

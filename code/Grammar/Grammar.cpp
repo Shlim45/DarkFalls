@@ -32,46 +32,29 @@ Grammar::Grammar()
     m_commands["att"] = attack;
     m_commands["hit"] = attack;
 
+
     /* Movement */
-    auto north = std::make_shared<NorthCommand>();
-    m_commands["north"] = north;
-    m_commands["n"] = north;
-
-    auto south = std::make_shared<SouthCommand>();
-    m_commands["south"] = south;
-    m_commands["s"] = south;
-
-    auto east = std::make_shared<EastCommand>();
-    m_commands["east"] = east;
-    m_commands["e"] = east;
-
-    auto west = std::make_shared<WestCommand>();
-    m_commands["west"] = west;
-    m_commands["w"] = west;
-
-    auto northeast = std::make_shared<NorthEastCommand>();
-    m_commands["northeast"] = northeast;
-    m_commands["ne"] = northeast;
-
-    auto northwest = std::make_shared<NorthWestCommand>();
-    m_commands["northwest"] = northwest;
-    m_commands["nw"] = northwest;
-
-    auto southeast = std::make_shared<SouthEastCommand>();
-    m_commands["southeast"] = southeast;
-    m_commands["se"] = southeast;
-
-    auto southwest = std::make_shared<SouthWestCommand>();
-    m_commands["southwest"] = southwest;
-    m_commands["sw"] = southwest;
-
-    auto up = std::make_shared<UpCommand>();
-    m_commands["up"] = up;
-    m_commands["u"] = up;
-
-    auto down = std::make_shared<DownCommand>();
-    m_commands["down"] = down;
-    m_commands["d"] = down;
+    auto movement = std::make_shared<MoveCommand>();
+    m_commands["north"] = movement;
+    m_commands["n"] = movement;
+    m_commands["south"] = movement;
+    m_commands["s"] = movement;
+    m_commands["east"] = movement;
+    m_commands["e"] = movement;
+    m_commands["west"] = movement;
+    m_commands["w"] = movement;
+    m_commands["northeast"] = movement;
+    m_commands["ne"] = movement;
+    m_commands["northwest"] = movement;
+    m_commands["nw"] = movement;
+    m_commands["southeast"] = movement;
+    m_commands["se"] = movement;
+    m_commands["southwest"] = movement;
+    m_commands["sw"] = movement;
+    m_commands["up"] = movement;
+    m_commands["u"] = movement;
+    m_commands["down"] = movement;
+    m_commands["d"] = movement;
 }
 
 void Grammar::Parse(Dictionary::Tokenizer &tokenizer, const std::shared_ptr<Logic::MudInterface>& mudInterface,
