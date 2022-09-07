@@ -8,6 +8,8 @@
 
 using namespace Mud::Logic;
 
+int Room::roomCount = 0;
+
 std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
 {
     std::string sOutput = Server::NEWLINE;

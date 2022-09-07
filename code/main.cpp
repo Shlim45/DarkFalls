@@ -2,8 +2,9 @@
 #include <thread>
 #include "Server/Text.hpp"
 #include "World/World.hpp"
-#include "World/Area.hpp"
-#include "World/Room.hpp"
+//#include "World/Area.hpp"
+//#include "World/Room.hpp"
+#include "code/Logic/Mobs/Monster.hpp"
 #include "Server/Server.hpp"
 #include "Database/DBConnection.hpp"
 
@@ -15,49 +16,6 @@ namespace
     const int MINOR = 1;
     const int PATCH = 0;
 }
-
-int Mud::Logic::Area::areaCount = 0;
-
-int Mud::Logic::Room::roomCount = 0;
-int Mud::Logic::Monster::monsterCount = 0;
-
-std::string Mud::Logic::CardinalExit::DirectionNames[NUM_DIRECTIONS] =
-        {
-                "north",
-                "south",
-                "east",
-                "west",
-                "northeast",
-                "northwest",
-                "southeast",
-                "southwest",
-                "up",
-                "down",
-        };
-
-std::string Mud::Logic::CardinalExit::DirectionCodes[NUM_DIRECTIONS] =
-        {
-                "n",
-                "s",
-                "e",
-                "w",
-                "ne",
-                "nw",
-                "se",
-                "sw",
-                "u",
-                "d",
-        };
-
-const std::vector<std::string> Mud::Logic::MobStats::StatNames =
-        {
-            "Strength",
-            "Constitution",
-            "Agility",
-            "Dexterity",
-            "Intelligence",
-            "Wisdom",
-        };
 
 //void timer_start(std::function<void()> func, unsigned int interval)
 //{

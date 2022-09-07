@@ -7,6 +7,8 @@
 
 using namespace Mud::Logic;
 
+int Area::areaCount = 0;
+
 void Area::AddRoom(int x, int y, int z, int roomID)
 {
     auto coords = std::make_tuple(x,y,z);

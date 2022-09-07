@@ -2,8 +2,11 @@
 // Created by shlim on 8/29/22.
 //
 
+#include <sstream>
 #include "Combat.hpp"
 #include "code/World/World.hpp"
+#include "code/Logic/Mobs/Mob.hpp"
+#include "code/Server/Text.hpp"
 
 using namespace Mud::Logic;
 

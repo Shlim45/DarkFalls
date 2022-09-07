@@ -8,8 +8,6 @@
 #include "code/Logic/includes.hpp"
 #include "Area.hpp"
 #include "Room.hpp"
-#include "code/Logic/Mobs/Player.hpp"
-#include "code/Logic/Mobs/Monster.hpp"
 #include "code/Logic/Libraries/Combat.hpp"
 //#include "code/Server/Server.hpp"
 
@@ -23,7 +21,6 @@ class Server;
 
 namespace Logic
 {
-
 class World
 {
 public:

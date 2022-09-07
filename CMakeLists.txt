@@ -85,12 +85,18 @@ set(SRCS
         code/Logic/MudInterface.cpp
         code/Logic/Libraries/Combat.cpp
         code/Logic/Accounts/PlayerAccount.cpp
+        code/Logic/Items/Item.cpp
+        code/Logic/Items/Item.hpp
+        code/Logic/MobStats.cpp
+        code/Logic/Mobs/Monster.cpp
+        code/World/CardinalExit.cpp
         code/World/Room.cpp
         code/World/Area.cpp
         code/World/World.cpp
         code/Server/Server.cpp
         code/Server/ConnectionBase.cpp
-        code/Server/LineOrientedConnection.cpp code/Database/DBConnection.cpp)
+        code/Server/LineOrientedConnection.cpp
+        code/Database/DBConnection.cpp)
 
 include_directories(${MYSQLCONNECTORCPP_INCLUDE_DIRS})
 link_directories(${MYSQLCONNECTORCPP_LIBRARIES})
