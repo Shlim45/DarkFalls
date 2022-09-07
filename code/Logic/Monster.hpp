@@ -88,10 +88,10 @@ public:
             auto bonus = 1.0f + ((float) lvlDiff) / 10.0f;
             const int exp = (int) ((float) m_experience * bonus);
             killer.AdjExperience(exp);
-            std::stringstream rpMessage;
-            rpMessage << "You gain " << Server::YELLOWTEXT << exp << Server::PLAINTEXT
-                      <<" experience points!" << Server::NEWLINE << Server::NEWLINE;
-            killer.Tell(rpMessage.str());
+            std::stringstream expMessage;
+            expMessage << "You gain " << Server::YELLOWTEXT << exp << Server::PLAINTEXT
+                       << " experience points!" << Server::NEWLINE;
+            killer.Tell(expMessage.str());
         }
 
         // TODO(jon): needs to accept &world to destroy the monster.
