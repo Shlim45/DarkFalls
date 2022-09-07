@@ -1,0 +1,99 @@
+//
+// Created by shlim on 9/7/22.
+//
+
+#ifndef DARKFALLS_ITEM_HPP
+#define DARKFALLS_ITEM_HPP
+
+#include "code/Logic/includes.hpp"
+
+namespace Mud
+{
+namespace Logic
+{
+class Mob;
+
+class Item
+{
+public:
+    static int itemCount;
+    Item() = default;
+    ~Item() = default;
+    explicit Item(uint32_t itemId) : m_itemId(itemId)
+    {
+        m_article = "a";
+        m_name = "generic item";
+        m_keyword = "item";
+    }
+
+    Item(uint32_t itemId, std::string &art, std::string &name, std::string &key)
+            : m_itemId(itemId), m_article(std::move(art)), m_name(std::move(name)), m_keyword(std::move(key))
+    { }
+
+
+    bool operator==(Item &rhs) const
+    {
+        return rhs.ItemID() == ItemID();
+    }
+
+    bool operator!=(Item &rhs) const
+    {
+        return rhs.ItemID() != ItemID();
+    }
+
+    [[nodiscard]] uint32_t ItemID() const { return m_itemId; }
+
+    [[nodiscard]] std::string Article() const
+    {
+        return m_article;
+    }
+    void SetArticle(std::string &art) { m_article = std::move(art); }
+
+    [[nodiscard]] std::string Keyword() const
+    {
+        return m_keyword;
+    }
+    void SetKeyword(std::string &key) { m_keyword = std::move(key); }
+
+    [[nodiscard]] std::string Name() const
+    {
+        return m_name;
+    }
+    void SetName(std::string &name) { m_name = std::move(name); }
+
+    [[nodiscard]] std::string DisplayName() const
+    {
+        std::stringstream result;
+        if (m_article.length())
+            result << m_article << " ";
+        result << m_name;
+        return result.str();
+    }
+
+    [[nodiscard]] uint16_t Value() const { return m_value; }
+    void SetValue(uint16_t value)        { m_value = value; }
+
+    [[nodiscard]] uint32_t Flags() const        { return m_flags; }
+    void SetFlags(uint32_t flags) { m_flags = flags; }
+    void AddFlag(uint32_t flag)   { m_flags |= flag; }
+
+    [[nodiscard]] int Location() const      { return m_location; }
+    void SetLocation(int loc) { m_location = loc; }
+
+    static int GetWorldCount() { return itemCount; }
+
+private:
+    uint32_t m_itemId;
+    std::string m_article;
+    std::string m_name;
+    std::string m_keyword;
+    uint16_t m_value{};
+    uint32_t m_flags{};
+    int m_location{};
+    std::shared_ptr<Mob> m_owner;
+};
+
+} // Mud
+} // Logic
+
+#endif //DARKFALLS_ITEM_HPP
