@@ -8,6 +8,9 @@
 #include "code/Logic/includes.hpp"
 #include "Area.hpp"
 #include "Room.hpp"
+#include "code/Logic/Items/Item.hpp"
+#include "code/Logic/Mobs/Player.hpp"
+#include "code/Logic/Mobs/Monster.hpp"
 #include "code/Logic/Libraries/Combat.hpp"
 //#include "code/Server/Server.hpp"
 
@@ -85,6 +88,8 @@ public:
 
     std::map<uint32_t, std::shared_ptr<Monster> > &Monsters();
 
+    /* ITEMS */
+
     void BroadcastMessage(const std::string &message, Realm targetRealm = Realm::NONE) const;
 
     void StartTicking(uint16_t interval);
@@ -96,6 +101,7 @@ public:
     Combat &CombatLibrary() { return m_combatLib; }
 
 private:
+    std::map<int, std::shared_ptr<Item> > m_items;
     std::map<int, std::shared_ptr<Room> > m_rooms;
     std::map<int, std::shared_ptr<Area> > m_areas;
     std::map<std::string, std::shared_ptr<Player> > m_playerDB;

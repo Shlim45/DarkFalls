@@ -15,6 +15,7 @@ namespace Logic
 {
 class Player;
 
+
     class Monster : public Mob
     {
     public:

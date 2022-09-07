@@ -6,6 +6,7 @@
 #define DARKFALLS_COMMON_HPP
 
 #include <string>
+#include <sstream>
 #include <utility>
 #include <map>
 #include <memory>
