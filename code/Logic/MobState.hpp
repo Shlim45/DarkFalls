@@ -21,9 +21,9 @@ public:
         m_power = power;
     }
 
-    int Health() const { return m_health; }
-    int Fatigue() const { return m_fatigue; }
-    int Power() const { return m_power; }
+    [[nodiscard]] int Health() const { return m_health; }
+    [[nodiscard]] int Fatigue() const { return m_fatigue; }
+    [[nodiscard]] int Power() const { return m_power; }
 
     void SetHealth(const int hits) { m_health = hits; }
     void SetFatigue(const int fat) { m_fatigue = fat; }
@@ -93,10 +93,16 @@ public:
         m_power += howMuch;
     }
 
+    [[nodiscard]] MobPosition GetPosition() const { return m_position; }
+    void SetPosition(MobPosition pos) { m_position = pos; }
+
+    [[nodiscard]] MobLifeState GetLifeState() const { return m_lifeState; }
+    void SetLifeState(MobLifeState state) { m_lifeState = state; }
+
 private:
-    uint16_t m_health;
-    uint16_t m_fatigue;
-    uint16_t m_power;
+    uint16_t m_health{};
+    uint16_t m_fatigue{};
+    uint16_t m_power{};
 
     MobPosition m_position{};
     MobLifeState m_lifeState{};

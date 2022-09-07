@@ -44,7 +44,25 @@ void Combat::HandleAttack(Mob &attacker, Mob &defender, World &world)
     damageOutput << " for " << Server::REDTEXT << actualDmg << Server::PLAINTEXT << " damage";
     room->Show(attackOutput + damageOutput.str() + "!", attacker, defender, attackOutput + "!");
 
+    if (defender.IsPlayer() && defender.CurState().Health() == 0)
+    {
+        std::stringstream deathSpam;
+        deathSpam << Server::BR_REDTEXT << defender.Name() << " was just killed by "
+                  << attacker.DisplayName() << "!" << Server::PLAINTEXT;
+        world.BroadcastMessage(deathSpam.str());
+        defender.HandleDeath(attacker);
+        return;
+    }
+
     defender.CurState().AdjHealth(-actualDmg, defender.MaxState());
     if (defender.CurState().Health() == 0)
-        defender.Tell("You are almost dead!");
+    {
+        if (defender.IsPlayer())
+            defender.Tell("You are almost dead!");
+        else
+        {
+            room->Show("%s just killed %t!", attacker, defender);
+            defender.HandleDeath(attacker);
+        }
+    }
 }

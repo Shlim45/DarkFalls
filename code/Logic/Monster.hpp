@@ -5,7 +5,9 @@
 #ifndef DARKFALLS_MONSTER_HPP
 #define DARKFALLS_MONSTER_HPP
 
+#include <sstream>
 #include "Mob.hpp"
+#include "code/Server/Text.hpp"
 
 namespace Mud
 {
@@ -71,6 +73,30 @@ public:
             return m_article + " " + m_name;
         return m_name;
     }
+
+    bool IsPlayer() override { return false; }
+
+    void HandleDeath(Mob &killer) override
+    {
+        if (killer.IsPlayer())
+        {
+            auto lvlDiff = m_level - killer.Level();
+            if (lvlDiff > 5)
+                lvlDiff = 5;
+            else if (lvlDiff < -5)
+                lvlDiff = -5;
+            auto bonus = 1.0f + ((float) lvlDiff) / 10.0f;
+            const int exp = (int) ((float) m_experience * bonus);
+            killer.AdjExperience(exp);
+            std::stringstream rpMessage;
+            rpMessage << "You gain " << Server::YELLOWTEXT << exp << Server::PLAINTEXT
+                      <<" experience points!" << Server::NEWLINE << Server::NEWLINE;
+            killer.Tell(rpMessage.str());
+        }
+    }
+
+
+public:
 
     std::unique_ptr<Monster> CopyOf()
     {

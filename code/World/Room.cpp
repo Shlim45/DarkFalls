@@ -75,7 +75,7 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
                 count++;
                 if (count > 1 && count == NUM_PLAYERS)
                     sPlayers += "and ";
-                sPlayers += Server::ColorizeText(p->Name(), Server::BR_GREENTEXT);
+                sPlayers += Server::ColorizeText(p->DisplayName(), Server::BR_GREENTEXT);
                 if (NUM_PLAYERS > 2 && count < NUM_PLAYERS)
                     sPlayers += ", ";
                 else if (NUM_PLAYERS > 1 && count < NUM_PLAYERS)
@@ -100,7 +100,7 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
             count++;
             if (count > 1 && count == NUM_MONSTERS)
                 sMonsters += "and ";
-            sMonsters += Server::ColorizeText(m->Name(), Server::BR_REDTEXT);
+            sMonsters += Server::ColorizeText(m->DisplayName(), Server::BR_REDTEXT);
             if (NUM_MONSTERS > 2 && count < NUM_MONSTERS)
                 sMonsters += ", ";
             else if (NUM_MONSTERS > 1 && count < NUM_MONSTERS)

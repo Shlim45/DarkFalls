@@ -284,8 +284,11 @@ void AttackCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
 {
     auto &response = mudInterface->ostream();
     auto player = mudInterface->GetPlayer();
-    auto roomID = player->Location();
-    auto &room = world.FindRoom(roomID);
+    if (!player->IsAlive())
+    {
+        response << Server::NEWLINE << "You must be alive to do that." << Server::NEWLINE;
+        return;
+    }
 
     auto attackWhat = commands.GetString();
     if (attackWhat.length() == 0)
@@ -293,6 +296,9 @@ void AttackCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
         response << Server::NEWLINE << "You must specify a target." << Server::NEWLINE;
         return;
     }
+
+    auto roomID = player->Location();
+    auto &room = world.FindRoom(roomID);
 
     auto pTarget = room->FindPlayer(attackWhat);
     auto mTarget = room->FindMonster(attackWhat);
@@ -303,10 +309,8 @@ void AttackCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
     }
     else if (pTarget)
         world.CombatLibrary().HandleAttack(*player, *pTarget, world);
-//        world.CombatLibrary().HandleAttackPP(*player, *pTarget, world);
     else if (mTarget)
         world.CombatLibrary().HandleAttack(*player, *mTarget, world);
-//        world.CombatLibrary().HandleAttackPM(*player, *mTarget, world);
 }
 
 void QuitCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
@@ -329,6 +333,12 @@ void SayCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared
                          Mud::Logic::World &world) const
 {
     auto player = mudInterface->GetPlayer();
+    if (!player->IsAlive())
+    {
+        mudInterface->ostream() << Server::NEWLINE << "You must be alive to do that." << Server::NEWLINE;
+        return;
+    }
+
     auto sayWhat = commands.CombineRemaining();
     if (sayWhat.length() == 0)
     {
@@ -395,12 +405,17 @@ void
 MoveCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
                      Mud::Logic::World &world) const
 {
+    auto player            = mudInterface->GetPlayer();
+    if (!player->IsAlive())
+    {
+        mudInterface->ostream() << Server::NEWLINE << "You must be alive to do that." << Server::NEWLINE;
+        return;
+    }
+
     auto cmd = commands.GetCommand();
     boost::to_lower(cmd);
 
     Logic::Direction dir = Logic::CardinalExit::GetDirectionFromString(cmd);
-
-    auto player            = mudInterface->GetPlayer();
     auto &room = world.FindRoom(player->Location());
     std::tuple<int,int,int> coords = room->Coords();
 

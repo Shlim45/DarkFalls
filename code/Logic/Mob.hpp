@@ -6,8 +6,10 @@
 #define DARKFALLS_MOB_HPP
 
 #include "includes.hpp"
+//#include <sstream>
 #include "MobState.hpp"
 #include "MobStats.hpp"
+//#include "code/Server/Text.hpp"
 
 namespace Mud
 {
@@ -104,6 +106,43 @@ namespace Logic
 
         [[nodiscard]] virtual bool HasSecurityFlag(Security::Flag toCheck) const
         { return false; }
+
+        virtual bool IsPlayer() { return false; }
+
+        virtual void HandleDeath(Mob &killer)
+        {
+//            if (IsPlayer())
+//            {
+//                if (killer.IsPlayer())
+//                {
+//                    auto lvlDiff = m_level - killer.Level();
+//                    auto bonus = 1.0f + ((float) lvlDiff) / 10.0f;
+//                    auto realmPoints = (float) m_level * bonus;
+//                    std::stringstream rpMessage;
+//                    rpMessage << "You would have earned " << Server::YELLOWTEXT
+//                              << (int) realmPoints << " realm points!" << Server::NEWLINE << Server::NEWLINE;
+//                    killer.Tell(rpMessage.str());
+//                }
+//                m_curState.SetPosition(MobPosition::LAYING);
+//                m_curState.SetLifeState(MobLifeState::DEAD);
+//            }
+//            else
+//            {
+//                if (killer.IsPlayer())
+//                {
+//                    auto lvlDiff = m_level - killer.Level();
+//                    if (lvlDiff > 5)
+//                        lvlDiff = 5;
+//                    else if (lvlDiff < -5)
+//                        lvlDiff = -5;
+//                    auto bonus = 1.0f + ((float) lvlDiff) / 10.0f;
+//                    auto exp = (float) m_experience * bonus;
+//                    killer.AdjExperience((int) exp);
+//                }
+//            }
+        }
+
+        bool IsAlive() { return m_curState.GetLifeState() == MobLifeState::ALIVE; }
 
 
     protected:
