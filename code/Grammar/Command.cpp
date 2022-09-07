@@ -4,8 +4,8 @@
 
 #include "Command.hpp"
 #include "code/Logic/MudInterface.hpp"
-#include "code/Logic/Player.hpp"
-#include "code/Logic/PlayerAccount.hpp"
+#include "code/Logic/Mobs/Player.hpp"
+#include "code/Logic/Accounts/PlayerAccount.hpp"
 #include "code/World/World.hpp"
 #include "code/Dictionary/Tokenizer.hpp"
 

@@ -4,8 +4,7 @@
 
 #include "Room.hpp"
 #include "code/Server/Text.hpp"
-#include "code/Logic/Player.hpp"
-#include "code/Logic/Monster.hpp"
+#include "code/Logic/Mobs/Player.hpp"
 
 using namespace Mud::Logic;
 

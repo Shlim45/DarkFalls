@@ -33,7 +33,7 @@ public:
     void HandleLine(const std::string &line);
     std::ostream &ostream();
     std::shared_ptr<Player> &GetPlayer();
-    Server::ConnectionBase &Connection() const;
+    [[nodiscard]] Server::ConnectionBase &Connection() const;
     std::shared_ptr<PlayerAccount> &GetAccount();
 
 private:

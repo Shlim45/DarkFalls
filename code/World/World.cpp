@@ -86,7 +86,7 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
     player->MaxState().SetHealth(10);
     player->MaxState().SetFatigue(10);
     player->MaxState().SetPower(10);
-//    player->CurState().RecoverMobState(player->MaxState());
+    player->CurState().RecoverMobState(player->MaxState());
 
     for (int i = 0; i < 6; i++)
         player->BaseStats().SetStat(i, 10);

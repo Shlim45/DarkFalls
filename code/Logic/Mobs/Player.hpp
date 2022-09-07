@@ -10,7 +10,7 @@
 #include "Monster.hpp"
 #include "code/Server/ConnectionBase.hpp"
 #include "code/Server/Text.hpp"
-#include "Security.hpp"
+#include "code/Logic/Security.hpp"
 
 
 namespace Mud::Logic
@@ -105,6 +105,7 @@ namespace Mud::Logic
                           << Server::PLAINTEXT << " realm points!" << Server::NEWLINE << Server::NEWLINE;
                 killer.Tell(rpMessage.str());
             }
+
             m_curState.SetPosition(MobPosition::LAYING);
             m_curState.SetLifeState(MobLifeState::DEAD);
         }

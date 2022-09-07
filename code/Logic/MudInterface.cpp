@@ -5,12 +5,9 @@
 #include "MudInterface.hpp"
 
 #include "../Dictionary/Tokenizer.hpp"
-//#include "../Server/ConnectionBase.hpp"
-#include "Player.hpp"
+#include "code/Logic/Mobs/Player.hpp"
 #include "code/World/World.hpp"
-#include "code/World/Area.hpp"
-#include "code/World/Room.hpp"
-#include "PlayerAccount.hpp"
+#include "code/Logic/Accounts/PlayerAccount.hpp"
 
 using namespace Mud::Logic;
 

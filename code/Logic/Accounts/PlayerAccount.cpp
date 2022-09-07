@@ -3,8 +3,8 @@
 //
 
 #include "PlayerAccount.hpp"
-#include "Player.hpp"
-#include "MudInterface.hpp"
+#include "code/Logic/Mobs/Player.hpp"
+#include "code/Logic/MudInterface.hpp"
 
 using namespace Mud::Logic;
 

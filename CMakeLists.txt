@@ -83,8 +83,8 @@ set(SRCS
         code/Grammar/Grammar.cpp
         code/Grammar/Command.cpp
         code/Logic/MudInterface.cpp
-        code/Logic/Combat.cpp
-        code/Logic/PlayerAccount.cpp
+        code/Logic/Libraries/Combat.cpp
+        code/Logic/Accounts/PlayerAccount.cpp
         code/World/Room.cpp
         code/World/Area.cpp
         code/World/World.cpp

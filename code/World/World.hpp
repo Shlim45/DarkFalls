@@ -8,9 +8,9 @@
 #include "code/Logic/includes.hpp"
 #include "Area.hpp"
 #include "Room.hpp"
-#include "code/Logic/Player.hpp"
-#include "code/Logic/Monster.hpp"
-#include "code/Logic/Combat.hpp"
+#include "code/Logic/Mobs/Player.hpp"
+#include "code/Logic/Mobs/Monster.hpp"
+#include "code/Logic/Libraries/Combat.hpp"
 //#include "code/Server/Server.hpp"
 
 namespace Mud

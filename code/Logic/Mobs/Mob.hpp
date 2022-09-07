@@ -5,11 +5,9 @@
 #ifndef DARKFALLS_MOB_HPP
 #define DARKFALLS_MOB_HPP
 
-#include "includes.hpp"
-//#include <sstream>
-#include "MobState.hpp"
-#include "MobStats.hpp"
-//#include "code/Server/Text.hpp"
+#include "code/Logic/includes.hpp"
+#include "code/Logic/MobState.hpp"
+#include "code/Logic/MobStats.hpp"
 
 namespace Mud
 {

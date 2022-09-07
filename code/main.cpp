@@ -4,7 +4,6 @@
 #include "World/World.hpp"
 #include "World/Area.hpp"
 #include "World/Room.hpp"
-#include "Logic/Monster.hpp"
 #include "Server/Server.hpp"
 #include "Database/DBConnection.hpp"
 
@@ -52,12 +51,12 @@ std::string Mud::Logic::CardinalExit::DirectionCodes[NUM_DIRECTIONS] =
 
 const std::vector<std::string> Mud::Logic::MobStats::StatNames =
         {
-            "strength",
-            "constitution",
-            "agility",
-            "dexterity",
-            "intelligence",
-            "wisdom",
+            "Strength",
+            "Constitution",
+            "Agility",
+            "Dexterity",
+            "Intelligence",
+            "Wisdom",
         };
 
 //void timer_start(std::function<void()> func, unsigned int interval)
