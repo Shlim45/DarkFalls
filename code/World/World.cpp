@@ -6,6 +6,7 @@
 #include "code/Server/Server.hpp"
 #include "code/Logic/Mobs/Player.hpp"
 #include "code/Logic/Mobs/Monster.hpp"
+#include "code/Logic/Items/Item.hpp"
 
 using namespace Mud::Logic;
 
@@ -205,6 +206,64 @@ void World::RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std:
     room->RemoveMonster(toRemove);
 }
 
+void World::GenerateItem(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw)
+{
+    std::shared_ptr<Item> item = std::make_shared<Item>(mID, art, name, kw);
+
+    AddItem(item);
+}
+
+void World::AddItem(std::shared_ptr<Item> &toAdd)
+{
+    m_itemDB.insert(std::make_pair<uint32_t, std::shared_ptr<Item> >(toAdd->ItemID(), std::move(toAdd)));
+}
+
+void World::DestroyItem(const std::shared_ptr<Item> &toDestroy)
+{
+    for (auto m = m_itemDB.begin(); m != m_itemDB.end(); m++)
+        if (m->first == toDestroy->ItemID())
+        {
+            m_itemDB.erase(m);
+            return;
+        }
+}
+
+std::shared_ptr<Item> World::FindItem(const std::string &name)
+{
+    for (const auto& r : m_rooms)
+    {
+        auto item = r.second->FindItem(name);
+        if (item != nullptr)
+            return item;
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<Item> &World::FindItem(const uint32_t itemID)
+{
+    auto item = m_itemDB.find(itemID);
+    if (item != m_itemDB.end())
+        return item->second;
+    else
+        return m_itemDB.begin()->second;
+}
+
+std::map<uint32_t, std::shared_ptr<Item> > &World::Items()
+{
+    return m_itemDB;
+}
+
+void World::AddItemToRoom(std::shared_ptr<Item> &toAdd, std::shared_ptr<Room> &room)
+{
+    room->AddItem(toAdd);
+}
+
+void World::RemoveItemFromRoom(const std::shared_ptr<Item> &toRemove, std::shared_ptr<Room> &room)
+{
+    room->RemoveItem(toRemove);
+}
+
 void World::StartTicking(uint16_t interval)
 {
     // const std::function<void()>& func,
@@ -249,18 +308,6 @@ void World::Shutdown()
     std::cout << "Shutting down World object..." << std::endl;
     m_ticking = false;
     std::cout << "Ticking stopped." << std::endl;
-/*    std::cout << "Destroying Monster objects." << std::endl;
-    for (auto &m : m_monsterDB)
-        delete m.second.get();
-    std::cout << "Destroying Player objects." << std::endl;
-    for (auto &p : m_playerDB)
-        delete p.second.get();
-    std::cout << "Destroying Room objects." << std::endl;
-    for (auto &r : m_rooms)
-        delete r.second.get();
-    std::cout << "Destroying Area objects." << std::endl;
-    for (auto &a : m_areas)
-        delete a.second.get();*/
     std::cout << "World Shutdown complete." << std::endl;
 
     // TODO(jon): Shutdown command

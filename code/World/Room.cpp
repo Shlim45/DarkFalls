@@ -5,6 +5,7 @@
 #include "Room.hpp"
 #include "code/Server/Text.hpp"
 #include "code/Logic/Mobs/Player.hpp"
+#include "code/Logic/Items/Item.hpp"
 
 using namespace Mud::Logic;
 
@@ -113,6 +114,28 @@ std::string Room::HandleLook(const std::shared_ptr<Player>& player) const
         sOutput += sMonsters;
     }
 
+    const size_t NUM_ITEMS = m_items.size();
+    if (NUM_ITEMS > 0)
+    {
+        int count = 0;
+
+        std::string sItems = "You see ";
+
+        for (const auto& item : m_items)
+        {
+            count++;
+            if (count > 1 && count == NUM_ITEMS)
+                sItems += "and ";
+            sItems += Server::ColorizeText(item->DisplayName(), Server::YELLOWTEXT);
+            if (NUM_ITEMS > 1 && count < NUM_ITEMS)
+                sItems += ", ";
+            else
+                sItems += "." + Server::NEWLINE;
+        }
+
+        sOutput += sItems;
+    }
+
     return sOutput + Server::NEWLINE;
 }
 
@@ -139,24 +162,6 @@ void Room::RemovePlayer(const std::shared_ptr<Player> &player)
     }
 }
 
-void Room::RemoveMonster(const std::shared_ptr<Monster> &monster)
-{
-    monster->SetLocation(0);
-    m_monsters.erase(monster);
-}
-
-void Room::AddCardinalExit(Direction dir)
-{
-    int shift = static_cast<int>(dir);
-    uint16_t newDir = 1 << shift;
-    m_cardinalExits |= newDir;
-}
-
-bool Room::HasCardinalExit(Direction dir) const
-{
-    return m_cardinalExits & (1 << static_cast<int>(dir));
-}
-
 std::shared_ptr<Player> Room::FindPlayer(const std::string &name)
 {
     for (const auto& p : m_players)
@@ -169,6 +174,21 @@ std::shared_ptr<Player> Room::FindPlayer(const std::string &name)
             return p;
 
     return nullptr;
+}
+
+void Room::AddMonster(const std::shared_ptr<Monster> &monster)
+{
+    if (monster)
+    {
+        monster->SetLocation(m_roomId);
+        m_monsters.insert(monster);
+    }
+}
+
+void Room::RemoveMonster(const std::shared_ptr<Monster> &monster)
+{
+    monster->SetLocation(0);
+    m_monsters.erase(monster);
 }
 
 std::shared_ptr<Monster> Room::FindMonster(const std::string &name)
@@ -195,13 +215,55 @@ std::shared_ptr<Monster> Room::FindMonster(const std::string &name)
     return nullptr;
 }
 
-void Room::AddMonster(const std::shared_ptr<Monster> &monster)
+void Room::AddItem(const std::shared_ptr<Item> &item)
 {
-    if (monster)
+    if (item)
     {
-        monster->SetLocation(m_roomId);
-        m_monsters.insert(monster);
+        item->SetLocation(m_roomId);
+        m_items.insert(item);
     }
+}
+
+void Room::RemoveItem(const std::shared_ptr<Item> &item)
+{
+    item->SetLocation(0);
+    m_items.erase(item);
+}
+
+std::shared_ptr<Item> Room::FindItem(const std::string &name)
+{
+    // Full name
+    for (const auto& I : m_items)
+        if (I->Name() == name)
+            return I;
+
+    const auto len = name.length();
+    for (const auto& m : m_items)
+        if (m->Name().substr(0, len) == name)
+            return m;
+
+    // Keyword
+    for (const auto& m : m_items)
+        if (m->Keyword() == name)
+            return m;
+
+    for (const auto& m : m_items)
+        if (m->Keyword().substr(0, len) == name)
+            return m;
+
+    return nullptr;
+}
+
+void Room::AddCardinalExit(Direction dir)
+{
+    int shift = static_cast<int>(dir);
+    uint16_t newDir = 1 << shift;
+    m_cardinalExits |= newDir;
+}
+
+bool Room::HasCardinalExit(Direction dir) const
+{
+    return m_cardinalExits & (1 << static_cast<int>(dir));
 }
 
 void Room::Show(const std::string &sMessage, Mob &source, const std::string &oMessage)

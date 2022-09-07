@@ -26,10 +26,9 @@ public:
         m_keyword = "item";
     }
 
-    Item(uint32_t itemId, std::string &art, std::string &name, std::string &key)
+    explicit Item(uint32_t itemId, std::string art, std::string name, std::string key)
             : m_itemId(itemId), m_article(std::move(art)), m_name(std::move(name)), m_keyword(std::move(key))
     { }
-
 
     bool operator==(Item &rhs) const
     {
@@ -79,6 +78,11 @@ public:
 
     [[nodiscard]] int Location() const      { return m_location; }
     void SetLocation(int loc) { m_location = loc; }
+
+    std::shared_ptr<Item> CopyOf()
+    {
+        return std::make_shared<Item>(m_itemId, m_article, m_name, m_keyword);
+    }
 
     static int GetWorldCount() { return itemCount; }
 

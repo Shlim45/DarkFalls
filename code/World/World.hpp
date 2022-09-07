@@ -8,9 +8,6 @@
 #include "code/Logic/includes.hpp"
 #include "Area.hpp"
 #include "Room.hpp"
-#include "code/Logic/Items/Item.hpp"
-#include "code/Logic/Mobs/Player.hpp"
-#include "code/Logic/Mobs/Monster.hpp"
 #include "code/Logic/Libraries/Combat.hpp"
 //#include "code/Server/Server.hpp"
 
@@ -24,96 +21,89 @@ class Server;
 
 namespace Logic
 {
-class World
-{
-public:
-    World() = default;
+    class Item;
 
-    /* AREAS */
+    class World
+    {
+    public:
+        World() = default;
 
-    std::map<int, std::shared_ptr<Area>> &Areas();
+        /* AREAS */
 
-    void AddArea(std::shared_ptr<Area> &toAdd);
+        std::map<int, std::shared_ptr<Area>> &Areas();
+        void AddArea(std::shared_ptr<Area> &toAdd);
+        std::shared_ptr<Area> &FindArea(const std::string &areaName);
+        std::shared_ptr<Area> &FindArea(int areaID);
+        void GenerateArea(int areaID, const std::string &areaName, Realm realm);
+        void ForEachArea(std::function<void()> func);
 
-    std::shared_ptr<Area> &FindArea(const std::string &areaName);
+        /* ROOMS */
 
-    std::shared_ptr<Area> &FindArea(int areaID);
+        std::map<int, std::shared_ptr<Room>> &Rooms();
+        void AddRoom(std::shared_ptr<Room> &toAdd);
+        std::shared_ptr<Room> &FindRoom(int roomId);
+        void GenerateRoom(int roomID, const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
 
-    void GenerateArea(int areaID, const std::string &areaName, Realm realm);
+        /* PLAYERS */
 
-    void ForEachArea(std::function<void()> func);
+        void GeneratePlayer(const std::string &name, Mud::Server::ConnectionBase &connection);
+        void AddOnlinePlayer(std::shared_ptr<Player> &toAdd);
+        void RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove);
+        std::shared_ptr<Player> FindPlayer(const std::string &name);
+        std::map<std::string, std::shared_ptr<Player> > &Players();
 
-    /* ROOMS */
+        void MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, bool quietly = false);
+        void MovePlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &newRoom, bool quietly = false);
 
-    std::map<int, std::shared_ptr<Room>> &Rooms();
+        void WalkPlayer(const std::shared_ptr<Player> &toMove, int newRoomID, Logic::Direction dir);
+        void WalkPlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &toRoom, Logic::Direction dir);
 
-    void AddRoom(std::shared_ptr<Room> &toAdd);
+        /* MONSTERS */
 
-    std::shared_ptr<Room> &FindRoom(int roomId);
+        void GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw);
+        void AddMonster(std::shared_ptr<Monster> &toAdd);
+        void RemoveMonster(const std::shared_ptr<Monster> &toRemove);
+        static void AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::shared_ptr<Room> &room);
+        static void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::shared_ptr<Room> &room);
+        std::shared_ptr<Monster> FindMonster(const std::string &name);
+        std::shared_ptr<Monster> &FindMonster(uint32_t monsterID);
+        std::map<uint32_t, std::shared_ptr<Monster> > &Monsters();
 
-    void GenerateRoom(int roomID, const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
+        /* ITEMS */
 
-    /* PLAYERS */
+        void GenerateItem(uint32_t itemId, const std::string &art, const std::string &name, const std::string &kw);
+        void AddItem(std::shared_ptr<Item> &toAdd);
+        void DestroyItem(const std::shared_ptr<Item> &toDestroy);
+        static void AddItemToRoom(std::shared_ptr<Item> &toAdd, std::shared_ptr<Room> &room);
+        static void RemoveItemFromRoom(const std::shared_ptr<Item> &toRemove, std::shared_ptr<Room> &room);
+        std::shared_ptr<Item> FindItem(const std::string &name);
+        std::shared_ptr<Item> &FindItem(uint32_t itemId);
+        std::map<uint32_t, std::shared_ptr<Item> > &Items();
 
-    void GeneratePlayer(const std::string &name, Mud::Server::ConnectionBase &connection);
+        /* WORLD */
 
-    void AddOnlinePlayer(std::shared_ptr<Player> &toAdd);
+        void BroadcastMessage(const std::string &message, Realm targetRealm = Realm::NONE) const;
+        void StartTicking(uint16_t interval);
+        void Tick();
+        void Shutdown();
 
-    void RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove);
+        Combat &CombatLibrary() { return m_combatLib; }
 
-    std::shared_ptr<Player> FindPlayer(const std::string &name);
+    private:
+        std::map<int, std::shared_ptr<Room> > m_rooms;
+        std::map<int, std::shared_ptr<Area> > m_areas;
+        std::map<std::string, std::shared_ptr<Player> > m_playerDB;
+        std::map<uint32_t, std::shared_ptr<Monster> > m_monsterDB;
+        std::map<uint32_t, std::shared_ptr<Item> > m_itemDB;
 
-    std::map<std::string, std::shared_ptr<Player> > &Players();
+        //    Mud::Server::Server &m_server;
 
-    void MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, bool quietly = false);
-    void MovePlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &newRoom, bool quietly = false);
+        bool m_ticking{};
+        uint64_t m_tickCount{};
+        uint16_t m_tickInterval{};
 
-    void WalkPlayer(const std::shared_ptr<Player> &toMove, int newRoomID, Logic::Direction dir);
-    void WalkPlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &toRoom, Logic::Direction dir);
-
-    /* MONSTERS */
-
-    void GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw);
-
-    void AddMonster(std::shared_ptr<Monster> &toAdd);
-
-    void RemoveMonster(const std::shared_ptr<Monster> &toRemove);
-
-    static void AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::shared_ptr<Room> &room);
-
-    static void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::shared_ptr<Room> &room);
-
-    std::shared_ptr<Monster> FindMonster(const std::string &name);
-    std::shared_ptr<Monster> &FindMonster(uint32_t monsterID);
-
-    std::map<uint32_t, std::shared_ptr<Monster> > &Monsters();
-
-    /* ITEMS */
-
-    void BroadcastMessage(const std::string &message, Realm targetRealm = Realm::NONE) const;
-
-    void StartTicking(uint16_t interval);
-
-    void Tick();
-
-    void Shutdown();
-
-    Combat &CombatLibrary() { return m_combatLib; }
-
-private:
-    std::map<int, std::shared_ptr<Item> > m_items;
-    std::map<int, std::shared_ptr<Room> > m_rooms;
-    std::map<int, std::shared_ptr<Area> > m_areas;
-    std::map<std::string, std::shared_ptr<Player> > m_playerDB;
-    std::map<uint32_t, std::shared_ptr<Monster> > m_monsterDB;
-//    Mud::Server::Server &m_server;
-
-    bool m_ticking{};
-    uint64_t m_tickCount{};
-    uint16_t m_tickInterval{};
-
-    Combat m_combatLib;
-};
+        Combat m_combatLib;
+    };
 
 } // Logic
 } // Mud

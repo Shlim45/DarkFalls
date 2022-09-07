@@ -2,9 +2,8 @@
 #include <thread>
 #include "Server/Text.hpp"
 #include "World/World.hpp"
-//#include "World/Area.hpp"
-//#include "World/Room.hpp"
-#include "code/Logic/Mobs/Monster.hpp"
+#include "Logic/Mobs/Monster.hpp"
+#include "Logic/Items/Item.hpp"
 #include "Server/Server.hpp"
 #include "Database/DBConnection.hpp"
 
@@ -94,6 +93,23 @@ int main()
     world.FindRoom(3)->AddMonster(world.FindMonster(2)->CopyOf());
     world.FindRoom(3)->AddMonster(world.FindMonster(1)->CopyOf());
     std::cout << Mud::Logic::Monster::GetLoadedCount() << " Monster templates loaded.\n";
+
+    std::cout << "Loading Item templates...\n";
+    world.GenerateItem(1, "a", "dagger", "dagger");
+    world.GenerateItem(2, "a", "sword", "sword");
+    world.GenerateItem(3, "the", "wand", "wand");
+    world.GenerateItem(4, "", "Bone Breaker Gauntlets", "gauntlets");
+
+    world.FindRoom(1)->AddItem(world.FindItem(1)->CopyOf());
+
+    world.FindRoom(2)->AddItem(world.FindItem(2)->CopyOf());
+    world.FindRoom(2)->AddItem(world.FindItem(3)->CopyOf());
+
+    world.FindRoom(3)->AddItem(world.FindItem(4)->CopyOf());
+    world.FindRoom(3)->AddItem(world.FindItem(3)->CopyOf());
+    world.FindRoom(3)->AddItem(world.FindItem(2)->CopyOf());
+    world.FindRoom(3)->AddItem(world.FindItem(1)->CopyOf());
+    std::cout << Mud::Logic::Item::GetWorldCount() << " Item templates loaded.\n";
 
     world.StartTicking(1000);
 

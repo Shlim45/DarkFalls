@@ -6,6 +6,7 @@
 #define DARKFALLS_MONSTER_HPP
 
 #include <sstream>
+#include <utility>
 #include "Mob.hpp"
 #include "code/Server/Text.hpp"
 
@@ -23,8 +24,8 @@ public:
     {
 //        ++monsterCount;
     }
-    explicit Monster(uint32_t id, std::string &art, std::string &name, std::string &kw)
-    : Mob(std::move(name)), m_monsterId(id), m_article(std::move(art)), m_keyword(std::move(kw))
+    explicit Monster(uint32_t id, std::string art, const std::string &name, std::string kw)
+    : Mob(name), m_monsterId(id), m_article(std::move(art)), m_keyword(std::move(kw))
     {
         ++monsterCount;
     }
@@ -103,12 +104,7 @@ public:
 
     std::unique_ptr<Monster> CopyOf()
     {
-        Monster monster;
-        monster.m_monsterId = m_monsterId;
-        monster.m_article = m_article;
-        monster.m_name = m_name;
-        monster.m_keyword = m_keyword;
-        return std::make_unique<Monster>(monster);
+        return std::make_unique<Monster>(m_monsterId, m_article, m_name, m_keyword);
     }
 
     static int GetLoadedCount() { return monsterCount; }
