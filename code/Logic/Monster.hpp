@@ -93,6 +93,8 @@ public:
                       <<" experience points!" << Server::NEWLINE << Server::NEWLINE;
             killer.Tell(rpMessage.str());
         }
+
+        // TODO(jon): needs to accept &world to destroy the monster.
     }
 
 
