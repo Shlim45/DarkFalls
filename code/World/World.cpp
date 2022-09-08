@@ -15,13 +15,17 @@ namespace
 const uint16_t TICKS_PER_REGEN = 7;
 }
 
+std::map<int, std::shared_ptr<Area>> &World::Areas()
+{
+    return m_areas;
+}
 
 void World::AddArea(std::shared_ptr<Area> &toAdd)
 {
     m_areas.insert(std::make_pair<int, std::shared_ptr<Area>>(toAdd->AreaID(), std::move(toAdd)));
 }
 
-std::shared_ptr<Area> &Mud::Logic::World::FindArea(const std::string &areaName)
+std::shared_ptr<Area> &World::FindArea(const std::string &areaName)
 {
     for (auto a = m_areas.begin(); a != m_areas.end(); a++)
     {
@@ -40,6 +44,23 @@ std::shared_ptr<Area> &World::FindArea(int areaID)
         return m_areas.begin()->second;
 }
 
+void World::GenerateArea(int areaID, const std::string &areaName, Realm realm)
+{
+    std::shared_ptr<Area> newArea = std::make_unique<Area>(areaID, areaName);
+    newArea->SetRealm(realm);
+    AddArea(newArea);
+}
+
+void World::ForEachArea(const std::function<void()>& func)
+{
+//    func();
+}
+
+std::map<int, std::shared_ptr<Room>> &World::Rooms()
+{
+    return m_rooms;
+}
+
 void World::AddRoom(std::shared_ptr<Room> &toAdd)
 {
     m_rooms.insert(std::make_pair<int, std::shared_ptr<Room>>(toAdd->RoomID(), std::move(toAdd)));
@@ -54,13 +75,6 @@ std::shared_ptr<Room> &World::FindRoom(int roomId)
         return m_rooms.begin()->second;
 }
 
-void World::GenerateArea(int areaID, const std::string &areaName, Realm realm)
-{
-    std::shared_ptr<Area> newArea = std::make_unique<Area>(areaID, areaName);
-    newArea->SetRealm(realm);
-    AddArea(newArea);
-}
-
 void World::GenerateRoom(const int roomID, const std::string &description, int areaID, int x, int y, int z, uint16_t cExits)
 {
     auto area = &FindArea(areaID);
@@ -71,16 +85,6 @@ void World::GenerateRoom(const int roomID, const std::string &description, int a
     newRoom->SetCoords(x, y, z);
     newRoom->SetCardinalExits(cExits);
     AddRoom(newRoom);
-}
-
-std::map<int, std::shared_ptr<Room>> &World::Rooms()
-{
-    return m_rooms;
-}
-
-std::map<int, std::shared_ptr<Area>> &World::Areas()
-{
-    return m_areas;
 }
 
 void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &connection)
@@ -100,11 +104,6 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
 
 std::shared_ptr<Player> World::FindPlayer(const std::string &name)
 {
-//    auto player = m_playerDB.find(name);
-//    if (player != m_playerDB.end())
-//        return player->second;
-//    else
-//        return m_playerDB.begin()->second;
     for (const auto& p : m_playerDB)
         if (p.second->Name() == name)
             return p.second;
@@ -135,6 +134,54 @@ void World::RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove)
 std::map<std::string, std::shared_ptr<Player> > &World::Players()
 {
     return m_playerDB;
+}
+
+void World::MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, bool quietly)
+{
+    auto &newRoom = FindRoom(newRoomID);
+    return MovePlayer(toMove, newRoom, quietly);
+}
+
+void World::MovePlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &newRoom, bool quietly)
+{
+    auto &oldRoom = FindRoom(toMove->Location());
+    oldRoom->RemovePlayer(toMove);
+    if (!quietly)
+        oldRoom->ShowOthers(toMove->Name() + " vanishes.", *toMove);
+
+    newRoom->AddPlayer(toMove);
+    if (!quietly)
+    {
+        toMove->Tell(Server::NEWLINE + newRoom->HandleLook(toMove));
+        newRoom->ShowOthers(toMove->Name() + " appears.", *toMove);
+    }
+}
+
+void World::WalkPlayer(const std::shared_ptr<Player> &toMove, int newRoomID, Direction dir)
+{
+    auto &toRoom = FindRoom(newRoomID);
+    return WalkPlayer(toMove, toRoom, dir);
+}
+
+void World::WalkPlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &toRoom, Direction dir)
+{
+    auto &fromRoom = FindRoom(toMove->Location());
+
+    Direction oppositeDir = CardinalExit::GetOppositeDirection(dir);
+    const auto toDir = CardinalExit::DirectionNames[static_cast<int>(dir)];
+    auto fromDir = CardinalExit::DirectionNames[static_cast<int>(oppositeDir)];
+
+    if (fromDir == "up")
+        fromDir = "above";
+    else if (fromDir == "down")
+        fromDir = "below";
+
+    fromRoom->ShowOthers(toMove->Name() + " leaves " + toDir + ".", *toMove);
+
+    MovePlayer(toMove, toRoom, true);
+
+    toMove->Tell("You travel " + toDir + "." + Server::NEWLINE + toRoom->HandleLook(toMove));
+    toRoom->ShowOthers(toMove->Name() + " arrives from the " + fromDir + ".", *toMove);
 }
 
 void World::BroadcastMessage(const std::string &message, const Realm targetRealm) const
@@ -320,11 +367,20 @@ void World::Tick()
     }
 }
 
-void World::Shutdown()
+void World::Shutdown(bool save)
 {
     std::cout << "Shutting down World object..." << std::endl;
     m_ticking = false;
     std::cout << "Ticking stopped." << std::endl;
+
+    if (save)
+    {
+        m_dbConnection.SaveAreas(*this);
+        m_dbConnection.SaveRooms(*this);
+        m_dbConnection.SaveItems(*this);
+        m_dbConnection.SaveMonsters(*this);
+    }
+
     std::cout << "World Shutdown complete." << std::endl;
 
     // TODO(jon): Shutdown command
@@ -332,55 +388,65 @@ void World::Shutdown()
 //    m_server.Shutdown();
 }
 
-void World::MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, bool quietly)
+void World::LoadWorld()
 {
-    auto &newRoom = FindRoom(newRoomID);
-    return MovePlayer(toMove, newRoom, quietly);
-}
+    std::cout << "Initializing World...\n";
 
-void World::MovePlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &newRoom, bool quietly)
-{
-    auto &oldRoom = FindRoom(toMove->Location());
-    oldRoom->RemovePlayer(toMove);
-    if (!quietly)
-        oldRoom->ShowOthers(toMove->Name() + " vanishes.", *toMove);
+    std::cout << "Loading Areas...\n";
+    m_dbConnection.LoadAreas(*this);
+    std::cout << "  " << Mud::Logic::Area::GetWorldCount() << " Areas Loaded.\n";
 
-    newRoom->AddPlayer(toMove);
-    if (!quietly)
-    {
-        toMove->Tell(Server::NEWLINE + newRoom->HandleLook(toMove));
-        newRoom->ShowOthers(toMove->Name() + " appears.", *toMove);
-    }
-}
+    std::cout << "Loading Rooms...\n";
+    m_dbConnection.LoadRooms(*this);
+    std::cout << "  " << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
 
-void World::WalkPlayer(const std::shared_ptr<Player> &toMove, int newRoomID, Direction dir)
-{
-    auto &toRoom = FindRoom(newRoomID);
-    return WalkPlayer(toMove, toRoom, dir);
-}
+    std::cout << "Loading Items...\n";
+    m_dbConnection.LoadItems(*this);
+    std::cout << "  " << Mud::Logic::Item::GetWorldCount() << " Items Loaded.\n";
 
-void World::WalkPlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &toRoom, Direction dir)
-{
-    auto &fromRoom = FindRoom(toMove->Location());
+    std::cout << "Loading Monsters...\n";
+    m_dbConnection.LoadMonsters(*this);
+    std::cout << "  " << Mud::Logic::Monster::GetLoadedCount() << " Monsters Loaded.\n";
 
-    Direction oppositeDir = CardinalExit::GetOppositeDirection(dir);
-    const auto toDir = CardinalExit::DirectionNames[static_cast<int>(dir)];
-    auto fromDir = CardinalExit::DirectionNames[static_cast<int>(oppositeDir)];
+//
+//    std::cout << "Loading Exits...\n";
+//    // NOTE(jon): Load objects (portals)
+//    std::cout << "Exits Loaded.\n";
+//
+//    std::cout << "Loading Accounts...\n";
+//    // NOTE(jon): Load objects (portals)
+//    std::cout << "Accounts Loaded.\n";
+//
+//    std::cout << "Loading Players...\n";
+//    // NOTE(jon): Load objects (portals)
+//    std::cout << "Players Loaded.\n";
 
-    if (fromDir == "up")
-        fromDir = "above";
-    else if (fromDir == "down")
-        fromDir = "below";
+    std::cout << "Populating Monsters...\n";
 
-    fromRoom->ShowOthers(toMove->Name() + " leaves " + toDir + ".", *toMove);
+    FindRoom(1)->AddMonster(FindMonster(1)->CopyOf());
 
-    MovePlayer(toMove, toRoom, true);
+    FindRoom(2)->AddMonster(FindMonster(2)->CopyOf());
+    FindRoom(2)->AddMonster(FindMonster(3)->CopyOf());
 
-    toMove->Tell("You travel " + toDir + "." + Server::NEWLINE + toRoom->HandleLook(toMove));
-    toRoom->ShowOthers(toMove->Name() + " arrives from the " + fromDir + ".", *toMove);
-}
+    FindRoom(3)->AddMonster(FindMonster(4)->CopyOf());
+    FindRoom(3)->AddMonster(FindMonster(3)->CopyOf());
+    FindRoom(3)->AddMonster(FindMonster(2)->CopyOf());
+    FindRoom(3)->AddMonster(FindMonster(1)->CopyOf());
 
-void World::ForEachArea(std::function<void()> func)
-{
+    std::cout << "Populating Items...\n";
+
+    FindRoom(1)->AddItem(FindItem(1)->CopyOf());
+
+    FindRoom(2)->AddItem(FindItem(2)->CopyOf());
+    FindRoom(2)->AddItem(FindItem(3)->CopyOf());
+
+    FindRoom(3)->AddItem(FindItem(4)->CopyOf());
+    FindRoom(3)->AddItem(FindItem(3)->CopyOf());
+    FindRoom(3)->AddItem(FindItem(2)->CopyOf());
+    FindRoom(3)->AddItem(FindItem(1)->CopyOf());
+
+    StartTicking(1000);
+
+    std::cout << "World initialized.\n" << std::endl;
 
 }

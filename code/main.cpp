@@ -49,67 +49,11 @@ int main()
         return 1;
     }
 
-    Mud::DB::DBConnection dbconn(SQL_HOSTNAME, SQL_USERNAME, SQL_PASSWORD);
-    dbconn.InitializeDB();
+    Mud::DB::DBConnection dbConnection(SQL_HOSTNAME, SQL_USERNAME, SQL_PASSWORD);
+    dbConnection.InitializeDB();
 
-    std::cout << "Initializing World...\n";
-    Mud::Logic::World world;
-
-    std::cout << "Loading Areas...\n";
-    dbconn.LoadAreas(world);
-    std::cout << "  " << Mud::Logic::Area::GetWorldCount() << " Areas Loaded.\n";
-
-    std::cout << "Loading Rooms...\n";
-    dbconn.LoadRooms(world);
-    std::cout << "  " << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
-
-    std::cout << "Loading Items...\n";
-    dbconn.LoadItems(world);
-    std::cout << "  " << Mud::Logic::Item::GetWorldCount() << " Items Loaded.\n";
-
-    std::cout << "Loading Monsters...\n";
-    dbconn.LoadMonsters(world);
-    std::cout << "  " << Mud::Logic::Monster::GetLoadedCount() << " Monsters Loaded.\n";
-//
-//    std::cout << "Loading Exits...\n";
-//    // NOTE(jon): Load objects (portals)
-//    std::cout << "Exits Loaded.\n";
-//
-//    std::cout << "Loading Accounts...\n";
-//    // NOTE(jon): Load objects (portals)
-//    std::cout << "Accounts Loaded.\n";
-//
-//    std::cout << "Loading Players...\n";
-//    // NOTE(jon): Load objects (portals)
-//    std::cout << "Players Loaded.\n";
-
-    std::cout << "Populating Monsters...\n";
-
-    world.FindRoom(1)->AddMonster(world.FindMonster(1)->CopyOf());
-
-    world.FindRoom(2)->AddMonster(world.FindMonster(2)->CopyOf());
-    world.FindRoom(2)->AddMonster(world.FindMonster(3)->CopyOf());
-
-    world.FindRoom(3)->AddMonster(world.FindMonster(4)->CopyOf());
-    world.FindRoom(3)->AddMonster(world.FindMonster(3)->CopyOf());
-    world.FindRoom(3)->AddMonster(world.FindMonster(2)->CopyOf());
-    world.FindRoom(3)->AddMonster(world.FindMonster(1)->CopyOf());
-
-    std::cout << "Populating Items...\n";
-
-    world.FindRoom(1)->AddItem(world.FindItem(1)->CopyOf());
-
-    world.FindRoom(2)->AddItem(world.FindItem(2)->CopyOf());
-    world.FindRoom(2)->AddItem(world.FindItem(3)->CopyOf());
-
-    world.FindRoom(3)->AddItem(world.FindItem(4)->CopyOf());
-    world.FindRoom(3)->AddItem(world.FindItem(3)->CopyOf());
-    world.FindRoom(3)->AddItem(world.FindItem(2)->CopyOf());
-    world.FindRoom(3)->AddItem(world.FindItem(1)->CopyOf());
-
-    world.StartTicking(1000);
-
-    std::cout << "World initialized.\n" << std::endl;
+    Mud::Logic::World world(dbConnection);
+    world.LoadWorld();
 
     std::cout << "\nInitializing Server...\n";
     Mud::Server::Server server(PORT, world);
@@ -117,10 +61,6 @@ int main()
 
     std::cout << "\nShutdown sequence initiated!" << std::endl;
 
-    dbconn.SaveAreas(world);
-    dbconn.SaveRooms(world);
-    dbconn.SaveItems(world);
-    dbconn.SaveMonsters(world);
     world.Shutdown();
 
     std::cout << "Program terminated normally." << std::endl;

@@ -9,10 +9,12 @@
 #include "Area.hpp"
 #include "Room.hpp"
 #include "code/Logic/Libraries/Combat.hpp"
+#include "code/Database/DBConnection.hpp"
 //#include "code/Server/Server.hpp"
 
 namespace Mud
 {
+
 namespace Server
 {
 class ConnectionBase;
@@ -26,7 +28,9 @@ namespace Logic
     class World
     {
     public:
-        World() = default;
+//        World() = default;
+        World(Mud::DB::DBConnection &dbconn) : m_dbConnection(dbconn)
+        { }
 
         /* AREAS */
 
@@ -35,7 +39,7 @@ namespace Logic
         std::shared_ptr<Area> &FindArea(const std::string &areaName);
         std::shared_ptr<Area> &FindArea(int areaID);
         void GenerateArea(int areaID, const std::string &areaName, Realm realm);
-        void ForEachArea(std::function<void()> func);
+        void ForEachArea(const std::function<void()>& func);
 
         /* ROOMS */
 
@@ -90,11 +94,13 @@ namespace Logic
         void BroadcastMessage(const std::string &message, Realm targetRealm = Realm::NONE) const;
         void StartTicking(uint16_t interval);
         void Tick();
-        void Shutdown();
+        void Shutdown(bool save = true);
+        void LoadWorld();
 
         Combat &CombatLibrary() { return m_combatLib; }
 
     private:
+        Mud::DB::DBConnection m_dbConnection;
         std::map<int, std::shared_ptr<Room> > m_rooms;
         std::map<int, std::shared_ptr<Area> > m_areas;
         std::map<std::string, std::shared_ptr<Player> > m_playerDB;

@@ -104,12 +104,21 @@ public:
         // TODO(jon): needs to accept &world to destroy the monster.
     }
 
-
 public:
 
     std::unique_ptr<Monster> CopyOf()
     {
-        return std::make_unique<Monster>(m_monsterId, m_article, m_name, m_keyword);
+        auto monster = std::make_unique<Monster>(m_monsterId, m_article, m_name, m_keyword);
+        monster->MaxState().SetHealth(MaxState().Health());
+        monster->MaxState().SetFatigue(MaxState().Fatigue());
+        monster->MaxState().SetPower(MaxState().Power());
+        monster->CurState().RecoverMobState(monster->MaxState());
+        for (int i = 0; i < MobStats::NUM_STATS; i++)
+            monster->BaseStats().SetStat(i, BaseStats().GetStat(i));
+        monster->SetExperience(m_experience);
+        monster->SetLevel(m_level);
+        monster->SetRealm(m_realm);
+        return monster;
     }
 
     static int GetLoadedCount() { return monsterCount; }
