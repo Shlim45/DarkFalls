@@ -23,7 +23,7 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
 {
     auto player = mudInterface->GetPlayer();
     auto &response = mudInterface->ostream();
-    auto &room = world.FindRoom(player->Location());
+    auto &room = world.GetRoom(player->Location());
 
     if (!player->HasSecurityFlag(Mud::Security::Flag::GOTO))
     {
@@ -43,7 +43,7 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     int roomID = 0;
 
     // Player
-    auto gotoPlayer = world.FindPlayer(gotoWhat);
+    auto gotoPlayer = world.GetPlayer(gotoWhat);
     if (gotoPlayer)
         roomID = gotoPlayer->Location();
 
@@ -56,7 +56,7 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
             return;
         }
 
-        auto &gotoRoom = world.FindRoom(roomID);
+        auto &gotoRoom = world.GetRoom(roomID);
         if (gotoRoom)
         {
             response << "You go to Room #" << std::to_string(roomID) << "." << Server::NEWLINE;
@@ -67,7 +67,7 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
 
     // Monster
 
-    auto gotoMonster = world.FindMonster(gotoWhat);
+    auto gotoMonster = world.GetMonsterLive(gotoWhat);
     if (gotoMonster)
         roomID = gotoMonster->Location();
 
@@ -80,7 +80,7 @@ void GotoCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
             return;
         }
 
-        auto &gotoRoom = world.FindRoom(roomID);
+        auto &gotoRoom = world.GetRoom(roomID);
         if (gotoRoom->RoomID()) // prevent going to the void!
         {
             response << "You go to Room #" << std::to_string(roomID) << "." << Server::NEWLINE;
@@ -129,7 +129,7 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
 {
     auto player = mudInterface->GetPlayer();
     auto &response = mudInterface->ostream();
-    auto &room = world.FindRoom(player->Location());
+    auto &room = world.GetRoom(player->Location());
 
     if (!player->HasSecurityFlag(Mud::Security::Flag::CREATE))
     {
@@ -184,8 +184,8 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
 
         auto areaId = room->AreaID();
         // Check if room exists
-        if (world.FindArea(areaId)->FindRoomID(std::get<0>(coords), std::get<1>(coords),
-                std::get<2>(coords)) >= 0)
+        if (world.GetArea(areaId)->FindRoomID(std::get<0>(coords), std::get<1>(coords),
+                                              std::get<2>(coords)) >= 0)
         {
             auto fullDirName = Logic::CardinalExit::DirectionNames[static_cast<int>(dir)];
             response << Server::NEWLINE << "A room already exists to the " << fullDirName << ".  "
@@ -203,7 +203,7 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
                                    cardinalExits);
         room->AddCardinalExit(dir);
 
-        auto &gotoRoom = world.FindRoom(newRoomID);
+        auto &gotoRoom = world.GetRoom(newRoomID);
         room->RemovePlayer(player);
         room->ShowOthers(player->Name() + " vanishes.", *player);
 
@@ -253,7 +253,7 @@ void LookCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     auto &response = mudInterface->ostream();
     auto player = mudInterface->GetPlayer();
     auto roomID = player->Location();
-    auto &room = world.FindRoom(roomID);
+    auto &room = world.GetRoom(roomID);
 
     auto lookAtWhat = commands.GetString();
     if (lookAtWhat.length() == 0)
@@ -298,7 +298,7 @@ void AttackCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
     }
 
     auto roomID = player->Location();
-    auto &room = world.FindRoom(roomID);
+    auto &room = world.GetRoom(roomID);
 
     auto pTarget = room->FindPlayer(attackWhat);
     auto mTarget = room->FindMonster(attackWhat);
@@ -318,7 +318,7 @@ void QuitCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
 {
     auto player = mudInterface->GetPlayer();
     auto roomID = player->Location();
-    auto &room = world.FindRoom(roomID);
+    auto &room = world.GetRoom(roomID);
     if (room != nullptr)
     {
         room->ShowOthers(player->Name() + " disappears in a puff of smoke.", *player);
@@ -346,7 +346,7 @@ void SayCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared
         return;
     }
 
-    auto &room = world.FindRoom(player->Location());
+    auto &room = world.GetRoom(player->Location());
     std::stringstream result;
     room->Show("%s say, '" + sayWhat + "'", *player,
                "%s says, '" + sayWhat + "'");
@@ -416,7 +416,7 @@ MoveCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
     boost::to_lower(cmd);
 
     Logic::Direction dir = Logic::CardinalExit::GetDirectionFromString(cmd);
-    auto &room = world.FindRoom(player->Location());
+    auto &room = world.GetRoom(player->Location());
     std::tuple<int,int,int> coords = room->Coords();
 
     if (!room->HasCardinalExit(dir))
@@ -427,7 +427,7 @@ MoveCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
 
     Logic::CardinalExit::AdjustXYZByDirection(coords, dir);
 
-    auto area = &world.FindArea(room->AreaID());
+    auto area = &world.GetArea(room->AreaID());
     int newRoomID = area->get()->FindRoomID(std::get<0>(coords), std::get<1>(coords), std::get<2>(coords));
 
     world.WalkPlayer(player, newRoomID, dir);

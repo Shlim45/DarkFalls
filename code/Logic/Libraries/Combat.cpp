@@ -37,7 +37,7 @@ int Combat::RandomInt(int min, int max)
 
 void Combat::HandleAttack(Mob &attacker, Mob &defender, World &world)
 {
-    auto &room = world.FindRoom(defender.Location());
+    auto &room = world.GetRoom(defender.Location());
     auto baseDmg = CalculateBaseDamage(attacker);
     auto maxDmg = CalculateMaxDamage(attacker, defender, baseDmg);
     auto actualDmg = maxDmg * (3841 + RandomInt(0,255)) / 4096;

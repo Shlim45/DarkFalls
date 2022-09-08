@@ -171,7 +171,7 @@ void DBConnection::SaveArea(Mud::Logic::World &world, const int areaID)
                                       "AS new ON DUPLICATE KEY UPDATE "
                                       "areaID=new.areaID, name=new.name, realm=new.realm;");
 
-    auto &area = world.FindArea(areaID);
+    auto &area = world.GetArea(areaID);
     std::string name = area->Name();
     auto realm = static_cast<uint8_t>(area->GetRealm());
 
@@ -259,7 +259,7 @@ void DBConnection::SaveRoom(Logic::World &world, const int roomID)
                                       "areaID=new.areaID, description=new.description, cardinalExits=new.cardinalExits, "
                                       "xCoord=new.xCoord, yCoord=new.yCoord, zCoord=new.zCoord;");
 
-    auto &room = world.FindRoom(roomID);
+    auto &room = world.GetRoom(roomID);
     uint16_t areaID, cExits;
     std::string desc;
     std::tuple<int,int,int> coords;
@@ -302,7 +302,7 @@ void DBConnection::LoadItems(Mud::Logic::World &world)
         const uint16_t value = rs->getInt("value");
         const uint16_t flags = rs->getInt("flags");
 
-        world.GenerateItem(itemID, article, name, keyword, value, flags);
+        world.GenerateItemTemplate(itemID, article, name, keyword, value, flags);
     }
 
     delete rs;
@@ -311,14 +311,14 @@ void DBConnection::LoadItems(Mud::Logic::World &world)
 
 void DBConnection::SaveItems(Logic::World &world)
 {
-    std::cout << "Saving Items to database..." << std::endl;
+    std::cout << "Saving ItemCatalog to database..." << std::endl;
 
     m_pstmt = m_con->prepareStatement("INSERT INTO ItemCatalog VALUES (?, ?, ?, ?, ?, ?) "
                                       "AS new ON DUPLICATE KEY UPDATE itemID=new.itemID, "
                                       "article=new.article, name=new.name, keyword=new.keyword, "
                                       "value=new.value, flags=new.flags;");
 
-    auto itemCatalog = world.Items();
+    auto itemCatalog = world.ItemCatalog();
     uint32_t itemID;
     std::string article, name, keyword;
     uint16_t value, flags;
@@ -344,19 +344,19 @@ void DBConnection::SaveItems(Logic::World &world)
     }
 
     delete m_pstmt;
-    std::cout << "Items saved." << std::endl;
+    std::cout << "ItemCatalog saved." << std::endl;
 }
 
 void DBConnection::SaveItem(Logic::World &world, uint32_t itemID)
 {
-    std::cout << "Saving Items to database..." << std::endl;
+    std::cout << "Saving ItemCatalog to database..." << std::endl;
 
     m_pstmt = m_con->prepareStatement("INSERT INTO ItemCatalog VALUES (?, ?, ?, ?, ?, ?) "
                                       "AS new ON DUPLICATE KEY UPDATE itemID=new.itemID, "
                                       "article=new.article, name=new.name, keyword=new.keyword, "
                                       "value=new.value, flags=new.flags;");
 
-    auto item = world.FindItem(itemID);
+    auto item = world.GetItemTemplate(itemID);
 
     if (!item)
         return;
@@ -399,8 +399,8 @@ void DBConnection::LoadMonsters(Mud::Logic::World &world)
         const uint8_t intel = rs->getInt("intel");
         const uint8_t wis = rs->getInt("wis");
 
-        world.GenerateMonster(monsterID, article, name, keyword, exp, level, hits, fat, power,
-                              str, con, agi, dex, intel, wis, (Logic::Realm) realm);
+        world.GenerateMonsterTemplate(monsterID, article, name, keyword, exp, level, hits, fat, power,
+                                      str, con, agi, dex, intel, wis, (Logic::Realm) realm);
     }
 
     delete rs;
@@ -409,7 +409,7 @@ void DBConnection::LoadMonsters(Mud::Logic::World &world)
 
 void DBConnection::SaveMonsters(Logic::World &world)
 {
-    std::cout << "Saving Monsters to database..." << std::endl;
+    std::cout << "Saving MonsterCatalog to database..." << std::endl;
 
     m_pstmt = m_con->prepareStatement("INSERT INTO MonsterCatalog VALUES "
                                       "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
@@ -419,7 +419,7 @@ void DBConnection::SaveMonsters(Logic::World &world)
                                       "power=new.power, str=new.str, con=new.con, agi=new.agi, "
                                       "dex=new.dex, intel=new.intel, wis=new.wis;");
 
-    auto monsterCatalog = world.Monsters();
+    auto monsterCatalog = world.MonsterCatalog();
 
     for (auto const &r : monsterCatalog)
     {
@@ -446,7 +446,7 @@ void DBConnection::SaveMonsters(Logic::World &world)
     }
 
     delete m_pstmt;
-    std::cout << "Monsters saved." << std::endl;
+    std::cout << "MonsterCatalog saved." << std::endl;
 }
 
 void DBConnection::SaveMonster(Logic::World &world, uint32_t monsterID)
@@ -459,7 +459,7 @@ void DBConnection::SaveMonster(Logic::World &world, uint32_t monsterID)
                                       "power=new.power, str=new.str, con=new.con, agi=new.agi, "
                                       "dex=new.dex, intel=new.intel, wis=new.wis;");
 
-    auto monster = world.FindMonster(monsterID);
+    auto monster = world.GetMonsterTemplate(monsterID);
     if (!monster)
         return;
 

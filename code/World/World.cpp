@@ -25,7 +25,7 @@ void World::AddArea(std::shared_ptr<Area> &toAdd)
     m_areas.insert(std::make_pair<int, std::shared_ptr<Area>>(toAdd->AreaID(), std::move(toAdd)));
 }
 
-std::shared_ptr<Area> &World::FindArea(const std::string &areaName)
+std::shared_ptr<Area> &World::GetArea(const std::string &areaName)
 {
     for (auto a = m_areas.begin(); a != m_areas.end(); a++)
     {
@@ -35,7 +35,7 @@ std::shared_ptr<Area> &World::FindArea(const std::string &areaName)
     return m_areas.begin()->second;
 }
 
-std::shared_ptr<Area> &World::FindArea(int areaID)
+std::shared_ptr<Area> &World::GetArea(int areaID)
 {
     auto area = m_areas.find(areaID);
     if (area != m_areas.end())
@@ -66,7 +66,7 @@ void World::AddRoom(std::shared_ptr<Room> &toAdd)
     m_rooms.insert(std::make_pair<int, std::shared_ptr<Room>>(toAdd->RoomID(), std::move(toAdd)));
 }
 
-std::shared_ptr<Room> &World::FindRoom(int roomId)
+std::shared_ptr<Room> &World::GetRoom(int roomId)
 {
     auto room = m_rooms.find(roomId);
     if (room != m_rooms.end())
@@ -77,7 +77,7 @@ std::shared_ptr<Room> &World::FindRoom(int roomId)
 
 void World::GenerateRoom(const int roomID, const std::string &description, int areaID, int x, int y, int z, uint16_t cExits)
 {
-    auto area = &FindArea(areaID);
+    auto area = &GetArea(areaID);
     std::shared_ptr<Room> newRoom = std::make_unique<Room>(roomID, description);
     area->get()->AddRoom(x, y, z, roomID);
     newRoom->SetArea(area->get()->Name());
@@ -102,7 +102,7 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
     m_playerDB.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
 }
 
-std::shared_ptr<Player> World::FindPlayer(const std::string &name)
+std::shared_ptr<Player> World::GetPlayer(const std::string &name)
 {
     for (const auto& p : m_playerDB)
         if (p.second->Name() == name)
@@ -138,13 +138,13 @@ std::map<std::string, std::shared_ptr<Player> > &World::Players()
 
 void World::MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, bool quietly)
 {
-    auto &newRoom = FindRoom(newRoomID);
+    auto &newRoom = GetRoom(newRoomID);
     return MovePlayer(toMove, newRoom, quietly);
 }
 
 void World::MovePlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &newRoom, bool quietly)
 {
-    auto &oldRoom = FindRoom(toMove->Location());
+    auto &oldRoom = GetRoom(toMove->Location());
     oldRoom->RemovePlayer(toMove);
     if (!quietly)
         oldRoom->ShowOthers(toMove->Name() + " vanishes.", *toMove);
@@ -159,13 +159,13 @@ void World::MovePlayer(const std::shared_ptr<Player> &toMove, const std::shared_
 
 void World::WalkPlayer(const std::shared_ptr<Player> &toMove, int newRoomID, Direction dir)
 {
-    auto &toRoom = FindRoom(newRoomID);
+    auto &toRoom = GetRoom(newRoomID);
     return WalkPlayer(toMove, toRoom, dir);
 }
 
 void World::WalkPlayer(const std::shared_ptr<Player> &toMove, const std::shared_ptr<Room> &toRoom, Direction dir)
 {
-    auto &fromRoom = FindRoom(toMove->Location());
+    auto &fromRoom = GetRoom(toMove->Location());
 
     Direction oppositeDir = CardinalExit::GetOppositeDirection(dir);
     const auto toDir = CardinalExit::DirectionNames[static_cast<int>(dir)];
@@ -191,10 +191,10 @@ void World::BroadcastMessage(const std::string &message, const Realm targetRealm
             p.second->Tell(message);
 }
 
-void World::GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
-                            uint32_t exp, uint8_t level, uint8_t hits, uint8_t fat, uint8_t power,
-                            uint8_t str, uint8_t con, uint8_t agi, uint8_t dex, uint8_t intel, uint8_t wis,
-                            Realm realm)
+void World::GenerateMonsterTemplate(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
+                                    uint32_t exp, uint8_t level, uint8_t hits, uint8_t fat, uint8_t power,
+                                    uint8_t str, uint8_t con, uint8_t agi, uint8_t dex, uint8_t intel, uint8_t wis,
+                                    Realm realm)
 {
     std::shared_ptr<Monster> monster = std::make_shared<Monster>(mID, art, name, kw);
     monster->MaxState().SetHealth(hits);
@@ -214,25 +214,81 @@ void World::GenerateMonster(uint32_t mID, const std::string &art, const std::str
     monster->SetExperience(exp);
     monster->SetRealm(realm);
 
-    AddMonster(monster);
+    AddMonsterTemplate(monster);
 }
 
-void World::AddMonster(std::shared_ptr<Monster> &toAdd)
+void World::AddMonsterTemplate(std::shared_ptr<Monster> &toAdd)
 {
     m_monsterDB.insert(std::make_pair<uint32_t, std::shared_ptr<Monster> >(toAdd->MonsterID(), std::move(toAdd)));
 }
 
-void World::RemoveMonster(const std::shared_ptr<Monster> &toRemove)
+void World::DestroyMonsterTemplate(const std::shared_ptr<Monster> &toDestroy)
 {
     for (auto m = m_monsterDB.begin(); m != m_monsterDB.end(); m++)
-        if (m->first == toRemove->MonsterID())
+        if (m->first == toDestroy->MonsterID())
         {
             m_monsterDB.erase(m);
             return;
         }
 }
 
-std::shared_ptr<Monster> World::FindMonster(const std::string &name)
+std::shared_ptr<Monster> World::GetMonsterTemplate(const std::string &name)
+{
+    const auto lowerName = boost::to_lower_copy(name);
+    for (auto & M : m_monsterDB)
+    {
+        if (name == boost::to_lower_copy(M.second->DisplayName()))
+            return M.second;
+        if (name == boost::to_lower_copy(M.second->Name()))
+            return M.second;
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<Monster> World::GetMonsterTemplate(const uint32_t monsterID)
+{
+    auto monster = m_monsterDB.find(monsterID);
+    if (monster != m_monsterDB.end())
+        return monster->second;
+    else
+        return nullptr;
+}
+
+std::map<uint32_t, std::shared_ptr<Monster> > &World::MonsterCatalog()
+{
+    return m_monsterDB;
+}
+
+void World::AddMonsterLive(std::shared_ptr<Monster> &toAdd, const int roomId)
+{
+    auto room = GetRoom(roomId);
+    if (!(room || toAdd))
+        return;
+
+    auto monster = toAdd->CopyOf();
+    room->AddMonster(monster);
+    m_liveMonsters.insert(std::make_pair<uint32_t, std::shared_ptr<Monster> >(toAdd->MonsterID(), std::move(monster)));
+}
+
+void World::AddMonsterLive(const uint32_t monsterId, const int roomId)
+{
+    auto monster = GetMonsterTemplate(monsterId);
+    if (monster)
+        return AddMonsterLive(monster, roomId);
+}
+
+void World::DestroyMonsterLive(const std::shared_ptr<Monster> &toDestroy)
+{
+    for (auto m = m_liveMonsters.begin(); m != m_liveMonsters.end(); m++)
+        if (m->first == toDestroy->MonsterID())
+        {
+            m_liveMonsters.erase(m);
+            return;
+        }
+}
+
+std::shared_ptr<Monster> World::GetMonsterLive(const std::string &name)
 {
     for (const auto& r : m_rooms)
     {
@@ -244,18 +300,18 @@ std::shared_ptr<Monster> World::FindMonster(const std::string &name)
     return nullptr;
 }
 
-std::shared_ptr<Monster> World::FindMonster(const uint32_t monsterID)
+std::shared_ptr<Monster> World::GetMonsterLive(const uint32_t monsterID)
 {
-    auto monster = m_monsterDB.find(monsterID);
-    if (monster != m_monsterDB.end())
+    auto monster = m_liveMonsters.find(monsterID);
+    if (monster != m_liveMonsters.end())
         return monster->second;
     else
         return nullptr;
 }
 
-std::map<uint32_t, std::shared_ptr<Monster> > &World::Monsters()
+std::map<uint32_t, std::shared_ptr<Monster> > &World::MonstersLive()
 {
-    return m_monsterDB;
+    return m_liveMonsters;
 }
 
 void World::AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::shared_ptr<Room> &room)
@@ -268,21 +324,21 @@ void World::RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std:
     room->RemoveMonster(toRemove);
 }
 
-void World::GenerateItem(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
-                         uint16_t value, uint32_t flags)
+void World::GenerateItemTemplate(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
+                                 uint16_t value, uint32_t flags)
 {
     std::shared_ptr<Item> item = std::make_shared<Item>(mID, art, name, kw);
     item->SetValue(value);
     item->SetFlags(flags);
-    AddItem(item);
+    AddItemTemplate(item);
 }
 
-void World::AddItem(std::shared_ptr<Item> &toAdd)
+void World::AddItemTemplate(std::shared_ptr<Item> &toAdd)
 {
     m_itemDB.insert(std::make_pair<uint32_t, std::shared_ptr<Item> >(toAdd->ItemID(), std::move(toAdd)));
 }
 
-void World::DestroyItem(const std::shared_ptr<Item> &toDestroy)
+void World::DestroyItemTemplate(const std::shared_ptr<Item> &toDestroy)
 {
     for (auto m = m_itemDB.begin(); m != m_itemDB.end(); m++)
         if (m->first == toDestroy->ItemID())
@@ -292,7 +348,7 @@ void World::DestroyItem(const std::shared_ptr<Item> &toDestroy)
         }
 }
 
-std::shared_ptr<Item> World::FindItem(const std::string &name)
+std::shared_ptr<Item> World::GetItemTemplate(const std::string &name)
 {
     for (const auto& r : m_rooms)
     {
@@ -304,7 +360,7 @@ std::shared_ptr<Item> World::FindItem(const std::string &name)
     return nullptr;
 }
 
-std::shared_ptr<Item> World::FindItem(const uint32_t itemID)
+std::shared_ptr<Item> World::GetItemTemplate(const uint32_t itemID)
 {
     auto item = m_itemDB.find(itemID);
     if (item != m_itemDB.end())
@@ -313,7 +369,7 @@ std::shared_ptr<Item> World::FindItem(const uint32_t itemID)
         return nullptr;
 }
 
-std::map<uint32_t, std::shared_ptr<Item> > &World::Items()
+std::map<uint32_t, std::shared_ptr<Item> > &World::ItemCatalog()
 {
     return m_itemDB;
 }
@@ -400,13 +456,13 @@ void World::LoadWorld()
     m_dbConnection.LoadRooms(*this);
     std::cout << "  " << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
 
-    std::cout << "Loading Items...\n";
+    std::cout << "Loading ItemCatalog...\n";
     m_dbConnection.LoadItems(*this);
-    std::cout << "  " << Mud::Logic::Item::GetWorldCount() << " Items Loaded.\n";
+    std::cout << "  " << Mud::Logic::Item::GetWorldCount() << " ItemCatalog Loaded.\n";
 
-    std::cout << "Loading Monsters...\n";
+    std::cout << "Loading MonsterCatalog...\n";
     m_dbConnection.LoadMonsters(*this);
-    std::cout << "  " << Mud::Logic::Monster::GetLoadedCount() << " Monsters Loaded.\n";
+    std::cout << "  " << Mud::Logic::Monster::GetLoadedCount() << " MonsterCatalog Loaded.\n";
 
 //
 //    std::cout << "Loading Exits...\n";
@@ -421,29 +477,29 @@ void World::LoadWorld()
 //    // NOTE(jon): Load objects (portals)
 //    std::cout << "Players Loaded.\n";
 
-    std::cout << "Populating Monsters...\n";
+    std::cout << "Populating MonsterCatalog...\n";
 
-    FindRoom(1)->AddMonster(FindMonster(1)->CopyOf());
+    AddMonsterLive(1, 1);
 
-    FindRoom(2)->AddMonster(FindMonster(2)->CopyOf());
-    FindRoom(2)->AddMonster(FindMonster(3)->CopyOf());
+    AddMonsterLive(2, 2);
+    AddMonsterLive(3, 2);
 
-    FindRoom(3)->AddMonster(FindMonster(4)->CopyOf());
-    FindRoom(3)->AddMonster(FindMonster(3)->CopyOf());
-    FindRoom(3)->AddMonster(FindMonster(2)->CopyOf());
-    FindRoom(3)->AddMonster(FindMonster(1)->CopyOf());
+    AddMonsterLive(4, 3);
+    AddMonsterLive(3, 3);
+    AddMonsterLive(2, 3);
+    AddMonsterLive(1, 3);
 
-    std::cout << "Populating Items...\n";
+    std::cout << "Populating ItemCatalog...\n";
 
-    FindRoom(1)->AddItem(FindItem(1)->CopyOf());
+    GetRoom(1)->AddItem(GetItemTemplate(1)->CopyOf());
 
-    FindRoom(2)->AddItem(FindItem(2)->CopyOf());
-    FindRoom(2)->AddItem(FindItem(3)->CopyOf());
+    GetRoom(2)->AddItem(GetItemTemplate(2)->CopyOf());
+    GetRoom(2)->AddItem(GetItemTemplate(3)->CopyOf());
 
-    FindRoom(3)->AddItem(FindItem(4)->CopyOf());
-    FindRoom(3)->AddItem(FindItem(3)->CopyOf());
-    FindRoom(3)->AddItem(FindItem(2)->CopyOf());
-    FindRoom(3)->AddItem(FindItem(1)->CopyOf());
+    GetRoom(3)->AddItem(GetItemTemplate(4)->CopyOf());
+    GetRoom(3)->AddItem(GetItemTemplate(3)->CopyOf());
+    GetRoom(3)->AddItem(GetItemTemplate(2)->CopyOf());
+    GetRoom(3)->AddItem(GetItemTemplate(1)->CopyOf());
 
     StartTicking(1000);
 

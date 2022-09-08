@@ -36,8 +36,8 @@ namespace Logic
 
         std::map<int, std::shared_ptr<Area>> &Areas();
         void AddArea(std::shared_ptr<Area> &toAdd);
-        std::shared_ptr<Area> &FindArea(const std::string &areaName);
-        std::shared_ptr<Area> &FindArea(int areaID);
+        std::shared_ptr<Area> &GetArea(const std::string &areaName);
+        std::shared_ptr<Area> &GetArea(int areaID);
         void GenerateArea(int areaID, const std::string &areaName, Realm realm);
         void ForEachArea(const std::function<void()>& func);
 
@@ -45,7 +45,7 @@ namespace Logic
 
         std::map<int, std::shared_ptr<Room>> &Rooms();
         void AddRoom(std::shared_ptr<Room> &toAdd);
-        std::shared_ptr<Room> &FindRoom(int roomId);
+        std::shared_ptr<Room> &GetRoom(int roomId);
         void GenerateRoom(int roomID, const std::string &description, int areaID, int x, int y, int z, uint16_t cExits = 0);
 
         /* PLAYERS */
@@ -53,7 +53,7 @@ namespace Logic
         void GeneratePlayer(const std::string &name, Mud::Server::ConnectionBase &connection);
         void AddOnlinePlayer(std::shared_ptr<Player> &toAdd);
         void RemoveOnlinePlayer(const std::shared_ptr<Player> &toRemove);
-        std::shared_ptr<Player> FindPlayer(const std::string &name);
+        std::shared_ptr<Player> GetPlayer(const std::string &name);
         std::map<std::string, std::shared_ptr<Player> > &Players();
 
         void MovePlayer(const std::shared_ptr<Player> &toMove, int newRoomID, bool quietly = false);
@@ -64,30 +64,37 @@ namespace Logic
 
         /* MONSTERS */
 
-        void GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
-                             uint32_t exp = 0, uint8_t level = 1,
-                             uint8_t hits = 10, uint8_t fat = 10, uint8_t power = 10,
-                             uint8_t str = 10, uint8_t con = 10, uint8_t agi = 10,
-                             uint8_t dex = 10, uint8_t intel = 10, uint8_t wis = 10, Realm realm = Realm::NONE);
-        void AddMonster(std::shared_ptr<Monster> &toAdd);
-        void RemoveMonster(const std::shared_ptr<Monster> &toRemove);
+        void GenerateMonsterTemplate(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
+                                     uint32_t exp = 0, uint8_t level = 1,
+                                     uint8_t hits = 10, uint8_t fat = 10, uint8_t power = 10,
+                                     uint8_t str = 10, uint8_t con = 10, uint8_t agi = 10,
+                                     uint8_t dex = 10, uint8_t intel = 10, uint8_t wis = 10, Realm realm = Realm::NONE);
+        void AddMonsterTemplate(std::shared_ptr<Monster> &toAdd);
+        void DestroyMonsterTemplate(const std::shared_ptr<Monster> &toDestroy);
         static void AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::shared_ptr<Room> &room);
         static void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::shared_ptr<Room> &room);
-        std::shared_ptr<Monster> FindMonster(const std::string &name);
-        std::shared_ptr<Monster> FindMonster(uint32_t monsterID);
-        std::map<uint32_t, std::shared_ptr<Monster> > &Monsters();
+        std::shared_ptr<Monster> GetMonsterTemplate(const std::string &name);
+        std::shared_ptr<Monster> GetMonsterTemplate(const uint32_t monsterID);
+        std::map<uint32_t, std::shared_ptr<Monster> > &MonsterCatalog();
+
+        void AddMonsterLive(std::shared_ptr<Monster> &toAdd, const int roomId);
+        void AddMonsterLive(const uint32_t monsterId, const int roomId);
+        void DestroyMonsterLive(const std::shared_ptr<Monster> &toDestroy);
+        std::shared_ptr<Monster> GetMonsterLive(const std::string &name);
+        std::shared_ptr<Monster> GetMonsterLive(const uint32_t monsterID);
+        std::map<uint32_t, std::shared_ptr<Monster> > &MonstersLive();
 
         /* ITEMS */
 
-        void GenerateItem(uint32_t itemId, const std::string &art, const std::string &name, const std::string &kw,
-                          uint16_t value = 0, uint32_t flags = 0);
-        void AddItem(std::shared_ptr<Item> &toAdd);
-        void DestroyItem(const std::shared_ptr<Item> &toDestroy);
+        void GenerateItemTemplate(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
+                                  uint16_t value = 0, uint32_t flags = 0);
+        void AddItemTemplate(std::shared_ptr<Item> &toAdd);
+        void DestroyItemTemplate(const std::shared_ptr<Item> &toDestroy);
         static void AddItemToRoom(std::shared_ptr<Item> &toAdd, std::shared_ptr<Room> &room);
         static void RemoveItemFromRoom(const std::shared_ptr<Item> &toRemove, std::shared_ptr<Room> &room);
-        std::shared_ptr<Item> FindItem(const std::string &name);
-        std::shared_ptr<Item> FindItem(uint32_t itemId);
-        std::map<uint32_t, std::shared_ptr<Item> > &Items();
+        std::shared_ptr<Item> GetItemTemplate(const std::string &name);
+        std::shared_ptr<Item> GetItemTemplate(const uint32_t itemID);
+        std::map<uint32_t, std::shared_ptr<Item> > &ItemCatalog();
 
         /* WORLD */
 
@@ -106,6 +113,9 @@ namespace Logic
         std::map<std::string, std::shared_ptr<Player> > m_playerDB;
         std::map<uint32_t, std::shared_ptr<Monster> > m_monsterDB;
         std::map<uint32_t, std::shared_ptr<Item> > m_itemDB;
+
+        std::map<uint32_t, std::shared_ptr<Monster> > m_liveMonsters;
+        std::map<uint32_t, std::shared_ptr<Item> > m_liveItems;
 
         //    Mud::Server::Server &m_server;
 

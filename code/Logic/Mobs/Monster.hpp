@@ -106,9 +106,9 @@ public:
 
 public:
 
-    std::unique_ptr<Monster> CopyOf()
+    std::shared_ptr<Monster> CopyOf()
     {
-        auto monster = std::make_unique<Monster>(m_monsterId, m_article, m_name, m_keyword);
+        auto monster = std::make_shared<Monster>(m_monsterId, m_article, m_name, m_keyword);
         monster->MaxState().SetHealth(MaxState().Health());
         monster->MaxState().SetFatigue(MaxState().Fatigue());
         monster->MaxState().SetPower(MaxState().Power());

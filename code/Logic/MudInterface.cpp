@@ -60,7 +60,7 @@ void MudInterface::HandleLine(const std::string &line)
         m_world.GeneratePlayer(m_account->UserName(), m_connection);
 
         // Add player to account
-        m_player = m_world.FindPlayer(m_account->UserName());
+        m_player = m_world.GetPlayer(m_account->UserName());
         if (m_player == nullptr)
         {
             std::cerr << "[LOGIN]: Failed to find new player." << std::endl;
@@ -76,7 +76,7 @@ void MudInterface::HandleLine(const std::string &line)
         // set security clearance:
         m_player->SetSecurityRole(Security::Role::GAME_MASTER);
 
-        auto &startRoom = m_world.FindRoom(1);
+        auto &startRoom = m_world.GetRoom(1);
         startRoom->AddPlayer(m_player);
         startRoom->ShowOthers(m_player->Name() + " appears in a puff of smoke.", *m_player);
 
