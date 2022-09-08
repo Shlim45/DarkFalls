@@ -62,6 +62,14 @@ int main()
     std::cout << "Loading Rooms...\n";
     dbconn.LoadRooms(world);
     std::cout << "  " << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
+
+    std::cout << "Loading Items...\n";
+    dbconn.LoadItems(world);
+    std::cout << "  " << Mud::Logic::Item::GetWorldCount() << " Items Loaded.\n";
+
+    std::cout << "Loading Monsters...\n";
+    dbconn.LoadMonsters(world);
+    std::cout << "  " << Mud::Logic::Monster::GetLoadedCount() << " Monsters Loaded.\n";
 //
 //    std::cout << "Loading Exits...\n";
 //    // NOTE(jon): Load objects (portals)
@@ -75,13 +83,7 @@ int main()
 //    // NOTE(jon): Load objects (portals)
 //    std::cout << "Players Loaded.\n";
 
-    std::cout << "World initialized.\n" << std::endl;
-
-    std::cout << "Loading Monster templates...\n";
-    world.GenerateMonster(1, "a", "traveler", "traveler");
-    world.GenerateMonster(2, "a", "farmer", "farmer");
-    world.GenerateMonster(3, "a", "wandering merchant", "merchant");
-    world.GenerateMonster(4, "a", "small dog", "dog");
+    std::cout << "Populating Monsters...\n";
 
     world.FindRoom(1)->AddMonster(world.FindMonster(1)->CopyOf());
 
@@ -92,13 +94,8 @@ int main()
     world.FindRoom(3)->AddMonster(world.FindMonster(3)->CopyOf());
     world.FindRoom(3)->AddMonster(world.FindMonster(2)->CopyOf());
     world.FindRoom(3)->AddMonster(world.FindMonster(1)->CopyOf());
-    std::cout << Mud::Logic::Monster::GetLoadedCount() << " Monster templates loaded.\n";
 
-    std::cout << "Loading Item templates...\n";
-    world.GenerateItem(1, "a", "dagger", "dagger");
-    world.GenerateItem(2, "a", "sword", "sword");
-    world.GenerateItem(3, "the", "wand", "wand");
-    world.GenerateItem(4, "", "Bone Breaker Gauntlets", "gauntlets");
+    std::cout << "Populating Items...\n";
 
     world.FindRoom(1)->AddItem(world.FindItem(1)->CopyOf());
 
@@ -109,16 +106,21 @@ int main()
     world.FindRoom(3)->AddItem(world.FindItem(3)->CopyOf());
     world.FindRoom(3)->AddItem(world.FindItem(2)->CopyOf());
     world.FindRoom(3)->AddItem(world.FindItem(1)->CopyOf());
-    std::cout << Mud::Logic::Item::GetWorldCount() << " Item templates loaded.\n";
 
     world.StartTicking(1000);
+
+    std::cout << "World initialized.\n" << std::endl;
 
     std::cout << "\nInitializing Server...\n";
     Mud::Server::Server server(PORT, world);
     server.Run();
 
+    std::cout << "\nShutdown sequence initiated!" << std::endl;
+
     dbconn.SaveAreas(world);
     dbconn.SaveRooms(world);
+    dbconn.SaveItems(world);
+    dbconn.SaveMonsters(world);
     world.Shutdown();
 
     std::cout << "Program terminated normally." << std::endl;

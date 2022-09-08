@@ -64,6 +64,11 @@ public:
 
     [[nodiscard]] uint32_t MonsterID() const { return m_monsterId; }
 
+    [[nodiscard]] std::string Article() const override
+    {
+        return m_article;
+    }
+
     [[nodiscard]] std::string Keyword() const override
     {
         return m_keyword;

@@ -4,6 +4,9 @@
 
 #include "DBConnection.hpp"
 #include "code/World/World.hpp"
+#include "code/Logic/Items/Item.hpp"
+#include "code/Logic/Mobs/Monster.hpp"
+#include "code/Logic/Mobs/Player.hpp"
 
 using namespace Mud::DB;
 
@@ -47,9 +50,7 @@ void DBConnection::InitializeDB()
                     "name VARCHAR(50), "
                     "realm TINYINT UNSIGNED NOT NULL DEFAULT 0"
                     ");");
-    delete m_stmt;
 
-    m_stmt = m_con->createStatement();
     m_stmt->execute("CREATE TABLE IF NOT EXISTS Rooms("
                     "roomID MEDIUMINT UNSIGNED NOT NULL, "
                     "areaID SMALLINT UNSIGNED DEFAULT 0 NOT NULL, "
@@ -60,6 +61,56 @@ void DBConnection::InitializeDB()
                     "zCoord TINYINT UNSIGNED DEFAULT 0 NOT NULL, "
                     "PRIMARY KEY (roomID), "
                     "FOREIGN KEY (areaID) REFERENCES Areas(areaID) ON UPDATE CASCADE ON DELETE RESTRICT"
+                    ");");
+
+//    m_stmt->execute("DROP TABLE IF EXISTS MonsterCatalog");
+
+    m_stmt->execute("CREATE TABLE IF NOT EXISTS MonsterCatalog("
+                    "monsterID MEDIUMINT UNSIGNED NOT NULL, "
+                    "article VARCHAR(3), "
+                    "name VARCHAR(50) NOT NULL, "
+                    "keyword VARCHAR(50) NOT NULL, "
+                    "realm TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "exp MEDIUMINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "level TINYINT UNSIGNED NOT NULL DEFAULT 1, "
+                    "hits SMALLINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "fat SMALLINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "power SMALLINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "str TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "con TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "agi TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "dex TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "intel TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "wis TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "PRIMARY KEY (monsterID)"
+                    ");");
+
+    m_stmt->execute("CREATE TABLE IF NOT EXISTS Characters("
+                    "name VARCHAR(12) NOT NULL, "
+                    "secFlags MEDIUMINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "realm TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "exp MEDIUMINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "level TINYINT UNSIGNED NOT NULL DEFAULT 1, "
+                    "hits SMALLINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "fat SMALLINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "power SMALLINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "str TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "con TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "agi TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "dex TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "intel TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "wis TINYINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "PRIMARY KEY (name)"
+                    ");");
+
+    m_stmt->execute("CREATE TABLE IF NOT EXISTS ItemCatalog("
+                    "itemID MEDIUMINT UNSIGNED NOT NULL, "
+                    "article VARCHAR(3), "
+                    "name VARCHAR(50) NOT NULL, "
+                    "keyword VARCHAR(50) NOT NULL, "
+                    "value SMALLINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "flags MEDIUMINT UNSIGNED NOT NULL DEFAULT 0, "
+                    "PRIMARY KEY (itemID)"
                     ");");
     delete m_stmt;
 }
@@ -234,4 +285,203 @@ void DBConnection::SaveRoom(Logic::World &world, const int roomID)
 
     delete m_pstmt;
     std::cout << "Room #" << roomID << " saved to database." << std::endl;
+}
+
+void DBConnection::LoadItems(Mud::Logic::World &world)
+{
+    const std::string query = "SELECT * FROM ItemCatalog;";
+    m_pstmt = m_con->prepareStatement(query);
+    auto rs = m_pstmt->executeQuery();
+
+    while (rs->next())
+    {
+        const uint32_t itemID = rs->getInt64("itemID");
+        const std::string article = rs->getString("article");
+        const std::string name = rs->getString("name");
+        const std::string keyword = rs->getString("keyword");
+        const uint16_t value = rs->getInt("value");
+        const uint16_t flags = rs->getInt("flags");
+
+        world.GenerateItem(itemID, article, name, keyword, value, flags);
+    }
+
+    delete rs;
+    delete m_pstmt;
+}
+
+void DBConnection::SaveItems(Logic::World &world)
+{
+    std::cout << "Saving Items to database..." << std::endl;
+
+    m_pstmt = m_con->prepareStatement("INSERT INTO ItemCatalog VALUES (?, ?, ?, ?, ?, ?) "
+                                      "AS new ON DUPLICATE KEY UPDATE itemID=new.itemID, "
+                                      "article=new.article, name=new.name, keyword=new.keyword, "
+                                      "value=new.value, flags=new.flags;");
+
+    auto itemCatalog = world.Items();
+    uint32_t itemID;
+    std::string article, name, keyword;
+    uint16_t value, flags;
+
+    for (auto const &r : itemCatalog)
+    {
+        auto &item = r.second;
+        itemID = item->ItemID();
+        article = item->Article();
+        name = item->Name();
+        keyword = item->Keyword();
+        value = item->Value();
+        flags = item->Flags();
+
+        m_pstmt->setInt64(1, itemID);
+        m_pstmt->setString(2, article);
+        m_pstmt->setString(3, name);
+        m_pstmt->setString(4, keyword);
+        m_pstmt->setInt(5, value);
+        m_pstmt->setInt(6, flags);
+
+        m_pstmt->execute();
+    }
+
+    delete m_pstmt;
+    std::cout << "Items saved." << std::endl;
+}
+
+void DBConnection::SaveItem(Logic::World &world, uint32_t itemID)
+{
+    std::cout << "Saving Items to database..." << std::endl;
+
+    m_pstmt = m_con->prepareStatement("INSERT INTO ItemCatalog VALUES (?, ?, ?, ?, ?, ?) "
+                                      "AS new ON DUPLICATE KEY UPDATE itemID=new.itemID, "
+                                      "article=new.article, name=new.name, keyword=new.keyword, "
+                                      "value=new.value, flags=new.flags;");
+
+    auto item = world.FindItem(itemID);
+
+    if (!item)
+        return;
+
+    m_pstmt->setInt64(1, item->ItemID());
+    m_pstmt->setString(2, item->Article());
+    m_pstmt->setString(3, item->Name());
+    m_pstmt->setString(4, item->Keyword());
+    m_pstmt->setInt(5, item->Value());
+    m_pstmt->setInt(6, item->Flags());
+
+    m_pstmt->execute();
+
+    delete m_pstmt;
+    std::cout << "Item " << item->DisplayName() << "(#"<< itemID << ") saved to database." << std::endl;
+}
+
+void DBConnection::LoadMonsters(Mud::Logic::World &world)
+{
+    const std::string query = "SELECT * FROM MonsterCatalog;";
+    m_pstmt = m_con->prepareStatement(query);
+    auto rs = m_pstmt->executeQuery();
+
+    while (rs->next())
+    {
+        const uint32_t monsterID = rs->getInt64("monsterID");
+        const std::string article = rs->getString("article");
+        const std::string name = rs->getString("name");
+        const std::string keyword = rs->getString("keyword");
+        const uint8_t realm = rs->getInt("realm");
+        const uint32_t exp = rs->getInt("exp");
+        const uint8_t level = rs->getInt("level");
+        const uint8_t hits = rs->getInt("hits");
+        const uint8_t fat = rs->getInt("fat");
+        const uint8_t power = rs->getInt("power");
+        const uint8_t str = rs->getInt("str");
+        const uint8_t con = rs->getInt("con");
+        const uint8_t agi = rs->getInt("agi");
+        const uint8_t dex = rs->getInt("dex");
+        const uint8_t intel = rs->getInt("intel");
+        const uint8_t wis = rs->getInt("wis");
+
+        world.GenerateMonster(monsterID, article, name, keyword, exp, level, hits, fat, power,
+                              str, con, agi, dex, intel, wis, (Logic::Realm) realm);
+    }
+
+    delete rs;
+    delete m_pstmt;
+}
+
+void DBConnection::SaveMonsters(Logic::World &world)
+{
+    std::cout << "Saving Monsters to database..." << std::endl;
+
+    m_pstmt = m_con->prepareStatement("INSERT INTO MonsterCatalog VALUES "
+                                      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                                      "AS new ON DUPLICATE KEY UPDATE monsterID=new.monsterID, "
+                                      "article=new.article, name=new.name, keyword=new.keyword, realm=new.realm, "
+                                      "exp=new.exp, level=new.level, hits=new.hits, fat=new.fat, "
+                                      "power=new.power, str=new.str, con=new.con, agi=new.agi, "
+                                      "dex=new.dex, intel=new.intel, wis=new.wis;");
+
+    auto monsterCatalog = world.Monsters();
+
+    for (auto const &r : monsterCatalog)
+    {
+        auto &monster = r.second;
+
+        m_pstmt->setInt64(1, monster->MonsterID());
+        m_pstmt->setString(2, monster->Article());
+        m_pstmt->setString(3, monster->Name());
+        m_pstmt->setString(4, monster->Keyword());
+        m_pstmt->setInt(5, static_cast<uint8_t>(monster->GetRealm()));
+        m_pstmt->setInt64(6, monster->Experience());
+        m_pstmt->setInt(7, monster->Level());
+        m_pstmt->setInt(8, monster->MaxState().Health());
+        m_pstmt->setInt(9, monster->MaxState().Fatigue());
+        m_pstmt->setInt(10, monster->MaxState().Power());
+        m_pstmt->setInt(11, monster->BaseStats().GetStat(Logic::MobStats::Stat::STRENGTH));
+        m_pstmt->setInt(12, monster->BaseStats().GetStat(Logic::MobStats::Stat::CONSTITUTION));
+        m_pstmt->setInt(13, monster->BaseStats().GetStat(Logic::MobStats::Stat::AGILITY));
+        m_pstmt->setInt(14, monster->BaseStats().GetStat(Logic::MobStats::Stat::DEXTERITY));
+        m_pstmt->setInt(15, monster->BaseStats().GetStat(Logic::MobStats::Stat::INTELLIGENCE));
+        m_pstmt->setInt(16, monster->BaseStats().GetStat(Logic::MobStats::Stat::WISDOM));
+
+        m_pstmt->execute();
+    }
+
+    delete m_pstmt;
+    std::cout << "Monsters saved." << std::endl;
+}
+
+void DBConnection::SaveMonster(Logic::World &world, uint32_t monsterID)
+{
+    m_pstmt = m_con->prepareStatement("INSERT INTO MonsterCatalog VALUES "
+                                      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                                      "AS new ON DUPLICATE KEY UPDATE monsterID=new.monsterID, "
+                                      "article=new.article, name=new.name, keyword=new.keyword, realm=new.realm, "
+                                      "exp=new.exp, level=new.level, hits=new.hits, fat=new.fat, "
+                                      "power=new.power, str=new.str, con=new.con, agi=new.agi, "
+                                      "dex=new.dex, intel=new.intel, wis=new.wis;");
+
+    auto monster = world.FindMonster(monsterID);
+    if (!monster)
+        return;
+
+    m_pstmt->setInt64(1, monster->MonsterID());
+    m_pstmt->setString(2, monster->Article());
+    m_pstmt->setString(3, monster->Name());
+    m_pstmt->setString(4, monster->Keyword());
+    m_pstmt->setInt(5, static_cast<uint8_t>(monster->GetRealm()));
+    m_pstmt->setInt64(6, monster->Experience());
+    m_pstmt->setInt(7, monster->Level());
+    m_pstmt->setInt(8, monster->MaxState().Health());
+    m_pstmt->setInt(9, monster->MaxState().Fatigue());
+    m_pstmt->setInt(10, monster->MaxState().Power());
+    m_pstmt->setInt(11, monster->BaseStats().GetStat(Logic::MobStats::Stat::STRENGTH));
+    m_pstmt->setInt(12, monster->BaseStats().GetStat(Logic::MobStats::Stat::CONSTITUTION));
+    m_pstmt->setInt(13, monster->BaseStats().GetStat(Logic::MobStats::Stat::AGILITY));
+    m_pstmt->setInt(14, monster->BaseStats().GetStat(Logic::MobStats::Stat::DEXTERITY));
+    m_pstmt->setInt(15, monster->BaseStats().GetStat(Logic::MobStats::Stat::INTELLIGENCE));
+    m_pstmt->setInt(16, monster->BaseStats().GetStat(Logic::MobStats::Stat::WISDOM));
+
+    m_pstmt->execute();
+
+    delete m_pstmt;
+    std::cout << "Monster " << monster->DisplayName() << "(#"<< monsterID << ") saved to database." << std::endl;
 }

@@ -60,24 +60,29 @@ namespace Logic
 
         /* MONSTERS */
 
-        void GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw);
+        void GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
+                             uint32_t exp = 0, uint8_t level = 1,
+                             uint8_t hits = 10, uint8_t fat = 10, uint8_t power = 10,
+                             uint8_t str = 10, uint8_t con = 10, uint8_t agi = 10,
+                             uint8_t dex = 10, uint8_t intel = 10, uint8_t wis = 10, Realm realm = Realm::NONE);
         void AddMonster(std::shared_ptr<Monster> &toAdd);
         void RemoveMonster(const std::shared_ptr<Monster> &toRemove);
         static void AddMonsterToRoom(std::shared_ptr<Monster> &toAdd, std::shared_ptr<Room> &room);
         static void RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std::shared_ptr<Room> &room);
         std::shared_ptr<Monster> FindMonster(const std::string &name);
-        std::shared_ptr<Monster> &FindMonster(uint32_t monsterID);
+        std::shared_ptr<Monster> FindMonster(uint32_t monsterID);
         std::map<uint32_t, std::shared_ptr<Monster> > &Monsters();
 
         /* ITEMS */
 
-        void GenerateItem(uint32_t itemId, const std::string &art, const std::string &name, const std::string &kw);
+        void GenerateItem(uint32_t itemId, const std::string &art, const std::string &name, const std::string &kw,
+                          uint16_t value = 0, uint32_t flags = 0);
         void AddItem(std::shared_ptr<Item> &toAdd);
         void DestroyItem(const std::shared_ptr<Item> &toDestroy);
         static void AddItemToRoom(std::shared_ptr<Item> &toAdd, std::shared_ptr<Room> &room);
         static void RemoveItemFromRoom(const std::shared_ptr<Item> &toRemove, std::shared_ptr<Room> &room);
         std::shared_ptr<Item> FindItem(const std::string &name);
-        std::shared_ptr<Item> &FindItem(uint32_t itemId);
+        std::shared_ptr<Item> FindItem(uint32_t itemId);
         std::map<uint32_t, std::shared_ptr<Item> > &Items();
 
         /* WORLD */

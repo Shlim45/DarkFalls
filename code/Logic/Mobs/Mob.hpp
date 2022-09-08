@@ -51,6 +51,9 @@ namespace Logic
         void SetName(std::string name)
         { m_name = std::move(name); }
 
+        [[nodiscard]] virtual std::string Article() const
+        { return ""; };
+
         [[nodiscard]] virtual std::string Keyword() const
         { return m_name; };
 
@@ -89,6 +92,9 @@ namespace Logic
 
         [[nodiscard]] Realm GetRealm() const
         { return m_realm; }
+
+        virtual void SetRealm(Realm realm)
+        { m_realm = realm; }
 
         virtual void Tell(const std::string &message)
         {}

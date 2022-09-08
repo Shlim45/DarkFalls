@@ -144,13 +144,28 @@ void World::BroadcastMessage(const std::string &message, const Realm targetRealm
             p.second->Tell(message);
 }
 
-void World::GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw)
+void World::GenerateMonster(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
+                            uint32_t exp, uint8_t level, uint8_t hits, uint8_t fat, uint8_t power,
+                            uint8_t str, uint8_t con, uint8_t agi, uint8_t dex, uint8_t intel, uint8_t wis,
+                            Realm realm)
 {
     std::shared_ptr<Monster> monster = std::make_shared<Monster>(mID, art, name, kw);
-    monster->MaxState().SetHealth(10);
-    monster->MaxState().SetFatigue(10);
-    monster->MaxState().SetPower(10);
+    monster->MaxState().SetHealth(hits);
+    monster->MaxState().SetFatigue(fat);
+    monster->MaxState().SetPower(power);
     monster->CurState().RecoverMobState(monster->MaxState());
+
+    monster->BaseStats().SetStat(MobStats::Stat::STRENGTH, str);
+    monster->BaseStats().SetStat(MobStats::Stat::CONSTITUTION, con);
+    monster->BaseStats().SetStat(MobStats::Stat::AGILITY, agi);
+    monster->BaseStats().SetStat(MobStats::Stat::DEXTERITY, dex);
+    monster->BaseStats().SetStat(MobStats::Stat::INTELLIGENCE, intel);
+    monster->BaseStats().SetStat(MobStats::Stat::WISDOM, wis);
+    monster->CurStats().RecoverMobStats(monster->BaseStats());
+
+    monster->SetLevel(level);
+    monster->SetExperience(exp);
+    monster->SetRealm(realm);
 
     AddMonster(monster);
 }
@@ -182,13 +197,13 @@ std::shared_ptr<Monster> World::FindMonster(const std::string &name)
     return nullptr;
 }
 
-std::shared_ptr<Monster> &World::FindMonster(const uint32_t monsterID)
+std::shared_ptr<Monster> World::FindMonster(const uint32_t monsterID)
 {
     auto monster = m_monsterDB.find(monsterID);
     if (monster != m_monsterDB.end())
         return monster->second;
     else
-        return m_monsterDB.begin()->second;
+        return nullptr;
 }
 
 std::map<uint32_t, std::shared_ptr<Monster> > &World::Monsters()
@@ -206,10 +221,12 @@ void World::RemoveMonsterFromRoom(const std::shared_ptr<Monster> &toRemove, std:
     room->RemoveMonster(toRemove);
 }
 
-void World::GenerateItem(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw)
+void World::GenerateItem(uint32_t mID, const std::string &art, const std::string &name, const std::string &kw,
+                         uint16_t value, uint32_t flags)
 {
     std::shared_ptr<Item> item = std::make_shared<Item>(mID, art, name, kw);
-
+    item->SetValue(value);
+    item->SetFlags(flags);
     AddItem(item);
 }
 
@@ -240,13 +257,13 @@ std::shared_ptr<Item> World::FindItem(const std::string &name)
     return nullptr;
 }
 
-std::shared_ptr<Item> &World::FindItem(const uint32_t itemID)
+std::shared_ptr<Item> World::FindItem(const uint32_t itemID)
 {
     auto item = m_itemDB.find(itemID);
     if (item != m_itemDB.end())
         return item->second;
     else
-        return m_itemDB.begin()->second;
+        return nullptr;
 }
 
 std::map<uint32_t, std::shared_ptr<Item> > &World::Items()

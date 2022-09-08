@@ -36,6 +36,18 @@ namespace DB
         void SaveRooms(Logic::World &world);
         void SaveRoom(Logic::World &world, int roomID);
 
+        void LoadItems(Logic::World &world);
+        void SaveItems(Logic::World &world);
+        void SaveItem(Logic::World &world, uint32_t itemID);
+
+        void LoadMonsters(Logic::World &world);
+        void SaveMonsters(Logic::World &world);
+        void SaveMonster(Logic::World &world, uint32_t roomID);
+
+        void LoadPlayers(Logic::World &world);
+        void SavePlayers(Logic::World &world);
+        void SavePlayer(Logic::World &world, std::string name);
+
         void ShutdownDB()
         {
             delete m_stmt;

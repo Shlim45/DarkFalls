@@ -24,11 +24,22 @@ public:
         m_article = "a";
         m_name = "generic item";
         m_keyword = "item";
+//        ++itemCount;
     }
 
     explicit Item(uint32_t itemId, std::string art, std::string name, std::string key)
             : m_itemId(itemId), m_article(std::move(art)), m_name(std::move(name)), m_keyword(std::move(key))
-    { }
+    {
+        ++itemCount;
+    }
+
+    explicit Item(uint32_t itemId, std::string art, std::string name, std::string key, uint16_t value, uint16_t flags)
+            : m_itemId(itemId),
+            m_article(std::move(art)), m_name(std::move(name)), m_keyword(std::move(key)),
+            m_value(value), m_flags(flags)
+    {
+        ++itemCount;
+    }
 
     bool operator==(Item &rhs) const
     {
@@ -72,9 +83,9 @@ public:
     [[nodiscard]] uint16_t Value() const { return m_value; }
     void SetValue(uint16_t value)        { m_value = value; }
 
-    [[nodiscard]] uint32_t Flags() const        { return m_flags; }
-    void SetFlags(uint32_t flags) { m_flags = flags; }
-    void AddFlag(uint32_t flag)   { m_flags |= flag; }
+    [[nodiscard]] uint16_t Flags() const        { return m_flags; }
+    void SetFlags(uint16_t flags) { m_flags = flags; }
+    void AddFlag(uint16_t flag)   { m_flags |= flag; }
 
     [[nodiscard]] int Location() const      { return m_location; }
     void SetLocation(int loc) { m_location = loc; }
@@ -92,7 +103,7 @@ private:
     std::string m_name;
     std::string m_keyword;
     uint16_t m_value{};
-    uint32_t m_flags{};
+    uint16_t m_flags{};
     int m_location{};
     std::shared_ptr<Mob> m_owner;
 };
