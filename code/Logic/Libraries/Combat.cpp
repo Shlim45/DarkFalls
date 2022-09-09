@@ -66,6 +66,7 @@ void Combat::HandleAttack(Mob &attacker, Mob &defender, World &world)
         {
             room->Show("%s just killed %t!", attacker, defender);
             defender.HandleDeath(attacker);
+            world.DestroyMonsterLive(std::make_shared<Mob>(defender));
         }
     }
 }

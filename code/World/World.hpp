@@ -80,9 +80,10 @@ namespace Logic
         void AddMonsterLive(std::shared_ptr<Monster> &toAdd, const int roomId);
         void AddMonsterLive(const uint32_t monsterId, const int roomId);
         void DestroyMonsterLive(const std::shared_ptr<Monster> &toDestroy);
+        void DestroyMonsterLive(const std::shared_ptr<Mob> &toDestroy);
         std::shared_ptr<Monster> GetMonsterLive(const std::string &name);
-        std::shared_ptr<Monster> GetMonsterLive(const uint32_t monsterID);
-        std::map<uint32_t, std::shared_ptr<Monster> > &MonstersLive();
+        std::shared_ptr<Monster> GetMonsterLive(const uint32_t refId);
+        std::vector<std::shared_ptr<Monster> > &MonstersLive();
 
         /* ITEMS */
 
@@ -114,8 +115,8 @@ namespace Logic
         std::map<uint32_t, std::shared_ptr<Monster> > m_monsterDB;
         std::map<uint32_t, std::shared_ptr<Item> > m_itemDB;
 
-        std::map<uint32_t, std::shared_ptr<Monster> > m_liveMonsters;
-        std::map<uint32_t, std::shared_ptr<Item> > m_liveItems;
+        std::vector<std::shared_ptr<Monster> > m_liveMonsters;
+        std::vector<std::shared_ptr<Item> > m_liveItems;
 
         //    Mud::Server::Server &m_server;
 

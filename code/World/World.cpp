@@ -99,6 +99,7 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
         player->BaseStats().SetStat(i, 10);
     player->CurStats().RecoverMobStats(player->BaseStats());
 
+    player->SetReferenceId(++Mob::mobCount);
     m_playerDB.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
 }
 
@@ -268,7 +269,9 @@ void World::AddMonsterLive(std::shared_ptr<Monster> &toAdd, const int roomId)
 
     auto monster = toAdd->CopyOf();
     room->AddMonster(monster);
-    m_liveMonsters.insert(std::make_pair<uint32_t, std::shared_ptr<Monster> >(toAdd->MonsterID(), std::move(monster)));
+    monster->SetReferenceId(++Mob::mobCount);
+    m_liveMonsters.emplace_back(std::move(monster));
+//    m_liveMonsters.insert(std::make_pair<uint32_t, std::shared_ptr<Monster> >(toAdd->MonsterID(), std::move(monster)));
 }
 
 void World::AddMonsterLive(const uint32_t monsterId, const int roomId)
@@ -281,9 +284,25 @@ void World::AddMonsterLive(const uint32_t monsterId, const int roomId)
 void World::DestroyMonsterLive(const std::shared_ptr<Monster> &toDestroy)
 {
     for (auto m = m_liveMonsters.begin(); m != m_liveMonsters.end(); m++)
-        if (m->first == toDestroy->MonsterID())
+        if (*m == toDestroy)
         {
             m_liveMonsters.erase(m);
+//            --Monster::monsterCount;
+            return;
+        }
+}
+
+void World::DestroyMonsterLive(const std::shared_ptr<Mob> &toDestroy)
+{
+    for (auto m = m_liveMonsters.begin(); m != m_liveMonsters.end(); m++)
+        if ((*m)->ReferenceId() == toDestroy->ReferenceId())
+        {
+            auto room = GetRoom((*m)->Location());
+            if (room)
+                room->RemoveMonster(*m);
+
+            m_liveMonsters.erase(m);
+//            --Monster::monsterCount;
             return;
         }
 }
@@ -300,16 +319,16 @@ std::shared_ptr<Monster> World::GetMonsterLive(const std::string &name)
     return nullptr;
 }
 
-std::shared_ptr<Monster> World::GetMonsterLive(const uint32_t monsterID)
+std::shared_ptr<Monster> World::GetMonsterLive(const uint32_t refId)
 {
-    auto monster = m_liveMonsters.find(monsterID);
-    if (monster != m_liveMonsters.end())
-        return monster->second;
-    else
+    for (auto &monster : m_liveMonsters)
+        if (monster->ReferenceId() == refId)
+            return monster;
+
         return nullptr;
 }
 
-std::map<uint32_t, std::shared_ptr<Monster> > &World::MonstersLive()
+std::vector<std::shared_ptr<Monster> > &World::MonstersLive()
 {
     return m_liveMonsters;
 }

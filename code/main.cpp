@@ -16,6 +16,8 @@ namespace
     const int PATCH = 0;
 }
 
+uint64_t Mud::Logic::Mob::mobCount = 0;
+
 //void timer_start(std::function<void()> func, unsigned int interval)
 //{
 //    std::thread([func, interval]()

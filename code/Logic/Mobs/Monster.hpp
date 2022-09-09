@@ -20,25 +20,23 @@ class Monster : public Mob
 {
 public:
     static int monsterCount;
+
     Monster() : Mob("generic mob"), m_monsterId(0), m_article("a"), m_keyword("mob")
-    {
-//        ++monsterCount;
-    }
+    {    }
+
     explicit Monster(uint32_t id, std::string art, const std::string &name, std::string kw)
     : Mob(name), m_monsterId(id), m_article(std::move(art)), m_keyword(std::move(kw))
-    {
-        ++monsterCount;
-    }
+    {    }
+
 
     bool operator==(Monster &rhs) const
     {
-        return rhs.MonsterID() == MonsterID();
+        return rhs.ReferenceId() == m_referenceId;
     }
 
     bool operator==(Mob &rhs) const
     {
-        // TODO(jon): Add MobID to MOB class
-        return rhs.DisplayName() == DisplayName() && rhs.Location() == Location();
+        return rhs.ReferenceId() == m_referenceId;
     }
 
     bool operator==(Player &rhs) const
@@ -48,13 +46,13 @@ public:
 
     bool operator!=(Monster &rhs) const
     {
-        return rhs.MonsterID() != MonsterID();
+        return rhs.ReferenceId() != m_referenceId;
     }
 
     bool operator!=(Mob &rhs) const
     {
         // TODO(jon): Add MobID to MOB class
-        return rhs.DisplayName() != DisplayName() && rhs.Location() == Location();
+        return rhs.ReferenceId() != m_referenceId;
     }
 
     bool operator!=(Player &rhs) const

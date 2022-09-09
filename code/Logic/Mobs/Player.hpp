@@ -23,9 +23,19 @@ namespace Mud::Logic
         : Mob(name), m_connection(connection)
         {}
 
+//        ~Player() override
+//        {
+//            --mobCount;
+//        }
+
+        bool operator==(Mob &rhs) const
+        {
+            return rhs.ReferenceId() == m_referenceId;
+        }
+
         bool operator==(Player &rhs) const
         {
-            return rhs.Name() == Name();
+            return rhs.ReferenceId() == m_referenceId;
         }
 
         bool operator==(Monster &rhs) const
@@ -33,24 +43,19 @@ namespace Mud::Logic
             return false;
         }
 
-        bool operator==(Mob &rhs) const
+        bool operator!=(Mob &rhs) const
         {
-            return rhs.Name() == Name();
+            return rhs.ReferenceId() != m_referenceId;
         }
 
         bool operator!=(Player &rhs) const
         {
-            return rhs.Name() != Name();
+            return rhs.ReferenceId() != m_referenceId;
         }
 
         bool operator!=(Monster &rhs) const
         {
             return true;
-        }
-
-        bool operator!=(Mob &rhs) const
-        {
-            return rhs.Name() != Name();
         }
 
         [[nodiscard]] std::string DisplayName() const override

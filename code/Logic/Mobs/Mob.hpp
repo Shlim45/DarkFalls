@@ -25,11 +25,15 @@ namespace Logic
     class Mob
     {
     public:
+        static uint64_t mobCount; //
+
         explicit Mob(std::string name)
                 : m_name(std::move(name)), m_level(1),
                   m_curState(MobState()), m_maxState(MobState()),
                   m_baseStats(MobStats()), m_curStats(MobStats())
-        {}
+        {
+//            m_referenceId = ++mobCount;
+        }
 
         Mob() = default;
 
@@ -37,7 +41,7 @@ namespace Logic
 
         virtual bool operator==(Mob &rhs)
         {
-            return rhs.Name() == Name();
+            return rhs.m_referenceId == m_referenceId;
         }
 
         virtual bool operator!=(Mob &rhs)
@@ -119,6 +123,8 @@ namespace Logic
 
         bool IsAlive() { return m_curState.GetLifeState() == MobLifeState::ALIVE; }
 
+        [[nodiscard]] uint64_t ReferenceId() const { return m_referenceId; }
+        void SetReferenceId(uint64_t refId) { m_referenceId = refId; }
 
     protected:
         std::string m_name;
@@ -132,6 +138,8 @@ namespace Logic
 
         MobStats m_baseStats{};
         MobStats m_curStats{};
+
+        uint64_t m_referenceId{};
     };
 
 } // Logic
