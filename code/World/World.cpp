@@ -475,18 +475,18 @@ void World::StartTicking(uint16_t interval)
 
 void World::Tick()
 {
-     if (++m_tickCount == UINT64_MAX)
-        m_tickCount = 0;
+     if (++m_tickCount >= UINT32_MAX)
+        m_tickCount %= TICKS_PER_REGEN;
     const auto ts = std::chrono::system_clock::now();
-    const auto t_time = std::chrono::system_clock::to_time_t(ts);
-    const auto time = std::ctime(&t_time);
+    m_lastTick = std::chrono::system_clock::to_time_t(ts);
+//    const auto time = std::ctime(&m_lastTick);
     for (auto &p : m_playerDB)
     {
         auto &player = p.second;
         auto &maxState = player->MaxState();
         if (m_tickCount % TICKS_PER_REGEN == 0)
         {
-            std::cout << "[World]: Regenerating online player vitals at " << time;
+//            std::cout << "[World]: Regenerating online player vitals at " << time;
 //            if (player->CurState().Health() > 0)
                 player->CurState().AdjHealth(1, maxState);
             player->CurState().AdjFatigue(1, maxState);
@@ -500,7 +500,7 @@ void World::Shutdown(bool save)
 {
     std::cout << "Shutting down World object..." << std::endl;
     m_ticking = false;
-    std::cout << "Ticking stopped." << std::endl;
+    std::cout << "Ticking stopped after " << m_tickCount << " seconds." << std::endl;
 
     if (save)
     {
@@ -529,13 +529,13 @@ void World::LoadWorld()
     m_dbConnection.LoadRooms(*this);
     std::cout << "  " << Mud::Logic::Room::GetWorldCount() << " Rooms Loaded.\n";
 
-    std::cout << "Loading ItemCatalog...\n";
+    std::cout << "Loading Item Catalog...\n";
     m_dbConnection.LoadItems(*this);
-    std::cout << "  " << Mud::Logic::Item::GetWorldCount() << " ItemCatalog Loaded.\n";
+    std::cout << "  " << Mud::Logic::Item::GetWorldCount() << " Item Catalog Loaded.\n";
 
-    std::cout << "Loading MonsterCatalog...\n";
+    std::cout << "Loading Monster Catalog...\n";
     m_dbConnection.LoadMonsters(*this);
-    std::cout << "  " << Mud::Logic::Monster::GetLoadedCount() << " MonsterCatalog Loaded.\n";
+    std::cout << "  " << Mud::Logic::Monster::GetLoadedCount() << " Monster Catalog Loaded.\n";
 
 //
 //    std::cout << "Loading Exits...\n";
@@ -550,7 +550,7 @@ void World::LoadWorld()
 //    // NOTE(jon): Load objects (portals)
 //    std::cout << "Players Loaded.\n";
 
-    std::cout << "Populating MonsterCatalog...\n";
+    std::cout << "Populating Monsters...\n";
 
     AddMonsterLive(1, 1);
 
@@ -562,17 +562,7 @@ void World::LoadWorld()
     AddMonsterLive(2, 3);
     AddMonsterLive(1, 3);
 
-    std::cout << "Populating ItemCatalog...\n";
-
-//    GetRoom(1)->AddItem(GetItemTemplate(1)->CopyOf());
-//
-//    GetRoom(2)->AddItem(GetItemTemplate(2)->CopyOf());
-//    GetRoom(2)->AddItem(GetItemTemplate(3)->CopyOf());
-//
-//    GetRoom(3)->AddItem(GetItemTemplate(4)->CopyOf());
-//    GetRoom(3)->AddItem(GetItemTemplate(3)->CopyOf());
-//    GetRoom(3)->AddItem(GetItemTemplate(2)->CopyOf());
-//    GetRoom(3)->AddItem(GetItemTemplate(1)->CopyOf());
+    std::cout << "Populating Items...\n";
 
     AddItemLive(1, 1);
 

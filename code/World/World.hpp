@@ -130,6 +130,7 @@ namespace Logic
         bool m_ticking{};
         uint64_t m_tickCount{};
         uint16_t m_tickInterval{};
+        time_t m_lastTick{};
 
         Combat m_combatLib;
     };
