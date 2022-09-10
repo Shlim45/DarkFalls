@@ -99,7 +99,7 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
         player->BaseStats().SetStat(i, 10);
     player->CurStats().RecoverMobStats(player->BaseStats());
 
-    player->SetReferenceId(++Mob::mobCount);
+    player->SetReferenceId();
     m_playerDB.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
 }
 
@@ -269,7 +269,7 @@ void World::AddMonsterLive(std::shared_ptr<Monster> &toAdd, const int roomId)
 
     auto monster = toAdd->CopyOf();
     room->AddMonster(monster);
-    monster->SetReferenceId(++Mob::mobCount);
+    monster->SetReferenceId();
     m_liveMonsters.emplace_back(std::move(monster));
 //    m_liveMonsters.insert(std::make_pair<uint32_t, std::shared_ptr<Monster> >(toAdd->MonsterID(), std::move(monster)));
 }

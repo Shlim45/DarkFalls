@@ -24,13 +24,11 @@ public:
         m_article = "a";
         m_name = "generic item";
         m_keyword = "item";
-//        ++itemCount;
     }
 
     explicit Item(uint32_t itemId, std::string art, std::string name, std::string key)
             : m_itemId(itemId), m_article(std::move(art)), m_name(std::move(name)), m_keyword(std::move(key))
     {
-        ++itemCount;
     }
 
     explicit Item(uint32_t itemId, std::string art, std::string name, std::string key, uint16_t value, uint16_t flags)
@@ -38,8 +36,8 @@ public:
             m_article(std::move(art)), m_name(std::move(name)), m_keyword(std::move(key)),
             m_value(value), m_flags(flags)
     {
-        ++itemCount;
     }
+
 
     bool operator==(Item &rhs) const
     {

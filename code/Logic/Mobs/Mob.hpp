@@ -125,6 +125,7 @@ namespace Logic
 
         [[nodiscard]] uint64_t ReferenceId() const { return m_referenceId; }
         void SetReferenceId(uint64_t refId) { m_referenceId = refId; }
+        void SetReferenceId() { m_referenceId = ++mobCount; }
 
     protected:
         std::string m_name;
