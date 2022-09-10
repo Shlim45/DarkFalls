@@ -300,8 +300,8 @@ void TakeCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     {
         room->RemoveItem(toTake);
         player->AddItemToInventory(toTake);
-        room->Show("You pick up " + toTake->DisplayName() + ".", *player,
-                   player->DisplayName() + " picks up " + toTake->DisplayName() + ".");
+        room->Show("You pick up " + Server::ColorizeText(toTake->DisplayName(), Server::YELLOWTEXT) + ".", *player,
+                   player->DisplayName() + " picks up " + Server::ColorizeText(toTake->DisplayName(), Server::YELLOWTEXT) + ".");
     }
     else
     {
@@ -329,8 +329,8 @@ void DropCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
     {
         player->RemoveItemFromInventory(toDrop);
         room->AddItem(toDrop);
-        room->Show("You drop " + toDrop->DisplayName() + ".", *player,
-                   player->DisplayName() + " drops " + toDrop->DisplayName() + ".");
+        room->Show("You drop " + Server::ColorizeText(toDrop->DisplayName(), Server::YELLOWTEXT) + ".", *player,
+                   player->DisplayName() + " drops " + Server::ColorizeText(toDrop->DisplayName(), Server::YELLOWTEXT) + ".");
     }
     else
     {
