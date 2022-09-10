@@ -88,10 +88,22 @@ public:
     [[nodiscard]] int Location() const      { return m_location; }
     void SetLocation(int loc) { m_location = loc; }
 
+    std::shared_ptr<Mob> &Owner() { return m_owner; }
+    void SetOwner(std::shared_ptr<Mob> &owner) { m_owner = owner; }
+    void ClearOwner() { m_owner = nullptr; }
+
     std::shared_ptr<Item> CopyOf()
     {
-        return std::make_shared<Item>(m_itemId, m_article, m_name, m_keyword);
+        auto item = std::make_shared<Item>(m_itemId, m_article, m_name, m_keyword);
+        item->m_flags = m_flags;
+        item->m_referenceId = ++itemCount;
+        item->m_value = m_value;
+        return item;
     }
+
+    [[nodiscard]] uint64_t ReferenceId() const { return m_referenceId; }
+    void SetReferenceId(uint64_t refId) { m_referenceId = refId; }
+    void SetReferenceId() { m_referenceId = ++itemCount; }
 
     static int GetWorldCount() { return itemCount; }
 
@@ -103,7 +115,8 @@ private:
     uint16_t m_value{};
     uint16_t m_flags{};
     int m_location{};
-    std::shared_ptr<Mob> m_owner;
+    std::shared_ptr<Mob> m_owner = nullptr;
+    uint64_t m_referenceId{};
 };
 
 } // Mud

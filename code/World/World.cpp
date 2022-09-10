@@ -287,7 +287,6 @@ void World::DestroyMonsterLive(const std::shared_ptr<Monster> &toDestroy)
         if (*m == toDestroy)
         {
             m_liveMonsters.erase(m);
-//            --Monster::monsterCount;
             return;
         }
 }
@@ -302,7 +301,6 @@ void World::DestroyMonsterLive(const std::shared_ptr<Mob> &toDestroy)
                 room->RemoveMonster(*m);
 
             m_liveMonsters.erase(m);
-//            --Monster::monsterCount;
             return;
         }
 }
@@ -401,6 +399,62 @@ void World::AddItemToRoom(std::shared_ptr<Item> &toAdd, std::shared_ptr<Room> &r
 void World::RemoveItemFromRoom(const std::shared_ptr<Item> &toRemove, std::shared_ptr<Room> &room)
 {
     room->RemoveItem(toRemove);
+}
+
+void World::AddItemLive(std::shared_ptr<Item> &toAdd, const int roomId)
+{
+    auto room = GetRoom(roomId);
+    if (!(room || toAdd))
+        return;
+
+    auto item = toAdd->CopyOf();
+    room->AddItem(item);
+//    item->SetReferenceId();
+    m_liveItems.emplace_back(std::move(item));
+}
+
+void World::AddItemLive(const uint32_t itemId, const int roomId)
+{
+    auto item = GetItemTemplate(itemId);
+    if (item)
+        return AddItemLive(item, roomId);
+}
+
+void World::DestroyItemLive(const std::shared_ptr<Item> &toDestroy)
+{
+    for (auto m = m_liveItems.begin(); m != m_liveItems.end(); m++)
+        if (*m == toDestroy)
+        {
+            m_liveItems.erase(m);
+//            --Item::itemCount;
+            return;
+        }
+}
+
+std::shared_ptr<Item> World::GetItemLive(const std::string &name)
+{
+    for (const auto& r : m_rooms)
+    {
+        auto item = r.second->FindItem(name);
+        if (item != nullptr)
+            return item;
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<Item> World::GetItemLive(const uint32_t refId)
+{
+    for (auto &item : m_liveItems)
+        if (item->ReferenceId() == refId)
+            return item;
+
+    return nullptr;
+}
+
+std::vector<std::shared_ptr<Item> > &World::ItemsLive()
+{
+    return m_liveItems;
 }
 
 void World::StartTicking(uint16_t interval)
@@ -510,15 +564,25 @@ void World::LoadWorld()
 
     std::cout << "Populating ItemCatalog...\n";
 
-    GetRoom(1)->AddItem(GetItemTemplate(1)->CopyOf());
+//    GetRoom(1)->AddItem(GetItemTemplate(1)->CopyOf());
+//
+//    GetRoom(2)->AddItem(GetItemTemplate(2)->CopyOf());
+//    GetRoom(2)->AddItem(GetItemTemplate(3)->CopyOf());
+//
+//    GetRoom(3)->AddItem(GetItemTemplate(4)->CopyOf());
+//    GetRoom(3)->AddItem(GetItemTemplate(3)->CopyOf());
+//    GetRoom(3)->AddItem(GetItemTemplate(2)->CopyOf());
+//    GetRoom(3)->AddItem(GetItemTemplate(1)->CopyOf());
 
-    GetRoom(2)->AddItem(GetItemTemplate(2)->CopyOf());
-    GetRoom(2)->AddItem(GetItemTemplate(3)->CopyOf());
+    AddItemLive(1, 1);
 
-    GetRoom(3)->AddItem(GetItemTemplate(4)->CopyOf());
-    GetRoom(3)->AddItem(GetItemTemplate(3)->CopyOf());
-    GetRoom(3)->AddItem(GetItemTemplate(2)->CopyOf());
-    GetRoom(3)->AddItem(GetItemTemplate(1)->CopyOf());
+    AddItemLive(2, 2);
+    AddItemLive(3, 2);
+
+    AddItemLive(4, 3);
+    AddItemLive(3, 3);
+    AddItemLive(2, 3);
+    AddItemLive(1, 3);
 
     StartTicking(1000);
 

@@ -97,6 +97,13 @@ namespace Logic
         std::shared_ptr<Item> GetItemTemplate(const uint32_t itemID);
         std::map<uint32_t, std::shared_ptr<Item> > &ItemCatalog();
 
+        void AddItemLive(std::shared_ptr<Item> &toAdd, const int roomId);
+        void AddItemLive(const uint32_t itemId, const int roomId);
+        void DestroyItemLive(const std::shared_ptr<Item> &toDestroy);
+        std::shared_ptr<Item> GetItemLive(const std::string &name);
+        std::shared_ptr<Item> GetItemLive(const uint32_t refId);
+        std::vector<std::shared_ptr<Item> > &ItemsLive();
+
         /* WORLD */
 
         void BroadcastMessage(const std::string &message, Realm targetRealm = Realm::NONE) const;
