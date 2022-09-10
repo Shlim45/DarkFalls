@@ -226,7 +226,7 @@ void Room::AddItem(const std::shared_ptr<Item> &item)
 
 void Room::RemoveItem(const std::shared_ptr<Item> &item)
 {
-    item->SetLocation(0);
+    item->SetLocation(-1);
     m_items.erase(item);
 }
 

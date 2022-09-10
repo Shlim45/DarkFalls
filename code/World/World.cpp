@@ -5,7 +5,6 @@
 #include "World.hpp"
 #include "code/Server/Server.hpp"
 #include "code/Logic/Mobs/Player.hpp"
-#include "code/Logic/Mobs/Monster.hpp"
 #include "code/Logic/Items/Item.hpp"
 
 using namespace Mud::Logic;

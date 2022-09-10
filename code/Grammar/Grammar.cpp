@@ -23,6 +23,15 @@ Grammar::Grammar()
     auto look = std::make_shared<LookCommand>();
     m_commands["look"] = look;
     m_commands["l"] = look;
+    auto take = std::make_shared<TakeCommand>();
+    m_commands["take"] = take;
+    m_commands["get"] = take;
+    auto drop = std::make_shared<DropCommand>();
+    m_commands["drop"] = drop;
+    m_commands["put"] = drop;
+    auto inventory = std::make_shared<InventoryCommand>();
+    m_commands["inventory"] = inventory;
+    m_commands["inv"] = inventory;
     m_commands["quit"] = std::make_shared<QuitCommand>();
     m_commands["say"] = std::make_shared<SayCommand>();
     m_commands["who"] = std::make_shared<WhoCommand>();

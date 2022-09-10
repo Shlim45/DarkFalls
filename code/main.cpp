@@ -1,11 +1,10 @@
 #include <iostream>
-#include <thread>
+//#include <thread>
 #include "Server/Text.hpp"
 #include "World/World.hpp"
-#include "Logic/Mobs/Monster.hpp"
-#include "Logic/Items/Item.hpp"
 #include "Server/Server.hpp"
 #include "Database/DBConnection.hpp"
+#include "Logic/Mobs/Mob.hpp"
 
 namespace
 {
@@ -16,7 +15,6 @@ namespace
     const int PATCH = 0;
 }
 
-uint64_t Mud::Logic::Mob::mobCount = 0;
 
 //void timer_start(std::function<void()> func, unsigned int interval)
 //{

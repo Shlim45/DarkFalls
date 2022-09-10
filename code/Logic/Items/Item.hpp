@@ -88,10 +88,6 @@ public:
     [[nodiscard]] int Location() const      { return m_location; }
     void SetLocation(int loc) { m_location = loc; }
 
-    std::shared_ptr<Mob> &Owner() { return m_owner; }
-    void SetOwner(std::shared_ptr<Mob> &owner) { m_owner = owner; }
-    void ClearOwner() { m_owner = nullptr; }
-
     std::shared_ptr<Item> CopyOf()
     {
         auto item = std::make_shared<Item>(m_itemId, m_article, m_name, m_keyword);
@@ -108,14 +104,13 @@ public:
     static int GetWorldCount() { return itemCount; }
 
 private:
-    uint32_t m_itemId;
+    uint32_t m_itemId{};
     std::string m_article;
     std::string m_name;
     std::string m_keyword;
     uint16_t m_value{};
     uint16_t m_flags{};
     int m_location{};
-    std::shared_ptr<Mob> m_owner = nullptr;
     uint64_t m_referenceId{};
 };
 

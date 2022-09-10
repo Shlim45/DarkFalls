@@ -88,6 +88,7 @@ set(SRCS
         code/Logic/Items/Item.cpp
         code/Logic/Items/Item.hpp
         code/Logic/MobStats.cpp
+        code/Logic/Mobs/Mob.cpp
         code/Logic/Mobs/Monster.cpp
         code/World/CardinalExit.cpp
         code/World/Room.cpp

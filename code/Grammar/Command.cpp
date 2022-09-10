@@ -5,9 +5,11 @@
 #include "Command.hpp"
 #include "code/Logic/MudInterface.hpp"
 #include "code/Logic/Mobs/Player.hpp"
+#include "code/Logic/Mobs/Mob.hpp"
 #include "code/Logic/Accounts/PlayerAccount.hpp"
 #include "code/World/World.hpp"
 #include "code/Dictionary/Tokenizer.hpp"
+#include "code/Logic/Items/Item.hpp"
 
 using namespace Mud::Grammar;
 
@@ -277,6 +279,84 @@ void LookCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr
              << "They are currently wearing:" << Server::NEWLINE
              << "  nothing" << Server::NEWLINE
              << "They are standing." << Server::NEWLINE << Server::NEWLINE;
+}
+
+void TakeCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                          Logic::World &world) const
+{
+    auto &response = mudInterface->ostream();
+    auto &player = mudInterface->GetPlayer();
+    auto &room = world.GetRoom(player->Location());
+
+    auto takeWhat = commands.GetString();
+    if (takeWhat.length() == 0)
+    {
+        player->Tell("You must specify an item to take.");
+        return;
+    }
+
+    auto toTake = room->FindItem(takeWhat);
+    if (toTake)
+    {
+        room->RemoveItem(toTake);
+        player->AddItemToInventory(toTake);
+        room->Show("You pick up " + toTake->DisplayName() + ".", *player,
+                   player->DisplayName() + " picks up " + toTake->DisplayName() + ".");
+    }
+    else
+    {
+        response << Server::NEWLINE << "You dont see a '" << takeWhat << "' here."
+                 << Server::NEWLINE << Server::NEWLINE;
+    }
+}
+
+void DropCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                          Logic::World &world) const
+{
+    auto &response = mudInterface->ostream();
+    auto player = mudInterface->GetPlayer();
+    auto &room = world.GetRoom(player->Location());
+
+    auto dropWhat = commands.GetString();
+    if (dropWhat.length() == 0)
+    {
+        player->Tell("You must specify an item to drop.");
+        return;
+    }
+
+    auto toDrop = player->FindItemInInventory(dropWhat);
+    if (toDrop)
+    {
+        player->RemoveItemFromInventory(toDrop);
+        room->AddItem(toDrop);
+        room->Show("You drop " + toDrop->DisplayName() + ".", *player,
+                   player->DisplayName() + " drops " + toDrop->DisplayName() + ".");
+    }
+    else
+    {
+        response << Server::NEWLINE << "You dont see a '" << dropWhat << "' here."
+                 << Server::NEWLINE << Server::NEWLINE;
+    }
+}
+
+void InventoryCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                          Logic::World &world) const
+{
+    auto &response = mudInterface->ostream();
+    auto player = mudInterface->GetPlayer();
+
+    std::stringstream result;
+    result << Server::NEWLINE << "You are currently carrying:" << Server::NEWLINE;
+    if (player->Inventory().empty())
+        result << "  nothing" << Server::NEWLINE;
+    else
+        for (auto &I : player->Inventory())
+            result << "  " << Server::ColorizeText(I->DisplayName(), Server::YELLOWTEXT) << Server::NEWLINE;
+
+    result << Server::NEWLINE << "You are carrying " << player->Inventory().size() << " items."
+            << Server::NEWLINE << Server::NEWLINE;
+
+    response << result.str();
 }
 
 void AttackCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,

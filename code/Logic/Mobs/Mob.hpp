@@ -19,6 +19,7 @@ namespace Security
 namespace Logic
 {
     class Room;
+    class Item;
 
     enum class Realm;
 
@@ -123,6 +124,11 @@ namespace Logic
 
         bool IsAlive() { return m_curState.GetLifeState() == MobLifeState::ALIVE; }
 
+        std::set<std::shared_ptr<Item>> Inventory() { return m_inventory; }
+        void AddItemToInventory(const std::shared_ptr<Item>& item);
+        void RemoveItemFromInventory(const std::shared_ptr<Item>& item);
+        std::shared_ptr<Item> FindItemInInventory(const std::string &name);
+
         [[nodiscard]] uint64_t ReferenceId() const { return m_referenceId; }
         void SetReferenceId(uint64_t refId) { m_referenceId = refId; }
         void SetReferenceId() { m_referenceId = ++mobCount; }
@@ -139,6 +145,8 @@ namespace Logic
 
         MobStats m_baseStats{};
         MobStats m_curStats{};
+
+        std::set<std::shared_ptr<Item>> m_inventory;
 
         uint64_t m_referenceId{};
     };

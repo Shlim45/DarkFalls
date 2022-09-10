@@ -63,6 +63,24 @@ class LookCommand : public Command
                  Logic::World &world) const override;
 };
 
+class TakeCommand : public Command
+{
+    void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                 Logic::World &world) const override;
+};
+
+class DropCommand : public Command
+{
+    void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                 Logic::World &world) const override;
+};
+
+class InventoryCommand : public Command
+{
+    void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                 Logic::World &world) const override;
+};
+
 class AttackCommand : public Command
 {
     void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
