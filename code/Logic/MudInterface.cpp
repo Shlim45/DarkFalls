@@ -6,7 +6,7 @@
 
 #include "../Dictionary/Tokenizer.hpp"
 #include "code/Logic/Mobs/Player.hpp"
-#include "code/World/World.hpp"
+#include "code/Logic/World/World.hpp"
 #include "code/Logic/Accounts/PlayerAccount.hpp"
 
 using namespace Mud::Logic;

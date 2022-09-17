@@ -7,7 +7,7 @@
 
 //#include "../Logic/MudInterface.hpp"
 #include "ConnectionBase.hpp"
-#include "code/World/World.hpp"
+#include "code/Logic/World/World.hpp"
 #include "code/Logic/MudInterface.hpp"
 
 namespace Mud

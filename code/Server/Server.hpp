@@ -7,7 +7,7 @@
 
 #include <list>
 #include "LineOrientedConnection.hpp"
-#include "code/World/World.hpp"
+#include "code/Logic/World/World.hpp"
 
 namespace Mud
 {

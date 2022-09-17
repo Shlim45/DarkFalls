@@ -6,7 +6,7 @@
 #include "code/Logic/MudInterface.hpp"
 #include "code/Logic/Mobs/Player.hpp"
 #include "code/Logic/Accounts/PlayerAccount.hpp"
-#include "code/World/World.hpp"
+#include "code/Logic/World/World.hpp"
 #include "code/Dictionary/Tokenizer.hpp"
 #include "code/Logic/Items/Item.hpp"
 
@@ -250,9 +250,10 @@ StatCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
     {
         auto curVitals = pTarget->CurState();
         auto maxVitals = pTarget->MaxState();
-        response << Server::NEWLINE << "Name: " << Server::ColorizeText(pTarget->Name(), Server::BR_CYANTEXT) << Server::NEWLINE
-                 << "Experience: " << pTarget->Experience() << Server::NEWLINE
-                 << "Level: " << static_cast<int>(pTarget->Level()) << Server::NEWLINE
+        response << Server::NEWLINE << "Stat information for: " << Server::NEWLINE
+                 << "Player Name: " << Server::ColorizeText(pTarget->Name(), Server::BR_GREENTEXT) << Server::NEWLINE
+                 << "Experience:  " << pTarget->Experience() << Server::NEWLINE
+                 << "Level:       " << static_cast<int>(pTarget->Level()) << Server::NEWLINE
                  << Server::NEWLINE
                  << "Hits: " << Server::BR_BLUETEXT << curVitals.Health() << Server::PLAINTEXT << "/"
                  << Server::BR_BLUETEXT << maxVitals.Health() << Server::PLAINTEXT
@@ -272,15 +273,16 @@ StatCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
                      << statValue << Server::NEWLINE;
         }
 
-        response << Server::NEWLINE;
+        response << Server::NEWLINE << Server::NEWLINE << "Combat Statistics:" << Server::NEWLINE;
 
         for (uint8_t i = 0; i < Mud::Logic::CombatStats::NUM_STATS; i++)
         {
             int statValue = pTarget->CombStats().GetStat(i);
-            response << Server::YELLOWTEXT << Mud::Logic::CombatStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+            response << Server::BR_MAGENTATEXT << Mud::Logic::CombatStats::StatNames.at(i) << Server::PLAINTEXT << ": "
                      << statValue << Server::NEWLINE;
         }
 
+        response << Server::NEWLINE;
         return;
     }
 
@@ -289,10 +291,10 @@ StatCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
     {
         auto curVitals = mTarget->CurState();
         auto maxVitals = mTarget->MaxState();
-        response << Server::NEWLINE
-                 << "Name:       " << mTarget->Name() << Server::NEWLINE
-                 << "Experience: " << mTarget->Experience() << Server::NEWLINE
-                 << "Level:      " << static_cast<int>(mTarget->Level()) << Server::NEWLINE
+        response << Server::NEWLINE << "Stat information for:" << Server::NEWLINE
+                 << "Monster Name: " << Server::ColorizeText(mTarget->DisplayName(), Server::BR_REDTEXT) << Server::NEWLINE
+                 << "Experience:   " << mTarget->Experience() << Server::NEWLINE
+                 << "Level:        " << static_cast<int>(mTarget->Level()) << Server::NEWLINE
                  << Server::NEWLINE
                  << "Hits: " << Server::BR_BLUETEXT << curVitals.Health() << Server::PLAINTEXT << "/"
                  << Server::BR_BLUETEXT << maxVitals.Health() << Server::PLAINTEXT
@@ -312,14 +314,16 @@ StatCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
                      << statValue << Server::NEWLINE;
         }
 
-        response << Server::NEWLINE;
+        response << Server::NEWLINE << Server::NEWLINE << "Combat Statistics:" << Server::NEWLINE;
 
         for (uint8_t i = 0; i < Mud::Logic::CombatStats::NUM_STATS; i++)
         {
             int statValue = mTarget->CombStats().GetStat(i);
-            response << Server::YELLOWTEXT << Mud::Logic::CombatStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+            response << Server::BR_MAGENTATEXT << Mud::Logic::CombatStats::StatNames.at(i) << Server::PLAINTEXT << ": "
                      << statValue << Server::NEWLINE;
         }
+
+        response << Server::NEWLINE;
 
         return;
     }

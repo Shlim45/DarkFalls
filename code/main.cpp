@@ -1,7 +1,7 @@
 #include <iostream>
 //#include <thread>
 #include "Server/Text.hpp"
-#include "World/World.hpp"
+#include "Logic/World/World.hpp"
 #include "Server/Server.hpp"
 #include "Database/DBConnection.hpp"
 #include "Logic/Mobs/Mob.hpp"

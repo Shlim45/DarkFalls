@@ -4,7 +4,7 @@
 
 #include <sstream>
 #include "Combat.hpp"
-#include "code/World/World.hpp"
+#include "code/Logic/World/World.hpp"
 #include "code/Logic/Mobs/Mob.hpp"
 #include "code/Server/Text.hpp"
 
