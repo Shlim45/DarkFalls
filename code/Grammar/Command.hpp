@@ -45,6 +45,12 @@ class CreateCommand : public Command
                  Logic::World &world) const override;
 };
 
+class StatCommand : public Command
+{
+    void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                 Logic::World &world) const override;
+};
+
 class AccountCommand : public Command
 {
     void Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,

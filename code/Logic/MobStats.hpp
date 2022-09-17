@@ -27,6 +27,11 @@ public:
 
     static std::vector<std::string> const StatNames;
 
+    static inline uint8_t StatIndex(Stat cStat)
+    {
+        return static_cast<uint8_t>(cStat);
+    }
+
     MobStats() = default;
 
     template <typename T>
@@ -53,12 +58,12 @@ public:
     {
         const int numStats = (sizeof(m_stats) / sizeof(m_stats[0]));
         for (int stat = 0; stat < numStats; stat++)
-            m_stats[stat] - baseStats.m_stats[stat];
+            m_stats[stat] = baseStats.m_stats[stat];
     }
 
 
 private:
-    uint8_t m_stats[6];
+    uint8_t m_stats[NUM_STATS];
 };
 
 } // Logic

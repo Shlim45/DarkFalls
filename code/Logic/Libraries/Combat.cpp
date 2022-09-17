@@ -7,6 +7,7 @@
 #include "code/World/World.hpp"
 #include "code/Logic/Mobs/Mob.hpp"
 #include "code/Server/Text.hpp"
+#include "Dice.hpp"
 
 using namespace Mud::Logic;
 
@@ -29,18 +30,18 @@ uint16_t Combat::CalculateMaxDamage(Mob &attacker, Mob &defender,
     return maxDamage;
 }
 
-int Combat::RandomInt(int min, int max)
-{
-    std::uniform_int_distribution<int> intDistro(min, max);
-    return intDistro(m_defEngine);
-}
+//int Combat::RandomInt(int min, int max)
+//{
+//    std::uniform_int_distribution<int> intDistro(min, max);
+//    return intDistro(m_defEngine);
+//}
 
 void Combat::HandleAttack(Mob &attacker, Mob &defender, World &world)
 {
     auto &room = world.GetRoom(defender.Location());
     auto baseDmg = CalculateBaseDamage(attacker);
     auto maxDmg = CalculateMaxDamage(attacker, defender, baseDmg);
-    auto actualDmg = maxDmg * (3841 + RandomInt(0,255)) / 4096;
+    auto actualDmg = maxDmg * (3841 + m_diceLibrary.RandomInt(0,255)) / 4096;
 
     const std::string attackOutput = "%s attacks %t";
     std::stringstream damageOutput;

@@ -6,7 +6,7 @@
 #define DARKFALLS_COMBAT_HPP
 
 #include "code/Logic/includes.hpp"
-#include <random>
+#include "Dice.hpp"
 
 namespace Mud
 {
@@ -23,8 +23,6 @@ public:
     Combat() = default;
     ~Combat() = default;
 
-    int RandomInt(int min, int max);
-
     void HandleAttack(Mob &attacker, Mob &defender, World &world);
 
 private:
@@ -32,7 +30,8 @@ private:
     static uint16_t CalculateMaxDamage(Mob &attacker, Mob &defender, uint16_t baseDamage);
 
 private:
-    std::default_random_engine m_defEngine;
+    Dice m_diceLibrary;
+
 };
 
 } // Mud

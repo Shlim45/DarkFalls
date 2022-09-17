@@ -8,6 +8,7 @@
 #include "code/Logic/includes.hpp"
 #include "code/Logic/MobState.hpp"
 #include "code/Logic/MobStats.hpp"
+#include "code/Logic/CombatStats.hpp"
 
 namespace Mud
 {
@@ -95,6 +96,9 @@ namespace Logic
         MobStats &CurStats()
         { return m_curStats; }
 
+        CombatStats &CombStats()
+        { return m_combatStats; }
+
         [[nodiscard]] Realm GetRealm() const
         { return m_realm; }
 
@@ -137,7 +141,7 @@ namespace Logic
         std::string m_name;
         int m_location{};
         uint32_t m_experience{};
-        uint8_t m_level{};
+        uint8_t m_level = 1;
 
         Realm m_realm{};
         MobState m_curState;
@@ -145,6 +149,8 @@ namespace Logic
 
         MobStats m_baseStats{};
         MobStats m_curStats{};
+
+        CombatStats m_combatStats{};
 
         std::set<std::shared_ptr<Item>> m_inventory;
 

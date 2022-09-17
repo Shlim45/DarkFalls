@@ -5,7 +5,6 @@
 #include "Command.hpp"
 #include "code/Logic/MudInterface.hpp"
 #include "code/Logic/Mobs/Player.hpp"
-#include "code/Logic/Mobs/Mob.hpp"
 #include "code/Logic/Accounts/PlayerAccount.hpp"
 #include "code/World/World.hpp"
 #include "code/Dictionary/Tokenizer.hpp"
@@ -218,6 +217,93 @@ void CreateCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_p
     {
         response << Server::NEWLINE << "You may only create ROOM for now." << Server::NEWLINE << Server::NEWLINE;
     }
+}
+
+void
+StatCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
+                     Mud::Logic::World &world) const
+{
+    auto &player = mudInterface->GetPlayer();
+    auto &response = mudInterface->ostream();
+
+    if (!player->HasSecurityFlag(Security::Flag::PLAYERS))
+    {
+        response << Server::NEWLINE << "You do not have permission to create ROOMS."
+                 << Server::NEWLINE << Server::NEWLINE;
+        return;
+    }
+
+    auto mobTargetName = commands.CombineRemaining();
+    if (mobTargetName.length() == 0)
+    {
+        response << Server::NEWLINE << "Who do you wish to view the stats of?"
+                 << Server::NEWLINE << Server::NEWLINE;
+        return;
+    }
+
+    auto pTargetPos = world.Players().find(mobTargetName);
+    if (pTargetPos != world.Players().end())
+    {
+        auto pTarget = pTargetPos->second;
+        response << Server::NEWLINE << "Name: " << pTarget->Name() << Server::NEWLINE
+                 << "Experience: " << pTarget->Experience() << Server::NEWLINE
+                 << "Level: " << pTarget->Level() << Server::NEWLINE
+                 << "Hits: " << pTarget->CurState().Health() << "/" << pTarget->MaxState().Health()
+                 << " Fat: " << pTarget->CurState().Fatigue() << "/" << pTarget->MaxState().Fatigue()
+                 << " Power: " << pTarget->CurState().Power() << "/" << pTarget->MaxState().Power() << Server::NEWLINE
+
+                 << Server::NEWLINE << "Statistics:" << Server::NEWLINE;
+
+        for (uint8_t i = 0; i < Mud::Logic::MobStats::NUM_STATS; i++)
+        {
+            int statValue = pTarget->BaseStats().GetStat(i);
+            response << Server::YELLOWTEXT << Mud::Logic::MobStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+                     << statValue << Server::NEWLINE;
+        }
+
+        response << Server::NEWLINE;
+
+        for (uint8_t i = 0; i < Mud::Logic::CombatStats::NUM_STATS; i++)
+        {
+            int statValue = pTarget->CombStats().GetStat(i);
+            response << Server::YELLOWTEXT << Mud::Logic::CombatStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+                     << statValue << Server::NEWLINE;
+        }
+
+        return;
+    }
+
+    auto mTarget = world.GetMonsterLive(mobTargetName);
+    if (mTarget)
+    {
+        response << Server::NEWLINE << "Name: " << mTarget->Name() << Server::NEWLINE
+                 << "Experience: " << mTarget->Experience() << Server::NEWLINE
+                 << "Level: " << mTarget->Level() << Server::NEWLINE
+                 << "Hits: " << mTarget->CurState().Health() << "/" << mTarget->MaxState().Health()
+                 << " Fat: " << mTarget->CurState().Fatigue() << "/" << mTarget->MaxState().Fatigue()
+                 << " Power: " << mTarget->CurState().Power() << "/" << mTarget->MaxState().Power() << Server::NEWLINE
+
+                 << Server::NEWLINE << "Statistics:" << Server::NEWLINE;
+
+        for (uint8_t i = 0; i < Mud::Logic::MobStats::NUM_STATS; i++)
+        {
+            int statValue = mTarget->BaseStats().GetStat(i);
+            response << Server::YELLOWTEXT << Mud::Logic::MobStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+                     << statValue << Server::NEWLINE;
+        }
+
+        response << Server::NEWLINE;
+
+        for (uint8_t i = 0; i < Mud::Logic::CombatStats::NUM_STATS; i++)
+        {
+            int statValue = mTarget->CombStats().GetStat(i);
+            response << Server::YELLOWTEXT << Mud::Logic::CombatStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+                     << statValue << Server::NEWLINE;
+        }
+
+        return;
+    }
+
 }
 
 void AccountCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,

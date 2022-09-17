@@ -97,7 +97,7 @@ set(SRCS
         code/Server/Server.cpp
         code/Server/ConnectionBase.cpp
         code/Server/LineOrientedConnection.cpp
-        code/Database/DBConnection.cpp)
+        code/Database/DBConnection.cpp code/Logic/CombatStats.cpp code/Logic/CombatStats.hpp code/Logic/Libraries/Dice.hpp)
 
 include_directories(${MYSQLCONNECTORCPP_INCLUDE_DIRS})
 link_directories(${MYSQLCONNECTORCPP_LIBRARIES})

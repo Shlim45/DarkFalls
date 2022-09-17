@@ -95,8 +95,11 @@ void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &conn
     player->CurState().RecoverMobState(player->MaxState());
 
     for (int i = 0; i < 6; i++)
-        player->BaseStats().SetStat(i, 10);
+        player->BaseStats().SetStat(i, m_diceLib.RandomInt(10, 20));
+//        player->BaseStats().SetStat(i, 10);
     player->CurStats().RecoverMobStats(player->BaseStats());
+
+    player->CombStats().RecoverCombatStats(*player);
 
     player->SetReferenceId();
     m_playerDB.insert(std::make_pair<std::string, std::shared_ptr<Player> >(player->Name(), std::move(player)));
@@ -213,6 +216,8 @@ void World::GenerateMonsterTemplate(uint32_t mID, const std::string &art, const 
     monster->SetLevel(level);
     monster->SetExperience(exp);
     monster->SetRealm(realm);
+
+    monster->CombStats().RecoverCombatStats(*monster);
 
     AddMonsterTemplate(monster);
 }

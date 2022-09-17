@@ -133,6 +133,7 @@ namespace Logic
         time_t m_lastTick{};
 
         Combat m_combatLib;
+        Dice m_diceLib;
     };
 
 } // Logic
