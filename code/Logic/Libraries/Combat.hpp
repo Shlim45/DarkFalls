@@ -28,6 +28,7 @@ public:
 private:
     static uint16_t CalculateBaseDamage(Mob &attacker);
     static uint16_t CalculateMaxDamage(Mob &attacker, Mob &defender, uint16_t baseDamage);
+    uint16_t CalculateDamage(Mob &attacker, Mob &defender);
 
 private:
     Dice m_diceLibrary;

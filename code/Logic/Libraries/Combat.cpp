@@ -7,45 +7,45 @@
 #include "code/World/World.hpp"
 #include "code/Logic/Mobs/Mob.hpp"
 #include "code/Server/Text.hpp"
-#include "Dice.hpp"
 
 using namespace Mud::Logic;
 
 uint16_t Combat::CalculateBaseDamage(Mob &attacker)
 {
-    uint8_t wpnDamage = attacker.BaseStats().GetStat(MobStats::Stat::DEXTERITY);
+    // TODO(jon): Pull damage stat off weapon and pass in
+    //            weapon damage and mob level.
+    uint8_t wpnDamage = attacker.CurStats().GetStat(MobStats::Stat::STRENGTH);
+    const auto lvl = attacker.Level();
 
-    uint16_t baseDamage = wpnDamage + ( (wpnDamage + attacker.Level()) / 32 ) * ( (wpnDamage *attacker.Level()) / 32 );
+    uint16_t baseDamage = wpnDamage + ( (wpnDamage + lvl) / 32 ) * ( (wpnDamage * lvl) / 32 );
     return baseDamage;
 }
 
-uint16_t Combat::CalculateMaxDamage(Mob &attacker, Mob &defender,
-                                                uint16_t baseDamage)
+uint16_t Combat::CalculateMaxDamage(Mob &attacker, Mob &defender, uint16_t baseDamage)
 {
-    auto str = attacker.BaseStats().GetStat(MobStats::Stat::STRENGTH);
-    auto con = defender.BaseStats().GetStat(MobStats::Stat::CONSTITUTION);
+    auto power = attacker.CombStats().GetStat(CombatStats::Stat::PHY_DAMAGE);
+    auto defense = defender.CombStats().GetStat(CombatStats::Stat::PHY_DEFENSE);
 
-    uint16_t maxDamage = ((str * (512-con) * baseDamage) / (16 * 512));
+    uint16_t maxDamage = ((power * (512-defense) * baseDamage) / (16 * 512));
 
     return maxDamage;
 }
 
-//int Combat::RandomInt(int min, int max)
-//{
-//    std::uniform_int_distribution<int> intDistro(min, max);
-//    return intDistro(m_defEngine);
-//}
+uint16_t Combat::CalculateDamage(Mob &attacker, Mob &defender)
+{
+    auto baseDmg = CalculateBaseDamage(attacker);
+    auto maxDmg = CalculateMaxDamage(attacker, defender, baseDmg);
+    return maxDmg * (3841 + m_diceLibrary.RandomInt(0,255)) / 4096;
+}
 
 void Combat::HandleAttack(Mob &attacker, Mob &defender, World &world)
 {
     auto &room = world.GetRoom(defender.Location());
-    auto baseDmg = CalculateBaseDamage(attacker);
-    auto maxDmg = CalculateMaxDamage(attacker, defender, baseDmg);
-    auto actualDmg = maxDmg * (3841 + m_diceLibrary.RandomInt(0,255)) / 4096;
+    auto damage = CalculateDamage(attacker, defender);
 
     const std::string attackOutput = "%s attacks %t";
     std::stringstream damageOutput;
-    damageOutput << " for " << Server::REDTEXT << actualDmg << Server::PLAINTEXT << " damage";
+    damageOutput << " for " << Server::REDTEXT << damage << Server::PLAINTEXT << " damage";
     room->Show(attackOutput + damageOutput.str() + "!", attacker, defender, attackOutput + "!");
 
     if (defender.IsPlayer() && defender.CurState().Health() == 0)
@@ -58,7 +58,7 @@ void Combat::HandleAttack(Mob &attacker, Mob &defender, World &world)
         return;
     }
 
-    defender.CurState().AdjHealth(-actualDmg, defender.MaxState());
+    defender.CurState().AdjHealth(-damage, defender.MaxState());
     if (defender.CurState().Health() == 0)
     {
         if (defender.IsPlayer())

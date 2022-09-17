@@ -217,7 +217,7 @@ void World::GenerateMonsterTemplate(uint32_t mID, const std::string &art, const 
     monster->SetExperience(exp);
     monster->SetRealm(realm);
 
-    monster->CombStats().RecoverCombatStats(*monster);
+//    monster->CombStats().RecoverCombatStats(*monster);
 
     AddMonsterTemplate(monster);
 }
@@ -274,8 +274,10 @@ void World::AddMonsterLive(std::shared_ptr<Monster> &toAdd, const int roomId)
     auto monster = toAdd->CopyOf();
     room->AddMonster(monster);
     monster->SetReferenceId();
+    monster->CurStats().RecoverMobStats(monster->BaseStats());
+    monster->CurState().RecoverMobState(monster->MaxState());
+    monster->CombStats().RecoverCombatStats(*monster);
     m_liveMonsters.emplace_back(std::move(monster));
-//    m_liveMonsters.insert(std::make_pair<uint32_t, std::shared_ptr<Monster> >(toAdd->MonsterID(), std::move(monster)));
 }
 
 void World::AddMonsterLive(const uint32_t monsterId, const int roomId)

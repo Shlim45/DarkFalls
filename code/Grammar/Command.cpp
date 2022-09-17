@@ -225,6 +225,8 @@ StatCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
 {
     auto &player = mudInterface->GetPlayer();
     auto &response = mudInterface->ostream();
+    const std::string SPACES = "            ";
+    const int MAX_STATNAME_LENGTH = 12;
 
     if (!player->HasSecurityFlag(Security::Flag::PLAYERS))
     {
@@ -233,31 +235,40 @@ StatCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
         return;
     }
 
-    auto mobTargetName = commands.CombineRemaining();
-    if (mobTargetName.length() == 0)
+    const auto targetName = commands.CombineRemaining();
+    auto &pTarget = player;
+    if (targetName.length())
     {
-        response << Server::NEWLINE << "Who do you wish to view the stats of?"
-                 << Server::NEWLINE << Server::NEWLINE;
-        return;
+        auto pTargetPos = world.Players().find(targetName);
+        if (pTargetPos != world.Players().end())
+            pTarget = pTargetPos->second;
+        else
+            pTarget = nullptr;
     }
 
-    auto pTargetPos = world.Players().find(mobTargetName);
-    if (pTargetPos != world.Players().end())
+    if (pTarget)
     {
-        auto pTarget = pTargetPos->second;
-        response << Server::NEWLINE << "Name: " << pTarget->Name() << Server::NEWLINE
+        auto curVitals = pTarget->CurState();
+        auto maxVitals = pTarget->MaxState();
+        response << Server::NEWLINE << "Name: " << Server::ColorizeText(pTarget->Name(), Server::BR_CYANTEXT) << Server::NEWLINE
                  << "Experience: " << pTarget->Experience() << Server::NEWLINE
-                 << "Level: " << pTarget->Level() << Server::NEWLINE
-                 << "Hits: " << pTarget->CurState().Health() << "/" << pTarget->MaxState().Health()
-                 << " Fat: " << pTarget->CurState().Fatigue() << "/" << pTarget->MaxState().Fatigue()
-                 << " Power: " << pTarget->CurState().Power() << "/" << pTarget->MaxState().Power() << Server::NEWLINE
+                 << "Level: " << static_cast<int>(pTarget->Level()) << Server::NEWLINE
+                 << Server::NEWLINE
+                 << "Hits: " << Server::BR_BLUETEXT << curVitals.Health() << Server::PLAINTEXT << "/"
+                 << Server::BR_BLUETEXT << maxVitals.Health() << Server::PLAINTEXT
+                 << "  Fat: " << Server::BR_GREENTEXT << curVitals.Fatigue()<< Server::PLAINTEXT << "/"
+                 << Server::BR_GREENTEXT << maxVitals.Fatigue() << Server::PLAINTEXT
+                 << "  Power: " << Server::BR_REDTEXT << curVitals.Power()<< Server::PLAINTEXT << "/"
+                 << Server::BR_REDTEXT << maxVitals.Power() << Server::PLAINTEXT << Server::NEWLINE
 
                  << Server::NEWLINE << "Statistics:" << Server::NEWLINE;
 
         for (uint8_t i = 0; i < Mud::Logic::MobStats::NUM_STATS; i++)
         {
             int statValue = pTarget->BaseStats().GetStat(i);
-            response << Server::YELLOWTEXT << Mud::Logic::MobStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+            const std::string& STAT = Mud::Logic::MobStats::StatNames.at(i);
+            const auto padding = SPACES.substr(0, MAX_STATNAME_LENGTH - STAT.length());
+            response << padding << Server::YELLOWTEXT << STAT << Server::PLAINTEXT << ": "
                      << statValue << Server::NEWLINE;
         }
 
@@ -273,22 +284,31 @@ StatCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
         return;
     }
 
-    auto mTarget = world.GetMonsterLive(mobTargetName);
+    auto mTarget = world.GetMonsterLive(targetName);
     if (mTarget)
     {
-        response << Server::NEWLINE << "Name: " << mTarget->Name() << Server::NEWLINE
+        auto curVitals = mTarget->CurState();
+        auto maxVitals = mTarget->MaxState();
+        response << Server::NEWLINE
+                 << "Name:       " << mTarget->Name() << Server::NEWLINE
                  << "Experience: " << mTarget->Experience() << Server::NEWLINE
-                 << "Level: " << mTarget->Level() << Server::NEWLINE
-                 << "Hits: " << mTarget->CurState().Health() << "/" << mTarget->MaxState().Health()
-                 << " Fat: " << mTarget->CurState().Fatigue() << "/" << mTarget->MaxState().Fatigue()
-                 << " Power: " << mTarget->CurState().Power() << "/" << mTarget->MaxState().Power() << Server::NEWLINE
+                 << "Level:      " << static_cast<int>(mTarget->Level()) << Server::NEWLINE
+                 << Server::NEWLINE
+                 << "Hits: " << Server::BR_BLUETEXT << curVitals.Health() << Server::PLAINTEXT << "/"
+                 << Server::BR_BLUETEXT << maxVitals.Health() << Server::PLAINTEXT
+                 << "  Fat: " << Server::BR_GREENTEXT << curVitals.Fatigue()<< Server::PLAINTEXT << "/"
+                 << Server::BR_GREENTEXT << maxVitals.Fatigue() << Server::PLAINTEXT
+                 << "  Power: " << Server::BR_REDTEXT << curVitals.Power()<< Server::PLAINTEXT << "/"
+                 << Server::BR_REDTEXT << maxVitals.Power() << Server::PLAINTEXT << Server::NEWLINE
 
                  << Server::NEWLINE << "Statistics:" << Server::NEWLINE;
 
         for (uint8_t i = 0; i < Mud::Logic::MobStats::NUM_STATS; i++)
         {
             int statValue = mTarget->BaseStats().GetStat(i);
-            response << Server::YELLOWTEXT << Mud::Logic::MobStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+            const std::string& STAT = Mud::Logic::MobStats::StatNames.at(i);
+            const auto padding = SPACES.substr(0, MAX_STATNAME_LENGTH - STAT.length());
+            response << padding << Server::YELLOWTEXT << STAT << Server::PLAINTEXT << ": "
                      << statValue << Server::NEWLINE;
         }
 
@@ -304,6 +324,8 @@ StatCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
         return;
     }
 
+    response << Server::NEWLINE << "Target '" << targetName << "' not found."
+             << Server::NEWLINE << Server::NEWLINE;
 }
 
 void AccountCommand::Execute(Dictionary::Tokenizer &commands, const std::shared_ptr<Logic::MudInterface> &mudInterface,
@@ -559,10 +581,15 @@ InfoCommand::Execute(Mud::Dictionary::Tokenizer &commands, const std::shared_ptr
              << " Power: " << player->CurState().Power() << "/" << player->MaxState().Power() << Server::NEWLINE
 
              << Server::NEWLINE << "Statistics:" << Server::NEWLINE;
+
+    const std::string SPACES = "            ";
+    const int MAX_STATNAME_LENGTH = 12;
     for (uint8_t i = 0; i < Mud::Logic::MobStats::NUM_STATS; i++)
     {
         int statValue = player->BaseStats().GetStat(i);
-        response << Server::YELLOWTEXT << Mud::Logic::MobStats::StatNames.at(i) << Server::PLAINTEXT << ": "
+        const std::string& STAT = Mud::Logic::MobStats::StatNames.at(i);
+        const auto padding = SPACES.substr(0, MAX_STATNAME_LENGTH - STAT.length());
+        response << padding << Server::YELLOWTEXT << STAT << Server::PLAINTEXT << ": "
                  << statValue << Server::NEWLINE;
     }
 }

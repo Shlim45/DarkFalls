@@ -141,7 +141,7 @@ namespace Logic
         std::string m_name;
         int m_location{};
         uint32_t m_experience{};
-        uint8_t m_level = 1;
+        uint8_t m_level{};
 
         Realm m_realm{};
         MobState m_curState;
