@@ -90,6 +90,8 @@ set(SRCS
         code/Logic/CombatStats.cpp
         code/Logic/Mobs/Mob.cpp
         code/Logic/Mobs/Monster.cpp
+        code/Logic/Races/Race.cpp
+        code/Logic/Races/Human.cpp
         code/Logic/World/CardinalExit.cpp
         code/Logic/World/Room.cpp
         code/Logic/World/Area.cpp

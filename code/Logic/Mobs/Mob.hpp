@@ -105,6 +105,12 @@ namespace Logic
         virtual void SetRealm(Realm realm)
         { m_realm = realm; }
 
+        uint8_t RaceID() const
+        { return m_raceId; }
+
+        virtual void SetRaceID(uint8_t raceId)
+        { m_raceId = raceId; }
+
         virtual void Tell(const std::string &message)
         {}
 
@@ -144,6 +150,8 @@ namespace Logic
         uint8_t m_level{};
 
         Realm m_realm{};
+        uint8_t m_raceId{};
+
         MobState m_curState;
         MobState m_maxState;
 

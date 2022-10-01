@@ -4,8 +4,10 @@
 
 #include "World.hpp"
 #include "code/Server/Server.hpp"
+#include "code/Logic/Races/Race.hpp"
 #include "code/Logic/Mobs/Player.hpp"
 #include "code/Logic/Items/Item.hpp"
+#include "code/Logic/Races/Human.hpp"
 
 using namespace Mud::Logic;
 
@@ -84,6 +86,31 @@ void World::GenerateRoom(const int roomID, const std::string &description, int a
     newRoom->SetCoords(x, y, z);
     newRoom->SetCardinalExits(cExits);
     AddRoom(newRoom);
+}
+
+std::map<uint8_t, std::shared_ptr<Race>> &World::Races()
+{
+    return m_races;
+}
+
+void World::AddRace(std::shared_ptr<Race> &toAdd)
+{
+    m_races.insert(std::make_pair<uint8_t, std::shared_ptr<Race>>(toAdd->RaceID(), std::move(toAdd)));
+}
+
+std::shared_ptr<Race> &World::GetRace(uint8_t raceId)
+{
+    auto room = m_races.find(raceId);
+    if (room != m_races.end())
+        return room->second;
+    else
+        return m_races.begin()->second;
+}
+
+void World::GenerateRace(uint8_t raceId, const std::string &name, Realm realm)
+{
+    std::shared_ptr<Race> newRace = std::make_shared<Race>(raceId, name, realm);
+    AddRace(newRace);
 }
 
 void World::GeneratePlayer(const std::string &name, Server::ConnectionBase &connection)
@@ -537,11 +564,11 @@ void World::LoadWorld()
 
     std::cout << "Loading Item Catalog...\n";
     m_dbConnection.LoadItems(*this);
-    std::cout << "  " << Mud::Logic::Item::GetWorldCount() << " Item Catalog Loaded.\n";
+    std::cout << "  " << Mud::Logic::Item::GetWorldCount() << " Items Loaded.\n";
 
     std::cout << "Loading Monster Catalog...\n";
     m_dbConnection.LoadMonsters(*this);
-    std::cout << "  " << Mud::Logic::Monster::GetLoadedCount() << " Monster Catalog Loaded.\n";
+    std::cout << "  " << Mud::Logic::Monster::GetLoadedCount() << " Monsters Loaded.\n";
 
 //
 //    std::cout << "Loading Exits...\n";
@@ -551,6 +578,13 @@ void World::LoadWorld()
 //    std::cout << "Loading Accounts...\n";
 //    // NOTE(jon): Load objects (portals)
 //    std::cout << "Accounts Loaded.\n";
+//
+    std::cout << "Loading Races...\n";
+    GenerateRace(0, "GenRace", Realm::NONE);
+    GenerateRace(1, "Archon", Realm::IMMORTAL);
+    GenerateRace(2, "Skeleton", Realm::EVIL);
+
+    std::cout << "  " << Mud::Logic::Race::raceCount << " Races Loaded.\n";
 //
 //    std::cout << "Loading Players...\n";
 //    // NOTE(jon): Load objects (portals)
